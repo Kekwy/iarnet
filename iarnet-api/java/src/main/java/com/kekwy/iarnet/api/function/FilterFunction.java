@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.api;
+package com.kekwy.iarnet.api.function;
 
 /**
  * 自定义过滤函数接口。

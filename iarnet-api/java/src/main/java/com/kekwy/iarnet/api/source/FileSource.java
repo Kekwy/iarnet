@@ -1,6 +1,4 @@
-package com.kekwy.iarnet.api;
-
-import com.kekwy.iarnet.api.source.Source;
+package com.kekwy.iarnet.api.source;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

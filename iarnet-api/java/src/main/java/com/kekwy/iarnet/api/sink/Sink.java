@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.api;
+package com.kekwy.iarnet.api.sink;
 
 /**
  * 数据汇，消费类型为 T 的元素。

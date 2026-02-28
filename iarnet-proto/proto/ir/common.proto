@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package iarnet.proto.ir;
+
+option java_multiple_files = true;
+option java_package = "com.kekwy.iarnet.proto.ir";
+option java_outer_classname = "CommonProto";
+
+enum Language {
+  LANGUAGE_UNKNOWN = 0;
+  LANGUAGE_JAVA = 1;
+  LANGUAGE_PYTHON = 2;
+}

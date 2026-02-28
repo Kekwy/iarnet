@@ -12,7 +12,7 @@
     <description>iarnet parent project</description>
 
     <modules>
-        <module>iarnet-application</module>
+<!--        <module>iarnet-application</module>-->
         <module>iarnet-resource</module>
         <module>iarnet-common</module>
         <module>iarnet-proto</module>

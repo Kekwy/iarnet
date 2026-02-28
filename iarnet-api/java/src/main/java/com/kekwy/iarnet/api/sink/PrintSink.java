@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.api;
+package com.kekwy.iarnet.api.sink;
 
 /**
  * 将每个元素打印到标准输出的 Sink。
