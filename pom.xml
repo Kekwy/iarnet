@@ -12,7 +12,6 @@
     <description>iarnet parent project</description>
 
     <modules>
-        <module>iarnet-api</module>
         <module>iarnet-application</module>
         <module>iarnet-resource</module>
         <module>iarnet-common</module>
