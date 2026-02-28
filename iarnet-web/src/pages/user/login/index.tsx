@@ -25,6 +25,7 @@ import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Footer } from '@/components';
 import { login } from '@/services/ant-design-pro/api';
+import logoImg from '@/assets/logo.png';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import Settings from '../../../../config/defaultSettings';
 
@@ -182,7 +183,7 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
+          logo={<img alt="IARNet" src={logoImg} />}
           title="Ant Design"
           subTitle={intl.formatMessage({
             id: 'pages.layouts.userLayout.title',

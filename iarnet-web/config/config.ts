@@ -83,7 +83,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Ant Design Pro',
+  title: 'IARNet - 智能应用运行平台',
   layout: {
     locale: true,
     ...defaultSettings,
@@ -119,6 +119,7 @@ export default defineConfig({
       theme: {
         cssVar: true,
         token: {
+          colorPrimary: '#4A6CFA',
           fontFamily: 'AlibabaSans, sans-serif',
         },
       },
@@ -143,6 +144,12 @@ export default defineConfig({
   headScripts: [
     // 解决首次加载时白屏的问题
     { src: join(PUBLIC_PATH, 'scripts/loading.js'), async: true },
+  ],
+  /**
+   * @name <head> 中的 link 标签（如 favicon）
+   */
+  links: [
+    { rel: 'icon', type: 'image/png', href: `${PUBLIC_PATH}favicon.png` },
   ],
   //================ pro 插件配置 =================
   presets: ['umi-presets-pro'],

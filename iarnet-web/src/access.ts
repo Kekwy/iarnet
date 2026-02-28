@@ -1,11 +1,9 @@
 /**
  * @see https://umijs.org/docs/max/access#access
- * */
-export default function access(
-  initialState: { currentUser?: API.CurrentUser } | undefined,
-) {
-  const { currentUser } = initialState ?? {};
+ * 平台未使用登录，权限按需在此扩展
+ */
+export default function access() {
   return {
-    canAdmin: currentUser && currentUser.access === 'admin',
+    canAdmin: true,
   };
 }

@@ -8,16 +8,16 @@ const Settings: ProLayoutProps & {
   logo?: string;
 } = {
   navTheme: 'light',
-  // 拂晓蓝
-  colorPrimary: '#1890ff',
+  // 主题色
+  colorPrimary: '#4A6CFA',
   layout: 'mix',
   contentWidth: 'Fluid',
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Ant Design Pro',
+  title: 'IARNet - 智能应用运行平台',
   pwa: true,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: '/logo.png',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

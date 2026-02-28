@@ -11,8 +11,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>iarnet-application</artifactId>
+    <artifactId>iarnet-control-plane</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-application</name>
-    <description>iarnet 应用层</description>
+    <name>iarnet-control-plane</name>
+    <description>iarnet 控制台</description>
 </project>

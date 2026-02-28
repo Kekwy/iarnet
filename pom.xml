@@ -13,6 +13,7 @@
 
     <modules>
 <!--        <module>iarnet-application</module>-->
+        <module>iarnet-control-plane</module>
         <module>iarnet-resource</module>
         <module>iarnet-common</module>
         <module>iarnet-proto</module>
