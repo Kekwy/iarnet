@@ -1,12 +1,14 @@
-package com.kekwy.iarnet.control;
+package com.kekwy.iarnet;
 
-
+import com.kekwy.iarnet.config.SupportedLangProperties;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
+@EnableConfigurationProperties(SupportedLangProperties.class)
 public class MainApplication {
     public static void main(String[] args) {
         org.springframework.boot.SpringApplication.run(MainApplication.class, args);

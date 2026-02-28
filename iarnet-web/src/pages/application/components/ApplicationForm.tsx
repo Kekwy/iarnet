@@ -11,10 +11,10 @@ import type { Application } from '@/services/application/typings';
 
 export interface ApplicationFormValues {
   name: string;
-  gitUrl?: string;
-  branch?: string;
+  gitUrl: string;
+  branch: string;
+  runnerEnv: string;
   description?: string;
-  runnerEnv?: string;
 }
 
 interface ApplicationFormProps {
@@ -92,6 +92,7 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
           label="Git 仓库地址"
           placeholder="https://github.com/username/repo"
           disabled={isEdit}
+          rules={[{ required: true, message: '请输入 Git 仓库地址' }]}
           fieldProps={{ maxLength: 512 }}
         />
         <ProFormText
@@ -99,20 +100,22 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
           label="分支"
           placeholder="main"
           disabled={isEdit}
+          rules={[{ required: true, message: '请输入分支' }]}
           fieldProps={{ maxLength: 64 }}
         />
         <ProFormSelect
           name="runnerEnv"
-          label="运行环境"
-          placeholder="选择运行环境"
+          label="编程语言"
+          placeholder="选择编程语言"
+          rules={[{ required: true, message: '请选择编程语言' }]}
           request={async () => {
-            const { environments } = await applicationApi.getRunnerEnvironments();
-            return (environments || []).map((env) => ({ label: env, value: env }));
+            const { supportedLangs } = await applicationApi.getSupportedLangs();
+            return (supportedLangs || []).map((lang: string) => ({ label: lang, value: lang }));
           }}
         />
         <ProFormTextArea
           name="description"
-          label="描述（可选）"
+          label="描述"
           placeholder="应用描述信息"
           fieldProps={{ rows: 3, maxLength: 500 }}
         />

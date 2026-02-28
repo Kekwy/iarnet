@@ -4,7 +4,7 @@ import type {
   ApplicationStats,
   CreateApplicationParams,
   GetApplicationsResponse,
-  GetRunnerEnvironmentsResponse,
+  GetSupportedLangsResponse,
   UpdateApplicationParams,
 } from './typings';
 
@@ -74,16 +74,16 @@ export const applicationApi = {
       return { applications };
     }),
 
-  /** 获取运行环境列表 */
-  getRunnerEnvironments: () =>
-    request<GetRunnerEnvironmentsResponse>(`${API_PREFIX}/runner-environments`, {
+  /** 获取支持的编程语言列表 */
+  getSupportedLangs: () =>
+    request<GetSupportedLangsResponse>(`${API_PREFIX}/supported-langs`, {
       method: 'GET',
       skipErrorHandler: false,
       getResponse: false,
       baseURL: '',
     }).then((res: any) => {
       const raw = res?.data !== undefined ? res.data : res;
-      return { environments: Array.isArray(raw?.environments) ? raw.environments : [] };
+      return { supportedLangs: Array.isArray(raw?.supportedLangs) ? raw.supportedLangs : [] };
     }),
 
   /** 创建应用 */

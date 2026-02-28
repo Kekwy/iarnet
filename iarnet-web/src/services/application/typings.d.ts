@@ -40,9 +40,9 @@ export interface GetApplicationsResponse {
   applications: Application[];
 }
 
-/** 运行环境列表响应 */
-export interface GetRunnerEnvironmentsResponse {
-  environments: string[];
+/** 支持的编程语言列表响应 */
+export interface GetSupportedLangsResponse {
+  supportedLangs: string[];
 }
 
 /** 创建应用参数（后端 snake_case） */

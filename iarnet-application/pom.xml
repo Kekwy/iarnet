@@ -11,11 +11,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>iarnet-control-plane</artifactId>
+    <artifactId>iarnet-application</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-control-plane</name>
-    <description>iarnet 控制台</description>
-
+    <name>iarnet-application</name>
+    <description>iarnet 应用层</description>
     <dependencies>
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>
@@ -23,13 +22,22 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-application</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.46.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+            <version>6.4.4.Final</version>
         </dependency>
     </dependencies>
 </project>

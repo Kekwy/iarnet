@@ -153,7 +153,7 @@ const ApplicationManagement: React.FC = () => {
     {
       title: '状态',
       dataIndex: 'status',
-      width: 100,
+      width: 60,
       render: (_, record) => {
         const s = STATUS_MAP[record.status] ?? {
           text: record.status,
@@ -165,28 +165,35 @@ const ApplicationManagement: React.FC = () => {
     {
       title: '分支',
       dataIndex: 'branch',
-      width: 100,
+      width: 60,
       ellipsis: true,
       render: (_, r) => r.branch ?? '—',
     },
     {
-      title: '运行环境',
+      title: '编程语言',
       dataIndex: 'runnerEnv',
-      width: 120,
+      width: 80,
       ellipsis: true,
       render: (_, r) => r.runnerEnv ?? '—',
     },
     {
       title: '最后部署',
       dataIndex: 'lastDeployed',
-      width: 160,
+      width: 110,
       render: (_, r) => formatDateTime(r.lastDeployed),
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      width: 110,
+      render: (_, r) => formatDateTime(r.createdAt),
     },
     {
       title: '操作',
       valueType: 'option',
-      width: 240,
+      width: 320,
       fixed: 'right',
+      onCell: () => ({ style: { width: 320, minWidth: 320, maxWidth: 320 } }),
       render: (_, record) => {
         const canRun =
           record.status !== 'deploying' &&
@@ -202,7 +209,7 @@ const ApplicationManagement: React.FC = () => {
                 ? '导入中'
                 : '运行';
         return (
-          <Space wrap>
+          <Space size="small" wrap={false}>
             {record.status === 'running' ? (
               <Button
                 type="link"
@@ -346,9 +353,9 @@ const ApplicationManagement: React.FC = () => {
 
       {/* 应用列表 */}
       <ProTable<Application>
-        rowKey="id"
-        actionRef={actionRef}
-        columns={columns}
+          rowKey="id"
+          actionRef={actionRef}
+          columns={columns}
         request={async () => {
           try {
             const res = await applicationApi.getList();
