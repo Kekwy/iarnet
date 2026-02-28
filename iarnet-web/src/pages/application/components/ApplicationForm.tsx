@@ -14,8 +14,6 @@ export interface ApplicationFormValues {
   gitUrl?: string;
   branch?: string;
   description?: string;
-  executeCmd?: string;
-  envInstallCmd?: string;
   runnerEnv?: string;
 }
 
@@ -44,8 +42,6 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
         await applicationApi.update(application.id, {
           name: values.name,
           description: values.description ?? '',
-          execute_cmd: values.executeCmd,
-          env_install_cmd: values.envInstallCmd,
           runner_env: values.runnerEnv,
         });
         messageApi.success('应用已更新');
@@ -55,8 +51,6 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
           git_url: values.gitUrl,
           branch: values.branch || 'main',
           description: values.description ?? '',
-          execute_cmd: values.executeCmd,
-          env_install_cmd: values.envInstallCmd,
           runner_env: values.runnerEnv,
         });
         messageApi.success('应用已创建');
@@ -106,18 +100,6 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
           placeholder="main"
           disabled={isEdit}
           fieldProps={{ maxLength: 64 }}
-        />
-        <ProFormText
-          name="envInstallCmd"
-          label="环境安装命令（可选）"
-          placeholder="例如：pip install -r requirements.txt"
-          fieldProps={{ maxLength: 1024 }}
-        />
-        <ProFormText
-          name="executeCmd"
-          label="执行命令"
-          placeholder="例如：python app.py"
-          fieldProps={{ maxLength: 1024 }}
         />
         <ProFormSelect
           name="runnerEnv"

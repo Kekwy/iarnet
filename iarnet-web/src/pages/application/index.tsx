@@ -96,8 +96,6 @@ const ApplicationManagement: React.FC = () => {
       gitUrl: app.gitUrl,
       branch: app.branch || 'main',
       description: app.description,
-      executeCmd: app.executeCmd,
-      envInstallCmd: app.envInstallCmd,
       runnerEnv: app.runnerEnv,
     });
     setFormOpen(true);
