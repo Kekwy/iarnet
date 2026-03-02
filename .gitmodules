@@ -1,0 +1,3 @@
+[submodule "iarnet-example/java"]
+	path = iarnet-example/java
+	url = git@github.com:Kekwy/iarnet-example-java.git
