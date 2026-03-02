@@ -4,8 +4,9 @@ import {
   ProFormText,
   ProFormTextArea,
 } from '@ant-design/pro-components';
-import { message } from 'antd';
+import { message, Modal, Spin } from 'antd';
 import type { FC } from 'react';
+import { useState } from 'react';
 import { applicationApi } from '@/services/application';
 import type { Application } from '@/services/application/typings';
 
@@ -34,6 +35,7 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
   onSuccess,
 }) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [importing, setImporting] = useState(false);
   const isEdit = Boolean(application?.id);
 
   const handleFinish = async (values: ApplicationFormValues) => {
@@ -46,6 +48,8 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
         });
         messageApi.success('应用已更新');
       } else {
+        // 创建应用时，先显示全局导入中动画，直到后端完成仓库克隆
+        setImporting(true);
         await applicationApi.create({
           name: values.name,
           git_url: values.gitUrl,
@@ -61,12 +65,40 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
     } catch (e) {
       messageApi.error(isEdit ? '更新失败，请重试' : '创建失败，请重试');
       return false;
+    } finally {
+      if (!isEdit) {
+        setImporting(false);
+      }
     }
   };
 
   return (
     <>
       {contextHolder}
+      <Modal
+        open={importing}
+        footer={null}
+        centered
+        closable={false}
+        maskClosable={false}
+        title="正在导入应用"
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '24px 0',
+            gap: 12,
+          }}
+        >
+          <Spin size="large" />
+          <div style={{ color: 'rgba(0,0,0,0.65)' }}>
+            正在克隆仓库并初始化工作空间，请稍候…
+          </div>
+        </div>
+      </Modal>
       <ModalForm<ApplicationFormValues>
         title={isEdit ? '编辑应用' : '导入应用'}
         open={open}

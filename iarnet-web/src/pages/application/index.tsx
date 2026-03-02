@@ -1,6 +1,5 @@
 import {
   AppstoreOutlined,
-  CloudDownloadOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
   DeleteOutlined,
@@ -31,7 +30,6 @@ const STATUS_MAP: Record<
   error: { text: '错误', color: 'error' },
   deploying: { text: '部署中', color: 'processing' },
   cloning: { text: '克隆中', color: 'warning' },
-  importing: { text: '导入中', color: 'processing' },
 };
 
 function formatDateTime(iso?: string): string {
@@ -196,18 +194,14 @@ const ApplicationManagement: React.FC = () => {
       onCell: () => ({ style: { width: 320, minWidth: 320, maxWidth: 320 } }),
       render: (_, record) => {
         const canRun =
-          record.status !== 'deploying' &&
-          record.status !== 'cloning' &&
-          record.status !== 'importing';
+          record.status !== 'deploying' && record.status !== 'cloning';
         const repoUrl = gitUrlToHttps(record.gitUrl);
         const runButtonText =
           record.status === 'deploying'
             ? '部署中'
             : record.status === 'cloning'
               ? '克隆中'
-              : record.status === 'importing'
-                ? '导入中'
-                : '运行';
+              : '运行';
         return (
           <Space size="small" wrap={false}>
             {record.status === 'running' ? (
@@ -278,13 +272,6 @@ const ApplicationManagement: React.FC = () => {
       value: stats?.running ?? 0,
       icon: <ThunderboltOutlined />,
       valueStyle: { color: '#52c41a' },
-    },
-    {
-      key: 'importing',
-      title: '导入中',
-      value: stats?.importing ?? 0,
-      icon: <CloudDownloadOutlined />,
-      valueStyle: { color: '#4A6CFA' },
     },
     {
       key: 'undeployed',

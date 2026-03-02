@@ -1,12 +1,11 @@
-/** 应用状态 */
+/** 应用状态（前端展示，不再单独区分“导入中”状态） */
 export type ApplicationStatus =
   | 'idle'
   | 'running'
   | 'stopped'
   | 'error'
   | 'deploying'
-  | 'cloning'
-  | 'importing';
+  | 'cloning';
 
 /** 应用 */
 export interface Application {
@@ -31,8 +30,6 @@ export interface ApplicationStats {
   stopped: number;
   undeployed: number;
   failed: number;
-  /** 导入中的应用数 */
-  importing?: number;
 }
 
 /** 获取应用列表响应 */

@@ -18,23 +18,29 @@ function toApplication(app: Record<string, any>): Application {
     const date = new Date(v);
     return isNaN(date.getTime()) ? undefined : date.toISOString();
   };
-  const status = app.status as Application['status'];
+
+  // 统一映射后端状态到前端可展示的状态：
+  // - importing 视为 deploying（导入过程本质上也是部署准备过程）
+  // - 其他未知状态回退为 idle
+  const rawStatus = (app.status as string | undefined) ?? 'idle';
+  const normalizedStatusMap: Record<string, Application['status']> = {
+    idle: 'idle',
+    running: 'running',
+    stopped: 'stopped',
+    error: 'error',
+    deploying: 'deploying',
+    cloning: 'cloning',
+    importing: 'deploying',
+  };
+  const status = normalizedStatusMap[rawStatus] ?? 'idle';
+
   return {
     id: app.id,
     name: app.name,
     description: app.description ?? '',
     gitUrl: app.git_url,
     branch: app.branch,
-    status:
-      status === 'idle' ||
-      status === 'running' ||
-      status === 'stopped' ||
-      status === 'error' ||
-      status === 'deploying' ||
-      status === 'cloning' ||
-      status === 'importing'
-        ? status
-        : 'idle',
+    status,
     lastDeployed: parseTime(app.last_deployed),
     runnerEnv: app.runner_env,
     containerId: app.container_id,

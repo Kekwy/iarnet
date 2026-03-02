@@ -1,3 +1,5 @@
 .idea
-data/**
 target
+workspaces
+workspaces/**
+**.db
