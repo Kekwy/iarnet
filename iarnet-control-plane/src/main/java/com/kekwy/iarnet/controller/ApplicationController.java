@@ -127,6 +127,31 @@ public class ApplicationController {
         return Response.ok(response);
     }
 
+    /**
+     * 获取指定应用最近一次 Maven 构建日志。
+     *
+     * GET /api/application/apps/{id}/build-log
+     */
+    @GetMapping("/apps/{id}/build-log")
+    public Response<String> getBuildLog(@PathVariable("id") String id) {
+        log.info("GET /apps/{}/build-log - 获取应用构建日志", id);
+        if (id == null || id.isBlank()) {
+            return Response.fail("应用 ID 不能为空");
+        }
+
+        try {
+            return applicationFacade.getBuildLog(ID.of(id))
+                    .map(Response::ok)
+                    .orElseGet(() -> Response.ok(""));
+        } catch (IllegalArgumentException e) {
+            log.warn("获取应用构建日志失败: 参数错误, id={}, msg={}", id, e.getMessage());
+            return Response.fail(e.getMessage());
+        } catch (Exception e) {
+            log.error("获取应用构建日志失败: id={}, msg={}", id, e.getMessage(), e);
+            return Response.fail("获取构建日志失败: " + e.getMessage());
+        }
+    }
+
     /** 获取支持的编程语言列表 GET /api/application/supported-langs */
     @GetMapping("/supported-langs")
     public Response<SupportedLangsResponse> getSupportedLangs() {

@@ -12,8 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -72,6 +73,8 @@ public class DefaultWorkspaceService implements WorkspaceService {
             throw new IllegalStateException("无法清理已有工作空间目录: " + workspacePath, e);
         }
 
+
+
         // 执行 git clone
         runGitClone(gitUrl, actualBranch, workspacePath);
 
@@ -106,7 +109,11 @@ public class DefaultWorkspaceService implements WorkspaceService {
 
     private void runGitClone(String gitUrl, String branch, Path workspacePath) {
         ProcessBuilder pb = new ProcessBuilder(
-                "git", "clone", "-b", branch, "--single-branch", gitUrl, workspacePath.toString());
+                "git", "clone", "-b", branch, "--single-branch", gitUrl, workspacePath.toString() + "/code");
+
+        // 禁用交互式凭证输入，避免进程卡死等待输入
+        pb.environment().put("GIT_TERMINAL_PROMPT", "0");
+        // 将 stderr 合并到 stdout，统一按日志输出（避免被日志系统误判为 error）
         pb.redirectErrorStream(true);
 
         log.info("执行 git clone，url={}, branch={}, dir={}", gitUrl, branch, workspacePath);
@@ -118,28 +125,52 @@ public class DefaultWorkspaceService implements WorkspaceService {
             throw new IllegalStateException("启动 git 进程失败", e);
         }
 
-        String output;
-        try (InputStream is = process.getInputStream()) {
-            output = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            output = "";
-        }
+        StringBuilder outputBuilder = new StringBuilder();
+
+        // 实时读取并打印输出，防止缓冲区填满导致阻塞
+        Thread logThread = new Thread(
+                () -> readStream(process.getInputStream(), "[git]", outputBuilder),
+                "git-clone-log-" + workspacePath.getFileName());
+        logThread.start();
 
         try {
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                // 克隆失败时清理目录
+            // 最长等待 10 分钟，避免无限卡死
+            boolean finished = process.waitFor(10, java.util.concurrent.TimeUnit.MINUTES);
+            logThread.join(1000);
+
+            if (!finished) {
+                process.destroyForcibly();
                 try {
                     FileSystemUtils.deleteRecursively(workspacePath);
                 } catch (IOException ignored) {
-                    // 忽略清理失败
+                }
+                throw new IllegalStateException("git clone 超时，已强制终止，输出：\n" + outputBuilder);
+            }
+
+            int exitCode = process.exitValue();
+            if (exitCode != 0) {
+                try {
+                    FileSystemUtils.deleteRecursively(workspacePath);
+                } catch (IOException ignored) {
                 }
                 throw new IllegalStateException(
-                        "git clone 失败，exitCode=" + exitCode + ", output=\n" + output);
+                        "git clone 失败，exitCode=" + exitCode + ", output=\n" + outputBuilder);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("git clone 被中断", e);
+        }
+    }
+
+    private void readStream(java.io.InputStream is, String prefix, StringBuilder collector) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                log.info("{} {}", prefix, line);
+                collector.append(line).append('\n');
+            }
+        } catch (IOException e) {
+            log.warn("{} 读取输出失败: {}", prefix, e.getMessage());
         }
     }
 }

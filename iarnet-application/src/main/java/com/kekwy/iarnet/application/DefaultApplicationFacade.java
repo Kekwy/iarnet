@@ -11,8 +11,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -102,6 +108,33 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     @Override
     public Map<String, Long> getApplicationStats() {
         return applicationInfoService.getStats();
+    }
+
+    @Override
+    public Optional<String> getBuildLog(ID id) {
+        if (id == null || id.getValue() == null || id.getValue().isBlank()) {
+            throw new IllegalArgumentException("应用 ID 不能为空");
+        }
+
+        // 通过 WorkspaceService 获取应用工作空间目录
+        Workspace workspace = workspaceService.getByApplicationID(id);
+        if (workspace == null || workspace.getWorkspaceDir() == null || workspace.getWorkspaceDir().isBlank()) {
+            throw new IllegalStateException("应用工作空间目录无效");
+        }
+
+        Path logFile = Paths.get(workspace.getWorkspaceDir()).resolve(".iarnet").resolve("build.log");
+        if (!Files.exists(logFile)) {
+            log.info("应用 {} 尚未生成构建日志文件: {}", id.getValue(), logFile.toAbsolutePath());
+            return Optional.empty();
+        }
+
+        try {
+            String content = Files.readString(logFile, StandardCharsets.UTF_8);
+            return Optional.ofNullable(content);
+        } catch (IOException e) {
+            log.error("读取应用 {} 构建日志失败: {}", id.getValue(), e.getMessage(), e);
+            throw new IllegalStateException("读取构建日志失败", e);
+        }
     }
 }
 

@@ -81,8 +81,8 @@ export const applicationApi = {
     }).then((res: any) => {
       const raw = res?.data !== undefined ? res.data : res;
       const list = Array.isArray(raw?.applications) ? raw.applications : [];
-      const applications = list.map((app: Record<string, any>) => toApplication(app));
-      applications.sort((a, b) => {
+      const applications: Application[] = list.map((app: Record<string, any>) => toApplication(app));
+      applications.sort((a: Application, b: Application) => {
         const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         if (ta === 0 && tb === 0) return b.id.localeCompare(a.id);
@@ -136,6 +136,18 @@ export const applicationApi = {
       skipErrorHandler: false,
       getResponse: false,
       baseURL: '',
+    }),
+
+  /** 获取应用最近一次构建日志 */
+  getBuildLog: (id: string) =>
+    request<string>(`${API_PREFIX}/apps/${id}/build-log`, {
+      method: 'GET',
+      skipErrorHandler: false,
+      getResponse: false,
+      baseURL: '',
+    }).then((res: any) => {
+      const raw = res?.data !== undefined ? res.data : res;
+      return typeof raw === 'string' ? raw : '';
     }),
 
   /** 停止应用 */

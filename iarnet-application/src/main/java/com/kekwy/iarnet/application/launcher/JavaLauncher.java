@@ -2,14 +2,17 @@ package com.kekwy.iarnet.application.launcher;
 
 import com.kekwy.iarnet.model.ID;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.util.FileSystemUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 /**
@@ -59,10 +62,16 @@ public class JavaLauncher implements Launcher {
 
             Path projectDir = pom.getParent();
 
+            // 准备构建日志文件：保存在原始工作空间目录下，便于前端通过后端接口读取
+            Path logDir = sourceDir.resolve(".iarnet");
+            Files.createDirectories(logDir);
+            Path logFile = logDir.resolve("build.log");
+
             // 调用 Maven 构建（要求运行环境已安装 mvn 命令）
+            // 移除 -q 参数，使用 -X 显示详细日志，便于排查构建问题
             ProcessBuilder pb = new ProcessBuilder(
                     "mvn",
-                    "-q",
+                    "-X",
                     "-DskipTests=true",
                     "clean",
                     "package"
@@ -73,15 +82,45 @@ public class JavaLauncher implements Launcher {
             log.info("开始构建 Java 应用，项目目录: {}", projectDir.toAbsolutePath());
             Process process = pb.start();
 
-            String output;
-            try (InputStream is = process.getInputStream()) {
-                output = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            }
+            StringBuilder outputBuilder = new StringBuilder();
 
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                log.error("Maven 构建失败，exitCode={}，输出:\n{}", exitCode, output);
-                throw new IllegalStateException("Maven 构建失败，exitCode=" + exitCode);
+            // 实时读取并打印输出，同时写入日志文件，防止缓冲区填满导致阻塞
+            Thread logThread = new Thread(
+                    () -> readStream(process.getInputStream(), "[maven]", outputBuilder, logFile),
+                    "maven-build-log-" + applicationID.getValue());
+            logThread.start();
+
+            try {
+                // 最长等待 30 分钟，Maven 构建可能需要较长时间
+                boolean finished = process.waitFor(30, TimeUnit.MINUTES);
+                logThread.join(2000); // 等待日志线程完成
+
+                if (!finished) {
+                    process.destroyForcibly();
+                    try {
+                        FileSystemUtils.deleteRecursively(buildRoot);
+                    } catch (IOException ignored) {
+                    }
+                    throw new IllegalStateException("Maven 构建超时，已强制终止，输出：\n" + outputBuilder);
+                }
+
+                int exitCode = process.exitValue();
+                if (exitCode != 0) {
+                    log.error("Maven 构建失败，exitCode={}，输出:\n{}", exitCode, outputBuilder);
+                    try {
+                        FileSystemUtils.deleteRecursively(buildRoot);
+                    } catch (IOException ignored) {
+                    }
+                    throw new IllegalStateException("Maven 构建失败，exitCode=" + exitCode + "，输出：\n" + outputBuilder);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                process.destroyForcibly();
+                try {
+                    FileSystemUtils.deleteRecursively(buildRoot);
+                } catch (IOException ignored) {
+                }
+                throw new RuntimeException("Maven 构建过程中被中断", e);
             }
 
             // 从 target 目录中选择一个 jar（通常是 fat jar）。
@@ -109,9 +148,6 @@ public class JavaLauncher implements Launcher {
             }
         } catch (IOException e) {
             throw new RuntimeException("构建 Java 应用失败（IO 异常）", e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("构建 Java 应用过程中被中断", e);
         }
     }
 
@@ -141,6 +177,26 @@ public class JavaLauncher implements Launcher {
                     throw new RuntimeException("复制目录失败: " + path, e);
                 }
             });
+        }
+    }
+
+    private void readStream(InputStream is, String prefix, StringBuilder collector, Path logFile) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+             BufferedWriter writer = Files.newBufferedWriter(
+                     logFile,
+                     StandardCharsets.UTF_8,
+                     StandardOpenOption.CREATE,
+                     StandardOpenOption.TRUNCATE_EXISTING)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                log.info("{} {}", prefix, line);
+                collector.append(line).append('\n');
+                writer.write(line);
+                writer.newLine();
+                writer.flush();
+            }
+        } catch (IOException e) {
+            log.warn("{} 读取输出失败: {}", prefix, e.getMessage());
         }
     }
 }
