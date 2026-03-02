@@ -104,23 +104,23 @@ public class ApplicationController {
 
     /** 更新应用 PUT /api/application/apps/:id */
     @PutMapping("/apps/{id}")
-    public Response<ApplicationInfo> updateApplication(@PathVariable Long id, @RequestBody UpdateApplicationRequest body) {
+    public Response<ApplicationInfo> updateApplication(@PathVariable String id, @RequestBody UpdateApplicationRequest body) {
         log.info("PUT /apps/{} - 更新应用: name={}, runnerEnv={}", id, body.getName(), body.getRunnerEnv());
         ApplicationInfo input = new ApplicationInfo();
         input.setName(body.getName());
         input.setDescription(body.getDescription());
         input.setRunnerEnv(body.getRunnerEnv());
 
-        ApplicationInfo updated = applicationFacade.updateApplication(id, input);
+        ApplicationInfo updated = applicationFacade.updateApplication(ID.of(id), input);
         log.info("应用更新成功: id={}, name={}", id, updated.getName());
         return Response.ok(updated);
     }
 
     /** 删除应用 DELETE /api/application/apps/:id */
     @DeleteMapping("/apps/{id}")
-    public Response<Void> deleteApplication(@PathVariable Long id) {
+    public Response<Void> deleteApplication(@PathVariable String id) {
         log.info("DELETE /apps/{} - 删除应用", id);
-        applicationFacade.deleteApplication(id);
+        applicationFacade.deleteApplication(ID.of(id));
         log.info("应用删除成功: id={}", id);
         return Response.ok();
     }

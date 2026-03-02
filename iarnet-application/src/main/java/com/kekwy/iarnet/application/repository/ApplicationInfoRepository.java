@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ApplicationInfoRepository extends JpaRepository<ApplicationInfoEntity, Long> {
+public interface ApplicationInfoRepository extends JpaRepository<ApplicationInfoEntity, String> {
 
     /** 按状态统计数量 */
     long countByStatus(String status);

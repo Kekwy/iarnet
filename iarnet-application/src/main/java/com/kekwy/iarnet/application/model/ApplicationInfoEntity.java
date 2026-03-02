@@ -15,7 +15,7 @@ public class ApplicationInfoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     /** 应用名称 */
     @Column(nullable = false, length = 128)

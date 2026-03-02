@@ -1,6 +1,7 @@
 package com.kekwy.iarnet.application;
 
 import com.kekwy.iarnet.model.ApplicationInfo;
+import com.kekwy.iarnet.model.ID;
 
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,9 @@ public interface ApplicationFacade {
 
     ApplicationInfo createApplication(ApplicationInfo input);
 
-    ApplicationInfo updateApplication(Long id, ApplicationInfo input);
+    ApplicationInfo updateApplication(ID id, ApplicationInfo input);
 
-    void deleteApplication(Long id);
+    void deleteApplication(ID id);
 
     Map<String, Long> getApplicationStats();
 }
