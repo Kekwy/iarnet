@@ -1,6 +1,7 @@
 package com.kekwy.iarnet.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kekwy.iarnet.enums.AppStatus;
 import lombok.Data;
 
 import java.time.Instant;
@@ -20,15 +21,19 @@ public class ApplicationInfo {
     /** 分支 */
     private String branch = "main";
 
-    /** 状态：idle / running / stopped / error / deploying / cloning / importing */
-    private String status = "idle";
+    /** 状态：idle / running / stopped / failed / deploying */
+    private AppStatus status = AppStatus.APP_STATUS_IDLE;
 
     /** 描述 */
     private String description;
 
     /** 运行环境 */
-    @JsonProperty("runner_env")
-    private String runnerEnv;
+    @JsonProperty("lang")
+    private String lang;
+
+    /** 最近一次构建/部署错误信息 */
+    @JsonProperty("last_error")
+    private String lastError;
 
     /** 最后部署时间 */
     @JsonProperty("last_deployed")

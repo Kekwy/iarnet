@@ -12,7 +12,7 @@ import {
 } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { useRequest } from '@umijs/max';
+import { history, useRequest } from '@umijs/max';
 import { Button, Card, message, Popconfirm, Space, Statistic, Tag } from 'antd';
 import React, { useRef, useState } from 'react';
 import { applicationApi } from '@/services/application';
@@ -94,7 +94,7 @@ const ApplicationManagement: React.FC = () => {
       gitUrl: app.gitUrl,
       branch: app.branch || 'main',
       description: app.description,
-      runnerEnv: app.runnerEnv,
+      lang: app.lang,
     });
     setFormOpen(true);
   };
@@ -137,7 +137,12 @@ const ApplicationManagement: React.FC = () => {
       width: 160,
       render: (_, record) => (
         <Space direction="vertical" size={0}>
-          <span className="font-medium">{record.name}</span>
+          <a
+            className="font-medium"
+            onClick={() => history.push(`/application/${record.id}`)}
+          >
+            {record.name}
+          </a>
           {record.description ? (
             <span style={{ color: 'rgba(0,0,0,0.45)', fontSize: 12 }}>
               {record.description.length > 60
@@ -169,10 +174,10 @@ const ApplicationManagement: React.FC = () => {
     },
     {
       title: '编程语言',
-      dataIndex: 'runnerEnv',
+      dataIndex: 'lang',
       width: 80,
       ellipsis: true,
-      render: (_, r) => r.runnerEnv ?? '—',
+      render: (_, r) => r.lang ?? '—',
     },
     {
       title: '最后部署',

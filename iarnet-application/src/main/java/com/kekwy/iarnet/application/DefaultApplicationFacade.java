@@ -1,13 +1,13 @@
 package com.kekwy.iarnet.application;
 
+import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.service.ApplicationInfoService;
+import com.kekwy.iarnet.application.service.LaunchService;
 import com.kekwy.iarnet.application.service.WorkspaceService;
 import com.kekwy.iarnet.model.ApplicationInfo;
 import com.kekwy.iarnet.model.ID;
 import com.kekwy.iarnet.util.IDUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +20,7 @@ public class DefaultApplicationFacade implements ApplicationFacade {
 
     private ApplicationInfoService applicationInfoService;
     private WorkspaceService workspaceService;
+    private LaunchService launchService;
 
     @Autowired
     public void setApplicationInfoService(ApplicationInfoService applicationInfoService) {
@@ -29,6 +30,11 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     @Autowired
     public void setWorkspaceService(WorkspaceService workspaceService) {
         this.workspaceService = workspaceService;
+    }
+
+    @Autowired
+    public void setLaunchService(LaunchService launchService) {
+        this.launchService = launchService;
     }
 
     @Override
@@ -55,6 +61,36 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     @Override
     public ApplicationInfo updateApplication(ID id, ApplicationInfo input) {
         return applicationInfoService.update(id, input);
+    }
+
+    @Override
+    public boolean launchApplication(ID id) {
+        if (id == null || id.getValue() == null) {
+            throw new IllegalArgumentException("应用 ID 不能为空");
+        }
+
+        // 读取应用信息
+        ApplicationInfo applicationInfo = applicationInfoService.getByID(id);
+        if (applicationInfo == null) {
+            throw new IllegalArgumentException("应用不存在: " + id.getValue());
+        }
+
+        // 找到对应的工作空间
+        Workspace workspace = workspaceService.getByApplicationID(id);
+        String workspaceDir = workspace.getWorkspaceDir();
+        if (workspaceDir == null || workspaceDir.isBlank()) {
+            throw new IllegalStateException("应用工作空间目录无效: " + workspaceDir);
+        }
+
+        String lang = applicationInfo.getLang();
+        if (lang == null || lang.isBlank()) {
+            throw new IllegalStateException("应用未配置运行语言(lang)，无法启动: id=" + id.getValue());
+        }
+
+        log.info("准备启动应用: id={}, name={}, lang={}, workspaceDir={}",
+                id.getValue(), applicationInfo.getName(), lang, workspaceDir);
+
+        return launchService.launchApplication(id, workspaceDir, lang);
     }
 
     @Override

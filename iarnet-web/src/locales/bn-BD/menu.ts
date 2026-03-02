@@ -1,4 +1,5 @@
 export default {
+  'menu.app-detail': 'Application Detail',
   'menu.welcome': 'স্বাগতম',
   'menu.more-blocks': 'আরও ব্লক',
   'menu.home': 'নীড়',

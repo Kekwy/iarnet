@@ -1,4 +1,5 @@
 export default {
+  'menu.app-detail': 'Application Detail',
   'menu.welcome': 'Welcome',
   'menu.more-blocks': 'More Blocks',
   'menu.home': 'Início',

@@ -14,8 +14,8 @@ import java.time.Instant;
 public class ApplicationInfoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @Column(name = "application_id", length = 64, nullable = false)
+    private String applicationID;
 
     /** 应用名称 */
     @Column(nullable = false, length = 128)
@@ -38,8 +38,12 @@ public class ApplicationInfoEntity {
     private String description;
 
     /** 运行环境 */
-    @Column(name = "runner_env", length = 128)
-    private String runnerEnv;
+    @Column(name = "lang", length = 128)
+    private String lang;
+
+    /** 最近一次构建/部署错误信息 */
+    @Column(name = "last_error", length = 1024)
+    private String lastError;
 
     /** 最后部署时间 */
     @Column(name = "last_deployed")

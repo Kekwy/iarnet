@@ -56,21 +56,56 @@ public class ApplicationController {
             log.warn("创建应用失败: 缺少必填字段 git_url");
             return Response.fail("缺少必填字段: git_url");
         }
-        if (body.getRunnerEnv() == null || body.getRunnerEnv().isBlank()) {
-            log.warn("创建应用失败: 缺少必填字段 runner_env");
-            return Response.fail("缺少必填字段: runner_env");
+        if (body.getLang() == null || body.getLang().isBlank()) {
+            log.warn("创建应用失败: 缺少必填字段 lang");
+            return Response.fail("缺少必填字段: lang");
         }
         ApplicationInfo input = new ApplicationInfo();
         input.setName(body.getName());
         input.setGitUrl(body.getGitUrl());
         input.setBranch(body.getBranch() != null && !body.getBranch().isBlank() ? body.getBranch() : "main");
         input.setDescription(body.getDescription());
-        input.setRunnerEnv(body.getRunnerEnv());
+        input.setLang(body.getLang());
 
         ApplicationInfo created = applicationFacade.createApplication(input);
         log.info("应用创建成功: id={}, name={}", created.getId() != null ? created.getId().getValue() : "?", created.getName());
         return Response.ok(created);
     }
+
+    /**
+     * 启动应用（构建 + 运行），与 HTTP 请求异步执行。
+     *
+     * 前端调用该接口仅负责触发任务，很快返回。
+     * 实际的构建/运行过程在后台异步执行，结果会反映到 ApplicationInfo.status / lastError 上，
+     * 前端可以通过轮询「获取应用列表」或单个详情接口获取最新状态和错误信息。
+     */
+    @PostMapping("/apps/{id}/launch")
+    public Response<Void> launchApplication(@PathVariable("id") String id) {
+        log.info("POST /apps/{}/launch - 触发应用构建与部署", id);
+
+        if (id == null || id.isBlank()) {
+            return Response.fail("应用 ID 不能为空");
+        }
+
+        ID appId = ID.of(id);
+
+        // 异步执行构建与运行，避免阻塞 HTTP 请求
+        new Thread(() -> {
+            try {
+                boolean ok = applicationFacade.launchApplication(appId);
+                if (!ok) {
+                    log.warn("异步启动应用失败: id={}", id);
+                }
+            } catch (Exception e) {
+                log.error("异步启动应用时发生异常: id={}", id, e);
+                // 具体错误信息已在 DefaultLaunchService 中写入 lastError，前端可主动轮询获取
+            }
+        }, "launch-app-" + id).start();
+
+        // 立即返回，提示任务已提交
+        return Response.ok("应用构建与部署任务已提交", null);
+    }
+
 
     /** 获取应用统计 GET /api/application/stats */
     @GetMapping("/stats")
@@ -105,11 +140,11 @@ public class ApplicationController {
     /** 更新应用 PUT /api/application/apps/:id */
     @PutMapping("/apps/{id}")
     public Response<ApplicationInfo> updateApplication(@PathVariable String id, @RequestBody UpdateApplicationRequest body) {
-        log.info("PUT /apps/{} - 更新应用: name={}, runnerEnv={}", id, body.getName(), body.getRunnerEnv());
+        log.info("PUT /apps/{} - 更新应用: name={}, lang={}", id, body.getName(), body.getLang());
         ApplicationInfo input = new ApplicationInfo();
         input.setName(body.getName());
         input.setDescription(body.getDescription());
-        input.setRunnerEnv(body.getRunnerEnv());
+        input.setLang(body.getLang());
 
         ApplicationInfo updated = applicationFacade.updateApplication(ID.of(id), input);
         log.info("应用更新成功: id={}, name={}", id, updated.getName());

@@ -1,7 +1,9 @@
 package com.kekwy.iarnet.application.service;
 
+import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.model.WorkspaceEntity;
 import com.kekwy.iarnet.application.repository.WorkspaceRepository;
+import com.kekwy.iarnet.model.ID;
 import com.kekwy.iarnet.util.IDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Service
 public class DefaultWorkspaceService implements WorkspaceService {
@@ -80,6 +83,25 @@ public class DefaultWorkspaceService implements WorkspaceService {
 
         log.info("工作空间已创建并完成克隆: applicationId={}, dir={}", applicationId, workspacePath.toAbsolutePath());
         return workspacePath.toAbsolutePath().toString();
+    }
+
+    @Override
+    public Workspace getByApplicationID(ID applicationID) {
+        if (applicationID == null || applicationID.getValue() == null) {
+            throw new IllegalArgumentException("applicationID 不能为空");
+        }
+
+        Optional<WorkspaceEntity> workspaceEntity =
+                workspaceRepository.findByApplicationID(applicationID.getValue());
+
+        WorkspaceEntity entity = workspaceEntity.orElseThrow(
+                () -> new IllegalArgumentException("未找到应用对应的工作空间，applicationId=" + applicationID.getValue()));
+
+        Workspace workspace = new Workspace();
+        workspace.setWorkspaceID(ID.of(entity.getWorkspaceID()));
+        workspace.setApplicationID(ID.of(entity.getApplicationID()));
+        workspace.setWorkspaceDir(entity.getWorkspaceDir());
+        return workspace;
     }
 
     private void runGitClone(String gitUrl, String branch, Path workspacePath) {

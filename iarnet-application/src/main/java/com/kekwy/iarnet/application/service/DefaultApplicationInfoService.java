@@ -2,6 +2,7 @@ package com.kekwy.iarnet.application.service;
 
 import com.kekwy.iarnet.application.model.ApplicationInfoEntity;
 import com.kekwy.iarnet.application.repository.ApplicationInfoRepository;
+import com.kekwy.iarnet.enums.AppStatus;
 import com.kekwy.iarnet.model.ApplicationInfo;
 import com.kekwy.iarnet.model.ID;
 import com.kekwy.iarnet.util.IDUtil;
@@ -32,31 +33,39 @@ public class DefaultApplicationInfoService implements ApplicationInfoService {
     }
 
     @Override
+    public ApplicationInfo getByID(ID id) {
+        return repository.findById(id.getValue()).map(
+                this::toApplicationInfo
+        ).orElse(null);
+    }
+
+    @Override
     public ApplicationInfo create(ApplicationInfo input) {
-        log.info("创建应用: name={}, gitUrl={}, branch={}, runnerEnv={}", input.getName(), input.getGitUrl(), input.getBranch(), input.getRunnerEnv());
+        log.info("创建应用: name={}, gitUrl={}, branch={}, lang={}", input.getName(), input.getGitUrl(), input.getBranch(), input.getLang());
         ApplicationInfoEntity entity = new ApplicationInfoEntity();
         // 优先使用外部传入的 ID（例如由 Facade 预先生成并用于 workspace），否则自行生成
         String idValue = input.getId() != null ? input.getId().getValue() : IDUtil.genAppID().getValue();
-        entity.setId(idValue);
+        entity.setApplicationID(idValue);
         entity.setName(input.getName());
         entity.setGitUrl(input.getGitUrl());
         entity.setBranch(input.getBranch() != null ? input.getBranch() : "main");
         entity.setDescription(input.getDescription() != null ? input.getDescription() : "");
-        entity.setRunnerEnv(input.getRunnerEnv());
-        entity.setStatus("importing");
+        entity.setLang(input.getLang());
+        entity.setStatus(AppStatus.APP_STATUS_IDLE.getName());
+        entity.setLastError(null);
         entity = repository.save(entity);
-        log.info("应用已持久化: id={}, status={}", entity.getId(), entity.getStatus());
+        log.info("应用已持久化: id={}, status={}", entity.getApplicationID(), entity.getStatus());
         return toApplicationInfo(entity);
     }
 
     @Override
     public ApplicationInfo update(ID id, ApplicationInfo input) {
-        log.info("更新应用 id={}: name={}, description={}, runnerEnv={}", id, input.getName(), input.getDescription(), input.getRunnerEnv());
+        log.info("更新应用 id={}: name={}, description={}, lang={}", id, input.getName(), input.getDescription(), input.getLang());
         ApplicationInfoEntity entity = repository.findById(id.getValue())
                 .orElseThrow(() -> new IllegalArgumentException("应用不存在: " + id));
         if (input.getName() != null) entity.setName(input.getName());
         if (input.getDescription() != null) entity.setDescription(input.getDescription());
-        if (input.getRunnerEnv() != null) entity.setRunnerEnv(input.getRunnerEnv());
+        if (input.getLang() != null) entity.setLang(input.getLang());
         entity = repository.save(entity);
         log.info("应用更新已持久化: id={}", id);
         return toApplicationInfo(entity);
@@ -84,14 +93,15 @@ public class DefaultApplicationInfoService implements ApplicationInfoService {
 
     private ApplicationInfo toApplicationInfo(ApplicationInfoEntity entity) {
         ApplicationInfo info = new ApplicationInfo();
-        info.setId(ID.of(entity.getId()));
+        info.setId(ID.of(entity.getApplicationID()));
         info.setName(entity.getName());
         info.setDescription(entity.getDescription());
         info.setGitUrl(entity.getGitUrl());
         info.setBranch(entity.getBranch());
-        info.setStatus(entity.getStatus());
+        info.setStatus(AppStatus.parse(entity.getStatus()));
         info.setLastDeployed(entity.getLastDeployed());
-        info.setRunnerEnv(entity.getRunnerEnv());
+        info.setLang(entity.getLang());
+        info.setLastError(entity.getLastError());
         info.setCreatedAt(entity.getCreatedAt());
         return info;
     }

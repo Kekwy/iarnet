@@ -1,5 +1,8 @@
 package com.kekwy.iarnet.application.service;
 
+import com.kekwy.iarnet.application.model.Workspace;
+import com.kekwy.iarnet.model.ID;
+
 /**
  * Workspace 服务，负责为应用管理工作空间目录及 Git 仓库。
  */
@@ -14,4 +17,6 @@ public interface WorkspaceService {
      * @return 工作空间目录绝对路径
      */
     String createWorkspaceAndClone(String applicationId, String gitUrl, String branch);
+
+    Workspace getByApplicationID(ID applicationID);
 }

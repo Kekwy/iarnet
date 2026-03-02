@@ -16,7 +16,10 @@ export interface Application {
   branch?: string;
   status: ApplicationStatus;
   lastDeployed?: string;
-  runnerEnv?: string;
+  /** 运行语言，例如 java / python / go */
+  lang?: string;
+  /** 最近一次构建/部署错误信息 */
+  lastError?: string;
   containerId?: string;
   executeCmd?: string;
   envInstallCmd?: string;
@@ -50,7 +53,8 @@ export interface CreateApplicationParams {
   description?: string;
   execute_cmd?: string;
   env_install_cmd?: string;
-  runner_env?: string;
+  /** 运行语言，例如 java / python / go */
+  lang?: string;
 }
 
 /** 更新应用参数 */
@@ -59,5 +63,6 @@ export interface UpdateApplicationParams {
   description?: string;
   execute_cmd?: string;
   env_install_cmd?: string;
-  runner_env?: string;
+  /** 运行语言，例如 java / python / go */
+  lang?: string;
 }

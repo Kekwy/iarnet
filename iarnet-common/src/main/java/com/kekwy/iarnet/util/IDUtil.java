@@ -22,4 +22,10 @@ public class IDUtil {
         return id;
     }
 
+    public static ID genArtifactID() {
+        ID id = new ID();
+        id.setValue("artifact." + genUUID());
+        return id;
+    }
+
 }

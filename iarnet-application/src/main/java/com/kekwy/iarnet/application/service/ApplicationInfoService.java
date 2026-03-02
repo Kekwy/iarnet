@@ -10,6 +10,8 @@ public interface ApplicationInfoService {
 
     List<ApplicationInfo> list();
 
+    ApplicationInfo getByID(ID id);
+
     ApplicationInfo create(ApplicationInfo input);
 
     ApplicationInfo update(ID id, ApplicationInfo input);

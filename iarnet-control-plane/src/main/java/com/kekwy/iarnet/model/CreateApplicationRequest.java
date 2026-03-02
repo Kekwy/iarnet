@@ -11,6 +11,7 @@ public class CreateApplicationRequest {
     private String gitUrl;
     private String branch = "main";
     private String description;
-    @JsonProperty("runner_env")
-    private String runnerEnv;
+    /** 运行语言，例如 java / python / go */
+    @JsonProperty("lang")
+    private String lang;
 }

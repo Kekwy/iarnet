@@ -1,4 +1,5 @@
 export default {
+  'menu.app-detail': 'Application Detail',
   'menu.welcome': 'Selamat Datang',
   'menu.more-blocks': 'Blocks Lainnya',
   'menu.home': 'Halaman Awal',

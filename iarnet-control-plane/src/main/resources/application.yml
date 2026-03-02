@@ -22,3 +22,5 @@ iarnet:
   # 工作空间基础目录，对应 DefaultWorkspaceService 中的 @Value("${iarnet.workspace-base-dir:./workspaces}")
   # 可以根据部署环境修改为绝对路径，例如 /var/iarnet/workspaces
   workspace-base-dir: ./workspaces
+  # 构建产物（fat jar 等）基础目录，对应 DefaultArtifactService 中的 @Value("${iarnet.artifact-base-dir:./artifacts}")
+  artifact-base-dir: ./artifacts

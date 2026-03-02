@@ -24,13 +24,21 @@ function toApplication(app: Record<string, any>): Application {
   // - 其他未知状态回退为 idle
   const rawStatus = (app.status as string | undefined) ?? 'idle';
   const normalizedStatusMap: Record<string, Application['status']> = {
+    // 纯字符串状态（旧格式）
     idle: 'idle',
     running: 'running',
     stopped: 'stopped',
     error: 'error',
     deploying: 'deploying',
     cloning: 'cloning',
+    // 历史 importing 状态视为 deploying
     importing: 'deploying',
+    // 枚举名状态（后端 AppStatus），统一在前端做转换
+    APP_STATUS_IDLE: 'idle',
+    APP_STATUS_RUNNING: 'running',
+    APP_STATUS_STOPPED: 'stopped',
+    APP_STATUS_DEPLOYING: 'deploying',
+    APP_STATUS_FAILED: 'error',
   };
   const status = normalizedStatusMap[rawStatus] ?? 'idle';
 
@@ -42,7 +50,10 @@ function toApplication(app: Record<string, any>): Application {
     branch: app.branch,
     status,
     lastDeployed: parseTime(app.last_deployed),
-    runnerEnv: app.runner_env,
+    // 后端新字段为 lang，兼容旧字段 runner_env
+    lang: app.lang ?? app.runner_env,
+     // 部署错误信息
+    lastError: app.last_error ?? app.lastError,
     containerId: app.container_id,
     executeCmd: app.execute_cmd,
     envInstallCmd: app.env_install_cmd,
@@ -120,14 +131,11 @@ export const applicationApi = {
 
   /** 运行/部署应用 */
   run: (id: string) =>
-    request<Application>(`${API_PREFIX}/apps/${id}/run`, {
+    request<void>(`${API_PREFIX}/apps/${id}/launch`, {
       method: 'POST',
       skipErrorHandler: false,
       getResponse: false,
       baseURL: '',
-    }).then((res: any) => {
-      const raw = res?.data !== undefined ? res.data : res;
-      return raw ? toApplication(raw) : res;
     }),
 
   /** 停止应用 */

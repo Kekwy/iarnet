@@ -18,6 +18,12 @@ export default [
     component: './application',
   },
   {
+    path: '/application/:id',
+    name: 'app-detail',
+    hideInMenu: true,
+    component: './application/detail',
+  },
+  {
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',

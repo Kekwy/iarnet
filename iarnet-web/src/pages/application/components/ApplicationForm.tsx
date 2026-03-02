@@ -14,7 +14,7 @@ export interface ApplicationFormValues {
   name: string;
   gitUrl: string;
   branch: string;
-  runnerEnv: string;
+  lang: string;
   description?: string;
 }
 
@@ -44,7 +44,7 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
         await applicationApi.update(application.id, {
           name: values.name,
           description: values.description ?? '',
-          runner_env: values.runnerEnv,
+          lang: values.lang,
         });
         messageApi.success('应用已更新');
       } else {
@@ -55,7 +55,7 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
           git_url: values.gitUrl,
           branch: values.branch || 'main',
           description: values.description ?? '',
-          runner_env: values.runnerEnv,
+          lang: values.lang,
         });
         messageApi.success('应用已创建');
       }
@@ -136,7 +136,7 @@ const ApplicationForm: FC<ApplicationFormProps> = ({
           fieldProps={{ maxLength: 64 }}
         />
         <ProFormSelect
-          name="runnerEnv"
+          name="lang"
           label="编程语言"
           placeholder="选择编程语言"
           rules={[{ required: true, message: '请选择编程语言' }]}

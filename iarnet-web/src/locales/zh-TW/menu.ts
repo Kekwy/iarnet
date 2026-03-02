@@ -1,4 +1,5 @@
 export default {
+  'menu.app-detail': '應用詳情',
   'menu.welcome': '歡迎',
   'menu.more-blocks': '更多區塊',
   'menu.home': '首頁',

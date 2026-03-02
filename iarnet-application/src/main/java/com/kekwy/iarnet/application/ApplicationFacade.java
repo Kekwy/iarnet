@@ -14,6 +14,8 @@ public interface ApplicationFacade {
 
     ApplicationInfo updateApplication(ID id, ApplicationInfo input);
 
+    boolean launchApplication(ID id);
+
     void deleteApplication(ID id);
 
     Map<String, Long> getApplicationStats();
