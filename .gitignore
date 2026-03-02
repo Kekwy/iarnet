@@ -2,4 +2,4 @@
 target
 workspaces
 workspaces/**
-**.db
+**/data

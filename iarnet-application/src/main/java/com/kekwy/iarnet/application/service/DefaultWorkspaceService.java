@@ -12,15 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 
 // TODO: 运行额外进程的代码可以提取到工具类
@@ -86,6 +82,13 @@ public class DefaultWorkspaceService implements WorkspaceService {
 
         // 执行 git clone
         runGitClone(gitUrl, actualBranch, sourcePath);
+        Path gitFilePath = sourcePath.resolve(".git");
+        // 删除 .git 文件
+        try {
+            Files.deleteIfExists(gitFilePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         WorkspaceEntity entity = new WorkspaceEntity();
         entity.setWorkspaceID(IDUtil.genWorkspaceID().getValue());
@@ -109,16 +112,24 @@ public class DefaultWorkspaceService implements WorkspaceService {
         WorkspaceEntity entity = workspaceEntity.orElseThrow(
                 () -> new IllegalArgumentException("未找到应用对应的工作空间，applicationId=" + applicationID.getValue()));
 
-        Workspace workspace = new Workspace();
-        workspace.setWorkspaceID(ID.of(entity.getWorkspaceID()));
-        workspace.setApplicationID(ID.of(entity.getApplicationID()));
-        workspace.setWorkspaceDir(entity.getWorkspaceDir());
-        return workspace;
+        // 使用领域模型 Workspace 封装目录结构，并在构造时确保目录存在
+        return new Workspace(
+                ID.of(entity.getWorkspaceID()),
+                ID.of(entity.getApplicationID()),
+                entity.getWorkspaceDir()
+        );
     }
 
     private void runGitClone(String gitUrl, String branch, Path sourcePath) {
+        // 使用 --progress -v 强制输出详细进度到日志文件（即使不是交互式终端）
         ProcessBuilder pb = new ProcessBuilder(
-                "git", "clone", "-b", branch, "--single-branch", gitUrl, sourcePath.toString());
+                "git", "clone",
+                "--progress",
+                "-v",
+                "-b", branch,
+                "--single-branch",
+                gitUrl,
+                sourcePath.toString());
 
         // 禁用交互式凭证输入，避免进程卡死等待输入
         pb.environment().put("GIT_TERMINAL_PROMPT", "0");
@@ -130,6 +141,12 @@ public class DefaultWorkspaceService implements WorkspaceService {
         // 将 git 输出写入 Workspace 目录下的 git-clone.log 文件
         Path workspacePath = sourcePath.getParent();
         Path logFile = workspacePath.resolve("git-clone.log");
+        try {
+            Files.createDirectories(workspacePath);
+        } catch (IOException e) {
+            throw new IllegalStateException("无法创建工作空间目录: " + workspacePath, e);
+        }
+        pb.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile.toFile()));
 
         Process process;
         try {
@@ -158,30 +175,11 @@ public class DefaultWorkspaceService implements WorkspaceService {
                 } catch (IOException ignored) {
                 }
                 throw new IllegalStateException(
-                        "git clone 失败，exitCode=" + exitCode);
+                        "git clone 失败，exitCode=" + exitCode + "，详情见日志文件: " + logFile.toAbsolutePath());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("git clone 被中断", e);
-        }
-    }
-
-    private void readStream(java.io.InputStream is, StringBuilder collector, Path logFile) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-             BufferedWriter writer = Files.newBufferedWriter(
-                     logFile,
-                     StandardCharsets.UTF_8,
-                     StandardOpenOption.CREATE,
-                     StandardOpenOption.TRUNCATE_EXISTING)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                collector.append(line).append('\n');
-                writer.write(line);
-                writer.newLine();
-                writer.flush();
-            }
-        } catch (IOException e) {
-            log.warn("读取 git 输出失败: {}", e.getMessage());
         }
     }
 }

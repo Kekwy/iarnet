@@ -82,11 +82,17 @@ public class DefaultApplicationInfoService implements ApplicationInfoService {
     public Map<String, Long> getStats() {
         log.debug("统计应用数量");
         Map<String, Long> stats = new HashMap<>();
+        // 总数
         stats.put("total", repository.count());
-        stats.put("running", repository.countByStatus("running"));
-        stats.put("stopped", repository.countByStatus("stopped"));
-        stats.put("undeployed", repository.countByStatus("idle"));
-        stats.put("failed", repository.countByStatus("error"));
+        // 与 AppStatus 中的状态名称保持一致
+        stats.put("running", repository.countByStatus(AppStatus.APP_STATUS_RUNNING.getName()));
+        stats.put("stopped", repository.countByStatus(AppStatus.APP_STATUS_STOPPED.getName()));
+        stats.put("undeployed", repository.countByStatus(AppStatus.APP_STATUS_IDLE.getName()));
+        // 失败：兼容旧数据中的 "error" 状态
+        long failedByNewStatus = repository.countByStatus(AppStatus.APP_STATUS_FAILED.getName());
+        long failedByOldStatus = repository.countByStatus("error");
+        stats.put("failed", failedByNewStatus + failedByOldStatus);
+        // importing 状态只作为兼容历史数据使用，当前逻辑已不再写入该状态
         stats.put("importing", repository.countByStatus("importing"));
         return stats;
     }

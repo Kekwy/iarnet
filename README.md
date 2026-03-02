@@ -1,0 +1,1 @@
+iarnet 控制平面需要先安装 iarnet-api，如果通过 docker 部署则可以忽略这个问题

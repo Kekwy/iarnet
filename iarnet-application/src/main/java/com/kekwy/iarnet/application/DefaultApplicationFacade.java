@@ -83,10 +83,6 @@ public class DefaultApplicationFacade implements ApplicationFacade {
 
         // 找到对应的工作空间
         Workspace workspace = workspaceService.getByApplicationID(id);
-        String workspaceDir = workspace.getWorkspaceDir();
-        if (workspaceDir == null || workspaceDir.isBlank()) {
-            throw new IllegalStateException("应用工作空间目录无效: " + workspaceDir);
-        }
 
         String lang = applicationInfo.getLang();
         if (lang == null || lang.isBlank()) {
@@ -94,9 +90,9 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         }
 
         log.info("准备启动应用: id={}, name={}, lang={}, workspaceDir={}",
-                id.getValue(), applicationInfo.getName(), lang, workspaceDir);
+                id.getValue(), applicationInfo.getName(), lang, workspace.getWorkspaceDir().toAbsolutePath());
 
-        return launchService.launchApplication(id, workspaceDir, lang);
+        return launchService.launchApplication(workspace, lang);
     }
 
     @Override
@@ -118,11 +114,11 @@ public class DefaultApplicationFacade implements ApplicationFacade {
 
         // 通过 WorkspaceService 获取应用工作空间目录
         Workspace workspace = workspaceService.getByApplicationID(id);
-        if (workspace == null || workspace.getWorkspaceDir() == null || workspace.getWorkspaceDir().isBlank()) {
+        if (workspace == null || workspace.getWorkspaceDir() == null) {
             throw new IllegalStateException("应用工作空间目录无效");
         }
 
-        Path logFile = Paths.get(workspace.getWorkspaceDir()).resolve(".iarnet").resolve("build.log");
+        Path logFile = workspace.getBuildLogFile();
         if (!Files.exists(logFile)) {
             log.info("应用 {} 尚未生成构建日志文件: {}", id.getValue(), logFile.toAbsolutePath());
             return Optional.empty();
@@ -130,7 +126,7 @@ public class DefaultApplicationFacade implements ApplicationFacade {
 
         try {
             String content = Files.readString(logFile, StandardCharsets.UTF_8);
-            return Optional.ofNullable(content);
+            return Optional.of(content);
         } catch (IOException e) {
             log.error("读取应用 {} 构建日志失败: {}", id.getValue(), e.getMessage(), e);
             throw new IllegalStateException("读取构建日志失败", e);
