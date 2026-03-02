@@ -13,14 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 
+// TODO: 运行额外进程的代码可以提取到工具类
 @Service
 public class DefaultWorkspaceService implements WorkspaceService {
 
@@ -72,11 +75,17 @@ public class DefaultWorkspaceService implements WorkspaceService {
         } catch (IOException e) {
             throw new IllegalStateException("无法清理已有工作空间目录: " + workspacePath, e);
         }
-
-
+    
+        // 创建 source 目录
+        Path sourcePath = workspacePath.resolve("source");
+        try {
+            Files.createDirectories(sourcePath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // 执行 git clone
-        runGitClone(gitUrl, actualBranch, workspacePath);
+        runGitClone(gitUrl, actualBranch, sourcePath);
 
         WorkspaceEntity entity = new WorkspaceEntity();
         entity.setWorkspaceID(IDUtil.genWorkspaceID().getValue());
@@ -107,16 +116,20 @@ public class DefaultWorkspaceService implements WorkspaceService {
         return workspace;
     }
 
-    private void runGitClone(String gitUrl, String branch, Path workspacePath) {
+    private void runGitClone(String gitUrl, String branch, Path sourcePath) {
         ProcessBuilder pb = new ProcessBuilder(
-                "git", "clone", "-b", branch, "--single-branch", gitUrl, workspacePath.toString() + "/code");
+                "git", "clone", "-b", branch, "--single-branch", gitUrl, sourcePath.toString());
 
         // 禁用交互式凭证输入，避免进程卡死等待输入
         pb.environment().put("GIT_TERMINAL_PROMPT", "0");
         // 将 stderr 合并到 stdout，统一按日志输出（避免被日志系统误判为 error）
         pb.redirectErrorStream(true);
 
-        log.info("执行 git clone，url={}, branch={}, dir={}", gitUrl, branch, workspacePath);
+        log.info("执行 git clone，url={}, branch={}, dir={}", gitUrl, branch, sourcePath);
+
+        // 将 git 输出写入 Workspace 目录下的 git-clone.log 文件
+        Path workspacePath = sourcePath.getParent();
+        Path logFile = workspacePath.resolve("git-clone.log");
 
         Process process;
         try {
@@ -125,36 +138,27 @@ public class DefaultWorkspaceService implements WorkspaceService {
             throw new IllegalStateException("启动 git 进程失败", e);
         }
 
-        StringBuilder outputBuilder = new StringBuilder();
-
-        // 实时读取并打印输出，防止缓冲区填满导致阻塞
-        Thread logThread = new Thread(
-                () -> readStream(process.getInputStream(), "[git]", outputBuilder),
-                "git-clone-log-" + workspacePath.getFileName());
-        logThread.start();
-
         try {
             // 最长等待 10 分钟，避免无限卡死
             boolean finished = process.waitFor(10, java.util.concurrent.TimeUnit.MINUTES);
-            logThread.join(1000);
 
             if (!finished) {
                 process.destroyForcibly();
                 try {
-                    FileSystemUtils.deleteRecursively(workspacePath);
+                    FileSystemUtils.deleteRecursively(sourcePath);
                 } catch (IOException ignored) {
                 }
-                throw new IllegalStateException("git clone 超时，已强制终止，输出：\n" + outputBuilder);
+                throw new IllegalStateException("git clone 超时，已强制终止");
             }
 
             int exitCode = process.exitValue();
             if (exitCode != 0) {
                 try {
-                    FileSystemUtils.deleteRecursively(workspacePath);
+                    FileSystemUtils.deleteRecursively(sourcePath);
                 } catch (IOException ignored) {
                 }
                 throw new IllegalStateException(
-                        "git clone 失败，exitCode=" + exitCode + ", output=\n" + outputBuilder);
+                        "git clone 失败，exitCode=" + exitCode);
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -162,15 +166,22 @@ public class DefaultWorkspaceService implements WorkspaceService {
         }
     }
 
-    private void readStream(java.io.InputStream is, String prefix, StringBuilder collector) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+    private void readStream(java.io.InputStream is, StringBuilder collector, Path logFile) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+             BufferedWriter writer = Files.newBufferedWriter(
+                     logFile,
+                     StandardCharsets.UTF_8,
+                     StandardOpenOption.CREATE,
+                     StandardOpenOption.TRUNCATE_EXISTING)) {
             String line;
             while ((line = br.readLine()) != null) {
-                log.info("{} {}", prefix, line);
                 collector.append(line).append('\n');
+                writer.write(line);
+                writer.newLine();
+                writer.flush();
             }
         } catch (IOException e) {
-            log.warn("{} 读取输出失败: {}", prefix, e.getMessage());
+            log.warn("读取 git 输出失败: {}", e.getMessage());
         }
     }
 }

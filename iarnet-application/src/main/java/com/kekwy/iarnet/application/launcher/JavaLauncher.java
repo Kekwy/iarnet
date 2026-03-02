@@ -34,7 +34,8 @@ public class JavaLauncher implements Launcher {
     @Override
     public String build(ID applicationID, String workspaceDir) {
         try {
-            Path sourceDir = Paths.get(workspaceDir);
+            Path workspacePath = Paths.get(workspaceDir);
+            Path sourceDir = workspacePath.resolve(workspaceDir).resolve("source");
             if (!Files.isDirectory(sourceDir)) {
                 throw new IllegalArgumentException("workspaceDir 不是有效目录: " + workspaceDir);
             }
@@ -63,9 +64,7 @@ public class JavaLauncher implements Launcher {
             Path projectDir = pom.getParent();
 
             // 准备构建日志文件：保存在原始工作空间目录下，便于前端通过后端接口读取
-            Path logDir = sourceDir.resolve(".iarnet");
-            Files.createDirectories(logDir);
-            Path logFile = logDir.resolve("build.log");
+            Path logFile = workspacePath.resolve("build.log");
 
             // 调用 Maven 构建（要求运行环境已安装 mvn 命令）
             // 移除 -q 参数，使用 -X 显示详细日志，便于排查构建问题
@@ -82,18 +81,10 @@ public class JavaLauncher implements Launcher {
             log.info("开始构建 Java 应用，项目目录: {}", projectDir.toAbsolutePath());
             Process process = pb.start();
 
-            StringBuilder outputBuilder = new StringBuilder();
-
-            // 实时读取并打印输出，同时写入日志文件，防止缓冲区填满导致阻塞
-            Thread logThread = new Thread(
-                    () -> readStream(process.getInputStream(), "[maven]", outputBuilder, logFile),
-                    "maven-build-log-" + applicationID.getValue());
-            logThread.start();
 
             try {
                 // 最长等待 30 分钟，Maven 构建可能需要较长时间
                 boolean finished = process.waitFor(30, TimeUnit.MINUTES);
-                logThread.join(2000); // 等待日志线程完成
 
                 if (!finished) {
                     process.destroyForcibly();
@@ -101,17 +92,17 @@ public class JavaLauncher implements Launcher {
                         FileSystemUtils.deleteRecursively(buildRoot);
                     } catch (IOException ignored) {
                     }
-                    throw new IllegalStateException("Maven 构建超时，已强制终止，输出：\n" + outputBuilder);
+                    throw new IllegalStateException("Maven 构建超时，已强制终止");
                 }
 
                 int exitCode = process.exitValue();
                 if (exitCode != 0) {
-                    log.error("Maven 构建失败，exitCode={}，输出:\n{}", exitCode, outputBuilder);
+                    log.error("Maven 构建失败，exitCode={}，输出:\n{}", exitCode);
                     try {
                         FileSystemUtils.deleteRecursively(buildRoot);
                     } catch (IOException ignored) {
                     }
-                    throw new IllegalStateException("Maven 构建失败，exitCode=" + exitCode + "，输出：\n" + outputBuilder);
+                    throw new IllegalStateException("Maven 构建失败，exitCode=" + exitCode );
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
