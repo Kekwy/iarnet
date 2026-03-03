@@ -40,6 +40,15 @@ public interface Flow<T> {
     Flow<T> filter(FilterFunction<? super T> predicate);
 
     /**
+     * 显式声明当前流的输出类型，用于 lambda 返回泛型类型时自动推断失败的场景。
+     * <pre>{@code
+     * flow.map(s -> Arrays.asList(s))
+     *     .returns(new TypeToken<List<String>>() {});
+     * }</pre>
+     */
+    Flow<T> returns(TypeToken<T> typeHint);
+
+    /**
      * 在本流之后插入任务节点（如 checkpoint），再连接 sink。
      */
     Flow<T> after(Task task);
@@ -50,4 +59,3 @@ public interface Flow<T> {
     void sink(Sink<? super T> sink);
 
 }
-

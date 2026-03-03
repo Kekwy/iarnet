@@ -6,4 +6,6 @@ package com.kekwy.iarnet.api.sink;
 public interface Sink<T> {
 
     void accept(T value);
+
+    <R> R accept(SinkVisitor<R> visitor);
 }

@@ -1,11 +1,21 @@
 package com.kekwy.iarnet.api.function;
 
+import com.kekwy.iarnet.api.Lang;
+
 import java.lang.reflect.Type;
 import java.util.Objects;
 
-public interface Function {
+public interface Function extends java.io.Serializable {
 
-    abstract class PythonFunction {
+    Lang getLang();
+
+    abstract class PythonFunction implements Function {
+
+        @Override
+        public Lang getLang() {
+            return Lang.LANG_PYTHON;
+        }
+
         private final String codeFile;
         private final String function;
         private final Type returnType;

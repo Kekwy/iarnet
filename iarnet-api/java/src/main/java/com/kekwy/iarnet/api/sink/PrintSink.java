@@ -18,4 +18,9 @@ public final class PrintSink implements Sink<Object> {
     public void accept(Object value) {
         System.out.println(value);
     }
+
+    @Override
+    public <R> R accept(SinkVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
 }
