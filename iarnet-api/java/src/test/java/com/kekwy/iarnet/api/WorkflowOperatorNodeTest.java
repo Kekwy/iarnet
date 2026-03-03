@@ -4,6 +4,7 @@ import com.kekwy.iarnet.api.function.FilterFunction;
 import com.kekwy.iarnet.api.function.FlatMapFunction;
 import com.kekwy.iarnet.api.function.Function;
 import com.kekwy.iarnet.api.function.MapFunction;
+import com.kekwy.iarnet.api.graph.Edge;
 import com.kekwy.iarnet.api.graph.Node;
 import com.kekwy.iarnet.api.graph.NodeKind;
 import com.kekwy.iarnet.api.graph.OperatorNode;
@@ -242,23 +243,23 @@ class WorkflowOperatorNodeTest {
             assertEquals(TypeKind.DOUBLE, map2.getOutputType().getKind());
         }
 
-        /** 验证前驱/后继连接关系 */
+        /** 验证 edges 连接关系 */
         @Test
-        void chainedOperators_precursorSuccessorLinked() {
+        void chainedOperators_edgesLinked() {
             wf.source(ConstantSource.of("a"))
                     .map(String::length)
                     .map(Object::toString);
 
             List<Node> allNodes = wf.getNodes();
+            List<Edge> allEdges = wf.getEdges();
+
             Node sourceNode = allNodes.get(0);
             OperatorNode map1 = operatorNode(0);
             OperatorNode map2 = operatorNode(1);
 
-            assertTrue(sourceNode.getSuccessors().contains(map1), "SourceNode → map1");
-            assertTrue(map1.getPrecursors().contains(sourceNode), "map1 ← SourceNode");
-
-            assertTrue(map1.getSuccessors().contains(map2), "map1 → map2");
-            assertTrue(map2.getPrecursors().contains(map1), "map2 ← map1");
+            assertEquals(2, allEdges.size());
+            assertEquals(Edge.of(sourceNode.getId(), map1.getId()), allEdges.get(0));
+            assertEquals(Edge.of(map1.getId(), map2.getId()), allEdges.get(1));
         }
     }
 

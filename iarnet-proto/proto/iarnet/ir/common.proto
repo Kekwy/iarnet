@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package iarnet.ir;
+
+option java_package = "com.kekwy.iarnet.proto.ir";
+option java_multiple_files = true;
+
+// ======================== 语言标识 ========================
+
+enum Lang {
+  LANG_UNSPECIFIED = 0;
+  LANG_JAVA        = 1;
+  LANG_PYTHON      = 2;
+}
+
+// ======================== 资源配额 ========================
+
+message Resource {
+  double cpu    = 1;
+  string memory = 2;
+  double gpu    = 3;
+}
+
+// ======================== 类型系统 ========================
+
+enum TypeKind {
+  TYPE_KIND_UNSPECIFIED = 0;
+  // primitive
+  STRING  = 1;
+  INT32   = 2;
+  INT64   = 3;
+  DOUBLE  = 4;
+  BOOLEAN = 5;
+  // composite
+  ARRAY   = 6;
+  MAP     = 7;
+  STRUCT  = 8;
+}
+
+message DataType {
+  TypeKind kind = 1;
+
+  // 仅 ARRAY 时有效
+  DataType element_type = 2;
+
+  // 仅 MAP 时有效
+  DataType key_type   = 3;
+  DataType value_type = 4;
+
+  // 仅 STRUCT 时有效
+  repeated Field fields = 5;
+}
+
+message Field {
+  string   name = 1;
+  DataType type = 2;
+}
+
+// ======================== 数据行（ConstantSource 使用）========================
+
+message Row {
+  bytes    value     = 1;  // 序列化后的值（Java 对象序列化 / JSON / 自定义编码）
+  DataType data_type = 2;
+}

@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.api;
 
+import com.kekwy.iarnet.api.graph.Edge;
 import com.kekwy.iarnet.api.graph.Node;
 import com.kekwy.iarnet.api.graph.NodeKind;
 import com.kekwy.iarnet.api.graph.SinkNode;
@@ -66,24 +67,25 @@ class WorkflowSinkNodeTest {
         assertInstanceOf(SinkNode.class, allNodes.get(1));
     }
 
-    // -------- 前驱/后继 --------
+    // -------- edges 连接 --------
 
-    /** SourceNode → SinkNode 前驱/后继连接正确 */
+    /** SourceNode → SinkNode 的 edge 正确 */
     @Test
-    void printSink_linkedToUpstreamSource() {
+    void printSink_edgeFromSourceToSink() {
         wf.source(ConstantSource.of("a"))
                 .sink(PrintSink.of());
 
         Node sourceNode = wf.getNodes().get(0);
         SinkNode sinkNode = findSinkNode();
 
-        assertTrue(sourceNode.getSuccessors().contains(sinkNode), "SourceNode → SinkNode");
-        assertTrue(sinkNode.getPrecursors().contains(sourceNode), "SinkNode ← SourceNode");
+        List<Edge> allEdges = wf.getEdges();
+        assertEquals(1, allEdges.size());
+        assertEquals(Edge.of(sourceNode.getId(), sinkNode.getId()), allEdges.get(0));
     }
 
-    /** OperatorNode → SinkNode 连接正确 */
+    /** OperatorNode → SinkNode 的 edge 正确 */
     @Test
-    void printSink_linkedToUpstreamOperator() {
+    void printSink_edgeFromOperatorToSink() {
         wf.source(ConstantSource.of("hello"))
                 .map((String s) -> s.toUpperCase())
                 .sink(PrintSink.of());
@@ -94,8 +96,9 @@ class WorkflowSinkNodeTest {
         Node operatorNode = allNodes.get(1);
         SinkNode sinkNode = findSinkNode();
 
-        assertTrue(operatorNode.getSuccessors().contains(sinkNode), "OperatorNode → SinkNode");
-        assertTrue(sinkNode.getPrecursors().contains(operatorNode), "SinkNode ← OperatorNode");
+        List<Edge> allEdges = wf.getEdges();
+        assertEquals(2, allEdges.size());
+        assertEquals(Edge.of(operatorNode.getId(), sinkNode.getId()), allEdges.get(1));
     }
 
     // -------- 经过 map 后类型传递 --------
@@ -114,9 +117,9 @@ class WorkflowSinkNodeTest {
 
     // -------- 完整管道 source → map → filter → sink --------
 
-    /** 验证完整管道的节点数量和 SinkNode 的类型 */
+    /** 验证完整管道的节点数量、edges 数量和 SinkNode 的类型 */
     @Test
-    void fullPipeline_sourceMapFilterSink_allNodesRegistered() {
+    void fullPipeline_sourceMapFilterSink_allNodesAndEdges() {
         wf.source(ConstantSource.of("hello", "hi", "hey"))
                 .map((String s) -> s.length())
                 .filter((Integer n) -> n > 2)
@@ -124,6 +127,9 @@ class WorkflowSinkNodeTest {
 
         List<Node> allNodes = wf.getNodes();
         assertEquals(4, allNodes.size(), "1 Source + 1 Map + 1 Filter + 1 Sink");
+
+        List<Edge> allEdges = wf.getEdges();
+        assertEquals(3, allEdges.size(), "Source→Map, Map→Filter, Filter→Sink");
 
         SinkNode sinkNode = findSinkNode();
         assertEquals(SinkKind.PRINT, sinkNode.getSinkKind());

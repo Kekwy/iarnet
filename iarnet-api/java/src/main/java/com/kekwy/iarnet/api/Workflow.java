@@ -5,6 +5,7 @@ import com.kekwy.iarnet.api.function.FlatMapFunction;
 import com.kekwy.iarnet.api.function.Function;
 import com.kekwy.iarnet.api.function.Function.PythonFunction;
 import com.kekwy.iarnet.api.function.MapFunction;
+import com.kekwy.iarnet.api.graph.Edge;
 import com.kekwy.iarnet.api.graph.Node;
 import com.kekwy.iarnet.api.graph.OperatorNode;
 import com.kekwy.iarnet.api.graph.OperatorNode.OperatorKind;
@@ -39,6 +40,7 @@ public class Workflow {
     }
 
     private final List<Node> nodes = new ArrayList<>();
+    private final List<Edge> edges = new ArrayList<>();
 
     public <T> Flow<T> source(Source<T> source) {
         SourceToNodeVisitor visitor = new SourceToNodeVisitor();
@@ -49,6 +51,10 @@ public class Workflow {
 
     public List<Node> getNodes() {
         return List.copyOf(nodes);
+    }
+
+    public List<Edge> getEdges() {
+        return List.copyOf(edges);
     }
 
     public void execute() {
@@ -202,10 +208,7 @@ public class Workflow {
             DataType inputType = precursors.isEmpty() ? null : precursors.get(0).getOutputType();
             sinkNode.setOutputType(inputType);
 
-            precursors.forEach(p -> {
-                p.addSuccessor(sinkNode);
-                sinkNode.addPrecursor(p);
-            });
+            precursors.forEach(p -> edges.add(Edge.of(p.getId(), sinkNode.getId())));
             nodes.add(sinkNode);
         }
 
@@ -242,10 +245,7 @@ public class Workflow {
         }
 
         private void linkAndRegister(OperatorNode node) {
-            precursors.forEach(p -> {
-                p.addSuccessor(node);
-                node.addPrecursor(p);
-            });
+            precursors.forEach(p -> edges.add(Edge.of(p.getId(), node.getId())));
             nodes.add(node);
         }
     }

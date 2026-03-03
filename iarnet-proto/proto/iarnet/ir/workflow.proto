@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package iarnet.ir;
+
+import "iarnet/ir/common.proto";
+
+option java_package = "com.kekwy.iarnet.proto.ir";
+option java_multiple_files = true;
+
+// ======================== 工作流图（顶层） ========================
+
+message WorkflowGraph {
+  string        graph_id    = 1;
+  string        workflow_id = 2;
+  repeated Node nodes       = 3;
+  repeated Edge edges       = 4;
+}
+
+// ======================== 边 ========================
+
+message Edge {
+  string from_node_id = 1;
+  string to_node_id   = 2;
+}
+
+// ======================== 节点 ========================
+
+enum NodeKind {
+  NODE_KIND_UNSPECIFIED = 0;
+  SOURCE               = 1;
+  OPERATOR             = 2;
+  SINK                 = 3;
+}
+
+message Node {
+  string   id          = 1;
+  NodeKind kind        = 2;
+  DataType output_type = 3;
+
+  // 根据 kind 使用对应的 detail
+  oneof detail {
+    SourceNodeDetail   source_detail   = 10;
+    OperatorNodeDetail operator_detail = 11;
+    SinkNodeDetail     sink_detail     = 12;
+  }
+}
+
+// ======================== Source 节点 ========================
+
+enum SourceKind {
+  SOURCE_KIND_UNSPECIFIED = 0;
+  CONSTANT               = 1;
+  FILE                   = 2;
+}
+
+message SourceNodeDetail {
+  SourceKind source_kind = 1;
+
+  // CONSTANT 时有效
+  repeated Row rows = 2;
+
+  // FILE 时有效
+  string file_path = 3;
+}
+
+// ======================== Operator 节点 ========================
+
+enum OperatorKind {
+  OPERATOR_KIND_UNSPECIFIED = 0;
+  MAP                      = 1;
+  FLAT_MAP                 = 2;
+  FILTER                   = 3;
+}
+
+message OperatorNodeDetail {
+  OperatorKind operator_kind = 1;
+
+  Lang lang = 2;
+
+  // Java 函数的序列化字节（后端反序列化还原执行）
+  bytes serialized_function = 3;
+
+  // 函数定位标识（Java: 类名, Python: codeFile:functionName）
+  string operator_identifier = 4;
+
+  int32    replicas  = 5;
+  Resource resource  = 6;
+
+  // Python 源码目录 / requirements 文件路径
+  string source_dir = 7;
+}
+
+// ======================== Sink 节点 ========================
+
+enum SinkKind {
+  SINK_KIND_UNSPECIFIED = 0;
+  PRINT                = 1;
+}
+
+message SinkNodeDetail {
+  SinkKind sink_kind = 1;
+}
