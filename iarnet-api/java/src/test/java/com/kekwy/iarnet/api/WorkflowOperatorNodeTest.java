@@ -1,10 +1,9 @@
 package com.kekwy.iarnet.api;
 
-import com.kekwy.iarnet.api.function.FilterFunction;
-import com.kekwy.iarnet.api.function.FlatMapFunction;
 import com.kekwy.iarnet.api.function.Function;
 import com.kekwy.iarnet.api.function.MapFunction;
 import com.kekwy.iarnet.api.graph.Edge;
+import com.kekwy.iarnet.api.graph.FunctionDescriptor;
 import com.kekwy.iarnet.api.graph.Node;
 import com.kekwy.iarnet.api.graph.NodeKind;
 import com.kekwy.iarnet.api.graph.OperatorNode;
@@ -53,7 +52,7 @@ class WorkflowOperatorNodeTest {
 
             OperatorNode op = operatorNode(0);
             assertEquals(OperatorKind.MAP, op.getOperatorKind());
-            assertEquals(Lang.LANG_JAVA, op.getLang());
+            assertEquals(Lang.LANG_JAVA, op.getFunction().getLang());
             assertEquals(NodeKind.OPERATOR, op.getKind());
             assertNotNull(op.getId());
             assertNotNull(op.getOutputType(), "Lambda 返回 Integer，应自动推断出 outputType");
@@ -78,10 +77,11 @@ class WorkflowOperatorNodeTest {
                     .map(String::length);
 
             OperatorNode op = operatorNode(0);
-            assertNotNull(op.getSerializedFunction());
-            assertTrue(op.getSerializedFunction().length > 0);
+            FunctionDescriptor fd = op.getFunction();
+            assertNotNull(fd.getSerializedFunction());
+            assertTrue(fd.getSerializedFunction().length > 0);
 
-            MapFunction<String, Integer> restored = SerializationUtil.deserialize(op.getSerializedFunction());
+            MapFunction<String, Integer> restored = SerializationUtil.deserialize(fd.getSerializedFunction());
             assertEquals(3, restored.apply("abc"));
         }
 
@@ -142,9 +142,10 @@ class WorkflowOperatorNodeTest {
                     .map(pyMapper);
 
             OperatorNode op = operatorNode(0);
-            assertEquals(Lang.LANG_PYTHON, op.getLang());
-            assertEquals("transform.py:to_int", op.getOperatorIdentifier());
-            assertNull(op.getSerializedFunction(), "Python 函数不需要序列化");
+            FunctionDescriptor fd = op.getFunction();
+            assertEquals(Lang.LANG_PYTHON, fd.getLang());
+            assertEquals("transform.py:to_int", fd.getFunctionIdentifier());
+            assertNull(fd.getSerializedFunction(), "Python 函数不需要序列化");
             assertNotNull(op.getOutputType());
             assertEquals(TypeKind.INT32, op.getOutputType().getKind());
         }
@@ -185,8 +186,8 @@ class WorkflowOperatorNodeTest {
 
             OperatorNode op = operatorNode(0);
             assertEquals(OperatorKind.FLAT_MAP, op.getOperatorKind());
-            assertEquals(Lang.LANG_JAVA, op.getLang());
-            assertNotNull(op.getSerializedFunction());
+            assertEquals(Lang.LANG_JAVA, op.getFunction().getLang());
+            assertNotNull(op.getFunction().getSerializedFunction());
         }
     }
 
@@ -205,8 +206,8 @@ class WorkflowOperatorNodeTest {
 
             OperatorNode op = operatorNode(0);
             assertEquals(OperatorKind.FILTER, op.getOperatorKind());
-            assertEquals(Lang.LANG_JAVA, op.getLang());
-            assertNotNull(op.getSerializedFunction());
+            assertEquals(Lang.LANG_JAVA, op.getFunction().getLang());
+            assertNotNull(op.getFunction().getSerializedFunction());
             assertNotNull(op.getOutputType(), "filter 的 outputType 应继承自上游 SourceNode");
             assertEquals(TypeKind.STRING, op.getOutputType().getKind());
         }

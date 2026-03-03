@@ -6,6 +6,7 @@ import com.kekwy.iarnet.api.function.Function;
 import com.kekwy.iarnet.api.function.Function.PythonFunction;
 import com.kekwy.iarnet.api.function.MapFunction;
 import com.kekwy.iarnet.api.graph.Edge;
+import com.kekwy.iarnet.api.graph.FunctionDescriptor;
 import com.kekwy.iarnet.api.graph.Node;
 import com.kekwy.iarnet.api.graph.OperatorNode;
 import com.kekwy.iarnet.api.graph.OperatorNode.OperatorKind;
@@ -218,29 +219,28 @@ public class Workflow {
                 Function function, OperatorKind kind,
                 DataType outputType, int replicas, Resource resource) {
 
-            Lang lang = function.getLang();
-            String operatorIdentifier;
-            byte[] serializedFunction = null;
-            String sourceDir = "";
-
+            FunctionDescriptor fd;
             if (function instanceof PythonFunction pf) {
-                operatorIdentifier = pf.codeFile() + ":" + pf.function();
-                sourceDir = pf.requirementsFile();
+                fd = FunctionDescriptor.builder()
+                        .lang(Lang.LANG_PYTHON)
+                        .functionIdentifier(pf.codeFile() + ":" + pf.function())
+                        .artifactPath(pf.artifactPath())
+                        .build();
             } else {
-                operatorIdentifier = function.getClass().getName();
-                serializedFunction = SerializationUtil.serialize(function);
+                fd = FunctionDescriptor.builder()
+                        .lang(function.getLang())
+                        .functionIdentifier(function.getClass().getName())
+                        .serializedFunction(SerializationUtil.serialize(function))
+                        .build();
             }
 
             return OperatorNode.builder()
                     .id(IDUtil.genUUID())
                     .outputType(outputType)
                     .operatorKind(kind)
-                    .lang(lang)
-                    .serializedFunction(serializedFunction)
-                    .operatorIdentifier(operatorIdentifier)
+                    .function(fd)
                     .replicas(replicas)
                     .resource(resource)
-                    .sourceDir(sourceDir)
                     .build();
         }
 

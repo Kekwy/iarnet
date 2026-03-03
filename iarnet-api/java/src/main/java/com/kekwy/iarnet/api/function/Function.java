@@ -19,13 +19,13 @@ public interface Function extends java.io.Serializable {
         private final String codeFile;
         private final String function;
         private final Type returnType;
-        private final String requirementsFile;
+        private final String artifactPath;
 
-        public PythonFunction(String codeFile, String function, Type returnType, String requirementsFile) {
+        public PythonFunction(String codeFile, String function, Type returnType, String artifactPath) {
             this.codeFile = codeFile;
             this.function = function;
             this.returnType = returnType;
-            this.requirementsFile = requirementsFile;
+            this.artifactPath = artifactPath;
         }
 
         public String codeFile() {
@@ -40,8 +40,11 @@ public interface Function extends java.io.Serializable {
             return returnType;
         }
 
-        public String requirementsFile() {
-            return requirementsFile;
+        /**
+         * 源码目录路径（requirements.txt 须位于同目录下）。
+         */
+        public String artifactPath() {
+            return artifactPath;
         }
 
         @Override
@@ -52,12 +55,12 @@ public interface Function extends java.io.Serializable {
             return Objects.equals(this.codeFile, that.codeFile) &&
                     Objects.equals(this.function, that.function) &&
                     Objects.equals(this.returnType, that.returnType) &&
-                    Objects.equals(this.requirementsFile, that.requirementsFile);
+                    Objects.equals(this.artifactPath, that.artifactPath);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(codeFile, function, returnType, requirementsFile);
+            return Objects.hash(codeFile, function, returnType, artifactPath);
         }
 
         @Override
@@ -66,44 +69,32 @@ public interface Function extends java.io.Serializable {
                     "codeFile=" + codeFile + ", " +
                     "function=" + function + ", " +
                     "returnType=" + returnType + ", " +
-                    "requirementsFile=" + requirementsFile + ']';
+                    "artifactPath=" + artifactPath + ']';
         }
 
     }
 
     class PythonMapFunction<T, R> extends PythonFunction implements MapFunction<T, R> {
 
-        public PythonMapFunction(String codeFile, String function, Type returnType, String requirementsFile) {
-            super(codeFile, function, returnType, requirementsFile);
+        public PythonMapFunction(String codeFile, String function, Type returnType, String artifactPath) {
+            super(codeFile, function, returnType, artifactPath);
         }
 
         @Override
         public R apply(T value) {
-            // 真实执行逻辑由后端 Python 实现，此处仅作为占位。
             return null;
         }
     }
 
-    /**
-     * 指定非泛型或简单类型的返回值类型，例如 String、Integer 等。
-     */
     static <T, R> MapFunction<T, R> pythonMap(String codeFile, String function, Class<R> returnType) {
         return new PythonMapFunction<>(codeFile, function, returnType, "");
     }
 
-    static <T, R> MapFunction<T, R> pythonMap(String codeFile, String function, Class<R> returnType, String requirementsFile) {
-        return new PythonMapFunction<>(codeFile, function, returnType, requirementsFile);
+    static <T, R> MapFunction<T, R> pythonMap(String codeFile, String function, Class<R> returnType, String artifactPath) {
+        return new PythonMapFunction<>(codeFile, function, returnType, artifactPath);
     }
 
-    /**
-     * 支持 List&lt;String&gt; 等泛型返回类型的工厂方法。
-     *
-     * <pre>
-     *   Function.pythonMap(\"m\", \"f\", new TypeRef&lt;List&lt;String&gt;&gt;() {})
-     * </pre>
-     */
     static <T, R> MapFunction<T, R> pythonMap(String file, String function, TypeRef<R> returnType) {
         return new PythonMapFunction<>(file, function, returnType.getType(), "");
     }
 }
-

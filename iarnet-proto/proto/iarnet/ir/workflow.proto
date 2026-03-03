@@ -67,27 +67,39 @@ message SourceNodeDetail {
 
 enum OperatorKind {
   OPERATOR_KIND_UNSPECIFIED = 0;
-  MAP                      = 1;
-  FLAT_MAP                 = 2;
-  FILTER                   = 3;
+  OPERATOR_MAP              = 1;
+  OPERATOR_FLAT_MAP         = 2;
+  OPERATOR_FILTER           = 3;
 }
 
 message OperatorNodeDetail {
-  OperatorKind operator_kind = 1;
+  OperatorKind       operator_kind = 1;
+  FunctionDescriptor function      = 2;
+  int32              replicas      = 3;
+  Resource           resource      = 4;
+}
 
-  Lang lang = 2;
+// ======================== 函数描述（语言无关） ========================
 
-  // Java 函数的序列化字节（后端反序列化还原执行）
+message FunctionDescriptor {
+  Lang lang = 1;
+
+  // 函数定位标识
+  // Java:   完整类名，如 "com.example.MyMapper"
+  // Python: "模块:函数名"，如 "transforms:to_upper"
+  string function_identifier = 2;
+
+  // 序列化的函数体（可选）
+  // Java:   java.io.Serializable 序列化字节
+  // Python: pickle / cloudpickle 序列化字节
+  // 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
   bytes serialized_function = 3;
 
-  // 函数定位标识（Java: 类名, Python: codeFile:functionName）
-  string operator_identifier = 4;
-
-  int32    replicas  = 5;
-  Resource resource  = 6;
-
-  // Python 源码目录 / requirements 文件路径
-  string source_dir = 7;
+  // 函数代码所在的工件路径（可选）
+  // Java:   JAR 文件路径
+  // Python: 源码目录路径（requirements.txt 须位于同目录下）
+  // 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
+  string artifact_path = 4;
 }
 
 // ======================== Sink 节点 ========================
