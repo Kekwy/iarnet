@@ -3,7 +3,9 @@ package com.kekwy.iarnet.api;
 import com.kekwy.iarnet.api.function.FilterFunction;
 import com.kekwy.iarnet.api.function.FlatMapFunction;
 import com.kekwy.iarnet.api.function.MapFunction;
+import com.kekwy.iarnet.api.graph.Node;
 import com.kekwy.iarnet.api.sink.Sink;
+import com.kekwy.iarnet.api.source.ConstantSource;
 import com.kekwy.iarnet.api.source.Source;
 
 import java.util.ArrayList;
@@ -27,11 +29,16 @@ public class Workflow {
         return new Workflow();
     }
 
+    private final List<Node> nodes = new ArrayList<>();
+
     private final List<Task> tasks = new ArrayList<>();
     private final List<Pipeline<?>> pipelines = new ArrayList<>();
     private final DefaultTaskContext taskContext = new DefaultTaskContext();
 
     public <T> Flow<T> source(Source<T> source) {
+        if (source instanceof ConstantSource<T>) {
+
+        }
         return new DefaultFlow<>(this, source, new ArrayList<>(), null);
     }
 
@@ -119,14 +126,14 @@ public class Workflow {
 
         @SuppressWarnings("unchecked")
         void run(TaskContext ctx) {
-            Iterator<Object> it = applyStages(source.iterator(), 0);
-            while (it.hasNext()) {
-                Object item = it.next();
-                if (task != null) {
-                    task.run(ctx);
-                }
-                ((Sink<Object>) sink).accept(item);
-            }
+//            Iterator<Object> it = applyStages(source.iterator(), 0);
+//            while (it.hasNext()) {
+//                Object item = it.next();
+//                if (task != null) {
+//                    task.run(ctx);
+//                }
+//                ((Sink<Object>) sink).accept(item);
+//            }
         }
 
         private Iterator<Object> applyStages(Iterator<?> input, int fromIndex) {

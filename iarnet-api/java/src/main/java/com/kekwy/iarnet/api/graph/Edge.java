@@ -8,4 +8,5 @@ public record Edge(String fromNodeId, String toNodeId) {
     public static Edge of(String fromNodeId, String toNodeId) {
         return new Edge(fromNodeId, toNodeId);
     }
+
 }

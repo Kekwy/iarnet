@@ -1,12 +1,12 @@
 package com.kekwy.iarnet.api.source;
 
-import java.util.Iterator;
+import com.kekwy.iarnet.api.graph.SourceNode;
 
 /**
  * 数据源，产生类型为 T 的元素流。
  */
-public interface Source<T> extends Iterable<T> {
+public interface Source<T> {
 
-    @Override
-    Iterator<T> iterator();
+    <R> R accept(SourceVisitor<R> visitor);
+
 }

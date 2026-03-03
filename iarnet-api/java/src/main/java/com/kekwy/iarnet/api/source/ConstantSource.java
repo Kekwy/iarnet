@@ -1,15 +1,27 @@
 package com.kekwy.iarnet.api.source;
 
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.List;
 
-public record ConstantSource<T>(T value) implements Source<T> {
+public class ConstantSource<T> implements Source<T> {
 
-    public static <T> ConstantSource<T> of(T value) {
-        return new ConstantSource<>(value);
+    private final List<T> value;
+
+    public ConstantSource(final List<T> value) {
+        this.value = value;
+    }
+
+    @SafeVarargs
+    public static <T> ConstantSource<T> of(T... value) {
+        return new ConstantSource<>(Arrays.stream(value).toList());
+    }
+
+    public List<T> getValue() {
+        return value;
     }
 
     @Override
-    public Iterator<T> iterator() {
-        return null;
+    public <R> R accept(SourceVisitor<R> visitor) {
+        return visitor.visit(this);
     }
 }

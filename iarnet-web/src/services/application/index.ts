@@ -64,12 +64,23 @@ function toApplication(app: Record<string, any>): Application {
 export const applicationApi = {
   /** 获取应用统计 */
   getStats: () =>
-    request<ApplicationStats>(`${API_PREFIX}/stats`, {
+    request<any>(`${API_PREFIX}/stats`, {
       method: 'GET',
       skipErrorHandler: false,
       getResponse: false,
       baseURL: '',
-    }).then((res: any) => (res?.data !== undefined ? res.data : res)),
+    }).then((res: any): ApplicationStats => {
+      // 后端统一返回 Response<T>，这里需要提取 data 字段
+      const raw = res?.data !== undefined ? res.data : res;
+      const s = raw || {};
+      return {
+        total: Number(s.total ?? 0),
+        running: Number(s.running ?? 0),
+        stopped: Number(s.stopped ?? 0),
+        undeployed: Number(s.undeployed ?? 0),
+        failed: Number(s.failed ?? 0),
+      };
+    }),
 
   /** 获取应用列表 */
   getList: () =>

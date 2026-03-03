@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 流上的处理阶段节点，对应 proto 中的 Stage（MapStage / FilterStage / FlatMapStage）。
  */
-public record StageNode(String id, StageKind kind, String function) implements Node {
+public record StageNode(String id, StageKind kind, String function) {
 
     public static StageNode map(String id, String function) {
         return new StageNode(id, StageKind.MAP, function);
@@ -19,10 +19,7 @@ public record StageNode(String id, StageKind kind, String function) implements N
         return new StageNode(id, StageKind.FLAT_MAP, function);
     }
 
-    @Override
-    public String getId() {
-        return id;
-    }
+
 
     public enum StageKind {
         MAP,
