@@ -5,6 +5,7 @@ import com.kekwy.iarnet.api.function.FlatMapFunction;
 import com.kekwy.iarnet.api.function.Function;
 import com.kekwy.iarnet.api.function.Function.PythonFunction;
 import com.kekwy.iarnet.api.function.MapFunction;
+import com.kekwy.iarnet.api.converter.GraphToProtoConverter;
 import com.kekwy.iarnet.api.graph.Edge;
 import com.kekwy.iarnet.api.graph.FunctionDescriptor;
 import com.kekwy.iarnet.api.graph.Node;
@@ -12,6 +13,11 @@ import com.kekwy.iarnet.api.graph.OperatorNode;
 import com.kekwy.iarnet.api.graph.OperatorNode.OperatorKind;
 import com.kekwy.iarnet.api.graph.SourceNode;
 import com.kekwy.iarnet.api.graph.SinkNode;
+import com.kekwy.iarnet.proto.api.SubmitWorkflowRequest;
+import com.kekwy.iarnet.proto.api.SubmitWorkflowResponse;
+import com.kekwy.iarnet.proto.api.SubmissionStatus;
+import com.kekwy.iarnet.proto.api.WorkflowServiceGrpc;
+import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 import com.kekwy.iarnet.api.sink.Sink;
 import com.kekwy.iarnet.api.sink.SinkToNodeVisitor;
 import com.kekwy.iarnet.api.source.Source;
@@ -19,10 +25,14 @@ import com.kekwy.iarnet.api.source.SourceToNodeVisitor;
 import com.kekwy.iarnet.api.util.IDUtil;
 import com.kekwy.iarnet.api.util.SerializationUtil;
 import com.kekwy.iarnet.api.util.TypeExtractor;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -58,8 +68,85 @@ public class Workflow {
         return List.copyOf(edges);
     }
 
+    private static final String ENV_APP_ID = "IARNET_APP_ID";
+    private static final String ENV_GRPC_PORT = "IARNET_GRPC_PORT";
+    private static final String DEFAULT_GRPC_HOST = "localhost";
+
+    /**
+     * 将 DSL 构建的图转换为 Protobuf IR，并通过 gRPC 提交到 control-plane。
+     * <p>
+     * gRPC 连接信息从环境变量读取：
+     * <ul>
+     *   <li>{@code IARNET_APP_ID} — application ID（必须）</li>
+     *   <li>{@code IARNET_GRPC_PORT} — gRPC 服务端口（必须）</li>
+     * </ul>
+     */
     public void execute() {
-        throw new UnsupportedOperationException("Remote workflow execution is not implemented yet.");
+        WorkflowGraph graph = toProtoGraph();
+
+        String portStr = System.getenv(ENV_GRPC_PORT);
+        if (portStr == null || portStr.isBlank()) {
+            throw new IllegalStateException(
+                    "环境变量 " + ENV_GRPC_PORT + " 未设置，无法连接 control-plane gRPC 服务");
+        }
+        int port = Integer.parseInt(portStr);
+
+        ManagedChannel channel = ManagedChannelBuilder
+                .forAddress(DEFAULT_GRPC_HOST, port)
+                .usePlaintext()
+                .build();
+
+        try {
+            WorkflowServiceGrpc.WorkflowServiceBlockingStub stub =
+                    WorkflowServiceGrpc.newBlockingStub(channel);
+
+            SubmitWorkflowRequest request = SubmitWorkflowRequest.newBuilder()
+                    .setGraph(graph)
+                    .build();
+
+            SubmitWorkflowResponse response = stub.submitWorkflow(request);
+
+            if (response.getStatus() == SubmissionStatus.ACCEPTED) {
+                System.out.println("[Workflow] 提交成功: submissionId=" + response.getSubmissionId()
+                        + ", message=" + response.getMessage());
+            } else {
+                throw new RuntimeException(
+                        "工作流提交被拒绝: " + response.getMessage());
+            }
+        } catch (StatusRuntimeException e) {
+            throw new RuntimeException(
+                    "gRPC 调用失败: " + e.getStatus(), e);
+        } finally {
+            try {
+                channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                channel.shutdownNow();
+            }
+        }
+    }
+
+    /**
+     * 将当前 DSL 构建的节点和边转换为 Protobuf {@link WorkflowGraph}。
+     * application ID 从环境变量 {@code IARNET_APP_ID} 读取。
+     */
+    public WorkflowGraph toProtoGraph() {
+        String applicationId = System.getenv(ENV_APP_ID);
+        if (applicationId == null || applicationId.isBlank()) {
+            throw new IllegalStateException(
+                    "环境变量 " + ENV_APP_ID + " 未设置，无法确定 application ID");
+        }
+        return toProtoGraph(applicationId);
+    }
+
+    /**
+     * 将当前 DSL 构建的节点和边转换为 Protobuf {@link WorkflowGraph}。
+     *
+     * @param applicationId 显式指定 application ID（测试用）
+     */
+    public WorkflowGraph toProtoGraph(String applicationId) {
+        GraphToProtoConverter converter = new GraphToProtoConverter();
+        return converter.convert(applicationId, nodes, edges);
     }
 
     private static final class DefaultTaskContext implements TaskContext {

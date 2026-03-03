@@ -104,6 +104,7 @@
                                 <argument>--pyi_out=${project.basedir}/generated/python</argument>
                                 <argument>${project.basedir}/proto/iarnet/ir/common.proto</argument>
                                 <argument>${project.basedir}/proto/iarnet/ir/workflow.proto</argument>
+                                <argument>${project.basedir}/proto/iarnet/api/workflow_service.proto</argument>
                             </arguments>
                         </configuration>
                     </execution>

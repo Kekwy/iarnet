@@ -10,8 +10,8 @@ option java_multiple_files = true;
 // ======================== 工作流图（顶层） ========================
 
 message WorkflowGraph {
-  string        graph_id    = 1;
-  string        workflow_id = 2;
+  string        workflow_id = 1;
+  string        application_id = 2;
   repeated Node nodes       = 3;
   repeated Edge edges       = 4;
 }

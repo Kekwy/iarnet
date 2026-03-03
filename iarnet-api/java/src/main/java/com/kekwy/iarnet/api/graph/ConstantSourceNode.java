@@ -20,4 +20,9 @@ public class ConstantSourceNode extends SourceNode {
     public List<Row> getRows() {
         return rows;
     }
+
+    @Override
+    public <R> R accept(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
 }

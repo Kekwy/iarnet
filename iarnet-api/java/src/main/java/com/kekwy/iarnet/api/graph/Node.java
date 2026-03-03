@@ -27,4 +27,6 @@ public abstract class Node {
 
     public abstract NodeKind getKind();
 
+    public abstract <R> R accept(NodeVisitor<R> visitor);
+
 }

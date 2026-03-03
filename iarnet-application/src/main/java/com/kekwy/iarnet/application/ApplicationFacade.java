@@ -2,6 +2,7 @@ package com.kekwy.iarnet.application;
 
 import com.kekwy.iarnet.model.ApplicationInfo;
 import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 
 import java.util.List;
 import java.util.Map;
@@ -28,4 +29,11 @@ public interface ApplicationFacade {
      * @return 日志全文（可能为空字符串）
      */
     Optional<String> getBuildLog(ID id);
+
+    /**
+     * 提交工作流图到执行器进行调度处理。
+     *
+     * @param graph 工作流图 IR
+     */
+    void submitWorkflow(WorkflowGraph graph);
 }

@@ -26,4 +26,9 @@ public class SinkNode extends Node {
     public NodeKind getKind() {
         return NodeKind.SINK;
     }
+
+    @Override
+    public <R> R accept(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
 }

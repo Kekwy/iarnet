@@ -26,6 +26,12 @@ import java.util.stream.Stream;
 @Slf4j
 public class JavaLauncher implements Launcher {
 
+    private final int grpcPort;
+
+    public JavaLauncher(int grpcPort) {
+        this.grpcPort = grpcPort;
+    }
+
     @Override
     public boolean launch(Workspace workspace) {
         Path workspaceDir = workspace.getWorkspaceDir();
@@ -145,10 +151,11 @@ public class JavaLauncher implements Launcher {
                         artifactJar.toAbsolutePath().toString()
                 );
 
-                // 通过环境变量将当前应用 ID 传递给运行中的进程
+                // 通过环境变量将当前应用 ID 和 gRPC 端口传递给运行中的进程
                 if (applicationID != null && applicationID.getValue() != null) {
                     runPb.environment().put("IARNET_APP_ID", applicationID.getValue());
                 }
+                runPb.environment().put("IARNET_GRPC_PORT", String.valueOf(grpcPort));
                 runPb.directory(workspaceDir.toFile());
                 runPb.redirectErrorStream(true);
                 runPb.redirectOutput(ProcessBuilder.Redirect.appendTo(appLogFile.toFile()));

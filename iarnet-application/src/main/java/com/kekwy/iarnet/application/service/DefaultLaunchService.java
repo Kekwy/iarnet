@@ -10,6 +10,7 @@ import com.kekwy.iarnet.enums.AppStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -19,13 +20,17 @@ public class DefaultLaunchService implements LaunchService {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultLaunchService.class);
 
-    /* language -> luncher factory */
-    private final Map<String, Launcher>  launcherFactoryMap =  Map.of(
-            "java", new JavaLauncher(),
-            "python", new PythonLauncher()
-    );
+    private final Map<String, Launcher> launcherFactoryMap;
 
     private ApplicationInfoRepository applicationInfoRepository;
+
+    @Autowired
+    public DefaultLaunchService(@Value("${grpc.server.port:9090}") int grpcPort) {
+        this.launcherFactoryMap = Map.of(
+                "java", new JavaLauncher(grpcPort),
+                "python", new PythonLauncher()
+        );
+    }
 
     @Autowired
     public void setApplicationInfoRepository(ApplicationInfoRepository applicationInfoRepository) {

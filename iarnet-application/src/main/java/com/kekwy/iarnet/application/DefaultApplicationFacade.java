@@ -1,11 +1,13 @@
 package com.kekwy.iarnet.application;
 
+import com.kekwy.iarnet.application.executor.Executor;
 import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.service.ApplicationInfoService;
 import com.kekwy.iarnet.application.service.LaunchService;
 import com.kekwy.iarnet.application.service.WorkspaceService;
 import com.kekwy.iarnet.model.ApplicationInfo;
 import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 import com.kekwy.iarnet.util.IDUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     private ApplicationInfoService applicationInfoService;
     private WorkspaceService workspaceService;
     private LaunchService launchService;
+    private Executor executor;
 
     @Autowired
     public void setApplicationInfoService(ApplicationInfoService applicationInfoService) {
@@ -41,6 +44,11 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     @Autowired
     public void setLaunchService(LaunchService launchService) {
         this.launchService = launchService;
+    }
+
+    @Autowired
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
     }
 
     @Override
@@ -131,6 +139,13 @@ public class DefaultApplicationFacade implements ApplicationFacade {
             log.error("读取应用 {} 构建日志失败: {}", id.getValue(), e.getMessage(), e);
             throw new IllegalStateException("读取构建日志失败", e);
         }
+    }
+
+    @Override
+    public void submitWorkflow(WorkflowGraph graph) {
+        log.info("提交工作流: workflowId={}, applicationId={}",
+                graph.getWorkflowId(), graph.getApplicationId());
+        executor.submit(graph);
     }
 }
 

@@ -25,5 +25,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.kekwy.iarnet</groupId>
+            <artifactId>iarnet-proto</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

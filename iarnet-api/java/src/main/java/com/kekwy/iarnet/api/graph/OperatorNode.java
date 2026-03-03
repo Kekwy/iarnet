@@ -48,6 +48,11 @@ public class OperatorNode extends Node {
         return NodeKind.OPERATOR;
     }
 
+    @Override
+    public <R> R accept(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
+
     public static Builder builder() {
         return new Builder();
     }

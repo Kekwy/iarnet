@@ -16,4 +16,9 @@ public class FileSourceNode extends SourceNode {
     public Path getPath() {
         return path;
     }
+
+    @Override
+    public <R> R accept(NodeVisitor<R> visitor) {
+        return visitor.visit(this);
+    }
 }
