@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package iarnet.actor;
+
+option java_package = "com.kekwy.iarnet.proto.actor";
+option java_multiple_files = true;
+
+// ======================== Actor 服务 ========================
+// 由容器内的 Actor runtime 实现，用于执行用户函数。
+
+service ActorService {
+
+  // 同步调用：一次请求对应一次响应。
+  //
+  // 上层通常会在 InvokeRequest.payload 中放入序列化后的参数包，
+  // 例如自定义的 Proto / JSON / Avro 等，由 Actor runtime 自行解码。
+  //
+  // 返回的 InvokeResponse.payload 则承载序列化后的结果对象。
+  rpc Invoke(ActorInvokeRequest) returns (ActorInvokeResponse);
+}
+
+// ======================== 调用请求/响应 ========================
+
+message ActorInvokeRequest {
+  // 逻辑上的 Actor 地址（可选，物理寻址由 Device Agent 负责）
+  string actor_addr    = 1;
+
+  // 本次调用的唯一标识，用于幂等与追踪。
+  string invocation_id = 2;
+
+  // 调用负载，由上层自行约定编码格式（例如 Proto / JSON / Avro）。
+  bytes  payload       = 3;
+
+  // 额外元数据，可用于传递调用上下文（trace_id、租户信息等）。
+  map<string, string> metadata = 4;
+}
+
+message ActorInvokeResponse {
+  // 与请求中的 invocation_id 对应。
+  string    invocation_id = 1;
+
+  // 执行结果负载，由 Actor runtime 负责编码，与请求约定保持一致。
+  bytes     payload       = 2;
+
+  // 如果执行失败，error 包含错误消息（堆栈可选）。
+  string    error         = 3;
+
+  // Actor 执行的性能信息（计算/排队/链路延迟等）。
+  ActorInfo info          = 4;
+}
+
+// ======================== Actor 运行信息 ========================
+
+message ActorInfo {
+  // 计算延迟（毫秒）：从进入用户函数到返回结果的时间。
+  int64 calc_latency_ms  = 1;
+
+  // 排队延迟（毫秒）：请求在 Actor 内部排队等待执行的时间（可选）。
+  int64 queue_latency_ms = 2;
+
+  // 链路延迟（毫秒）：网络往返时间（可选，由上层或 Device Agent 统计）。
+  int64 link_latency_ms  = 3;
+}
+
