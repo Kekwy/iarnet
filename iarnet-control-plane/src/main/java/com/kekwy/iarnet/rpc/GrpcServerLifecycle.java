@@ -4,6 +4,7 @@ import com.kekwy.iarnet.config.GrpcServerProperties;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.ServerInterceptors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.SmartLifecycle;
@@ -41,8 +42,18 @@ public class GrpcServerLifecycle implements SmartLifecycle {
         int port = properties.getPort();
         ServerBuilder<?> builder = ServerBuilder.forPort(port);
         for (BindableService service : grpcServices) {
-            builder.addService(service);
-            log.info("注册 gRPC 服务: {}", service.bindService().getServiceDescriptor().getName());
+            if (service instanceof AdapterRegistryGrpcService adapterService) {
+                // 为 AdapterRegistryGrpcService 附加 adapter-id 解析拦截器
+                var def = ServerInterceptors.intercept(
+                        adapterService,
+                        new AdapterRegistryGrpcService.AdapterIdInterceptor()
+                );
+                builder.addService(def);
+                log.info("注册 gRPC 服务: {}", def.getServiceDescriptor().getName());
+            } else {
+                builder.addService(service);
+                log.info("注册 gRPC 服务: {}", service.bindService().getServiceDescriptor().getName());
+            }
         }
 
         try {

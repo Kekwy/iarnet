@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package iarnet.adapter;
+
+import "iarnet/adapter/adapter_service.proto";
+
+option java_package = "com.kekwy.iarnet.proto.adapter";
+option java_multiple_files = true;
+
+// ======================== control-plane 侧服务 ========================
+// 由 control-plane 实现，各 Adapter 作为客户端主动调用。
+// 所有通信方向均为 Adapter → control-plane，Adapter 无需暴露任何端口。
+
+service AdapterRegistryService {
+
+  // Adapter 启动后主动向 control-plane 注册
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // 定期心跳，上报当前资源使用情况
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+  // Adapter 下线时主动注销
+  rpc Deregister(DeregisterRequest) returns (DeregisterResponse);
+
+  // 命令通道：Adapter 主动发起的长连接双向流。
+  // control-plane 通过此通道向 Adapter 下发操作指令（部署、停止等），
+  // Adapter 处理后通过同一通道返回结果。
+  rpc CommandChannel(stream CommandResponse) returns (stream Command);
+}
+
+// ======================== 注册 ========================
+
+message RegisterRequest {
+  string           adapter_name = 1;  // 适配器名称（用户自定义）
+  string           description  = 2;  // 适配器描述（用户自定义）
+  string           adapter_type = 3;  // 适配器类型，如 "docker", "k8s", "process"
+  ResourceCapacity capacity     = 4;  // 设备资源容量
+  repeated string  tags         = 5;  // 资源标签
+}
+
+message RegisterResponse {
+  bool   accepted   = 1;
+  string adapter_id = 2;  // 控制平面分配的唯一标识（注册成功时返回）
+  string message    = 3;  // 拒绝原因或确认信息
+}
+
+// ======================== 心跳 ========================
+
+message HeartbeatRequest {
+  string           adapter_id = 1;
+  ResourceCapacity usage      = 2;  // 当前资源使用快照
+}
+
+message HeartbeatResponse {
+  bool acknowledged = 1;
+}
+
+// ======================== 注销 ========================
+
+message DeregisterRequest {
+  string adapter_id = 1;
+}
+
+message DeregisterResponse {
+  bool   success = 1;
+  string message = 2;
+}
+
+// ======================== 命令通道 ========================
+
+// control-plane → Adapter：操作指令
+message Command {
+  string request_id = 1;  // 请求唯一标识，用于关联响应
+
+  oneof payload {
+    GetDeviceInfoRequest        get_device_info        = 10;
+    TransferArtifactChunk       transfer_artifact      = 11;
+    DeployInstanceRequest       deploy_instance        = 12;
+    StopInstanceRequest         stop_instance          = 13;
+    RemoveInstanceRequest       remove_instance        = 14;
+    GetInstanceStatusRequest    get_instance_status    = 15;
+    GetResourceUsageRequest     get_resource_usage     = 16;
+    GetNetworkCandidatesRequest get_network_candidates = 17;
+  }
+}
+
+// Adapter → control-plane：操作结果
+message CommandResponse {
+  string request_id = 1;  // 对应 Command 中的 request_id
+
+  oneof payload {
+    GetDeviceInfoResponse        get_device_info        = 10;
+    TransferArtifactResponse     transfer_artifact      = 11;
+    DeployInstanceResponse       deploy_instance        = 12;
+    StopInstanceResponse         stop_instance          = 13;
+    RemoveInstanceResponse       remove_instance        = 14;
+    GetInstanceStatusResponse    get_instance_status    = 15;
+    GetResourceUsageResponse     get_resource_usage     = 16;
+    GetNetworkCandidatesResponse get_network_candidates = 17;
+    CommandError                 error                  = 20;
+  }
+}
+
+// 命令执行失败时的通用错误
+message CommandError {
+  string message = 1;
+}

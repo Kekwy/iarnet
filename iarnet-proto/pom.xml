@@ -105,6 +105,8 @@
                                 <argument>${project.basedir}/proto/iarnet/ir/common.proto</argument>
                                 <argument>${project.basedir}/proto/iarnet/ir/workflow.proto</argument>
                                 <argument>${project.basedir}/proto/iarnet/api/workflow_service.proto</argument>
+                                <argument>${project.basedir}/proto/iarnet/adapter/adapter_service.proto</argument>
+                                <argument>${project.basedir}/proto/iarnet/adapter/adapter_registry.proto</argument>
                             </arguments>
                         </configuration>
                     </execution>

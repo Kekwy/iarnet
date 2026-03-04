@@ -11,33 +11,26 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>iarnet-control-plane</artifactId>
+    <artifactId>iarnet-adapter</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-control-plane</name>
-    <description>iarnet 控制台</description>
+    <name>iarnet-adapter</name>
+    <description>iarnet 资源适配器（Docker / K8s / 裸进程），独立部署于资源设备</description>
 
     <dependencies>
-        <dependency>
-            <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-application</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- ========== gRPC ========== -->
+        <!-- 内部模块 -->
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>
             <artifactId>iarnet-proto</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- gRPC -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
@@ -54,11 +47,32 @@
             <version>${grpc.version}</version>
         </dependency>
 
-        <!-- ========== Test ========== -->
+        <!-- Docker Java Client -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-core</artifactId>
+            <version>3.3.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.docker-java</groupId>
+            <artifactId>docker-java-transport-httpclient5</artifactId>
+            <version>3.3.6</version>
+        </dependency>
+
+        <!-- Kubernetes Java Client -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>6.13.4</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

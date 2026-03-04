@@ -5,6 +5,10 @@ import com.kekwy.iarnet.application.service.WorkspaceService;
 import com.kekwy.iarnet.model.ID;
 import com.kekwy.iarnet.proto.ir.Node;
 import com.kekwy.iarnet.proto.ir.WorkflowGraph;
+import com.kekwy.iarnet.resource.model.ActorDeployment;
+import com.kekwy.iarnet.resource.model.ActorInstance;
+import com.kekwy.iarnet.resource.model.PhysicalWorkflowGraph;
+import com.kekwy.iarnet.resource.service.SchedulerService;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +27,14 @@ public class DefaultExecutor implements Executor {
     private static final Logger log = LoggerFactory.getLogger(DefaultExecutor.class);
 
     private final WorkspaceService workspaceService;
+    private final SchedulerService schedulerService;
     private final BlockingQueue<WorkflowGraph> queue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
     private Thread workerThread;
 
-    public DefaultExecutor(WorkspaceService workspaceService) {
+    public DefaultExecutor(WorkspaceService workspaceService, SchedulerService schedulerService) {
         this.workspaceService = workspaceService;
+        this.schedulerService = schedulerService;
     }
 
     @Override
@@ -91,10 +97,22 @@ public class DefaultExecutor implements Executor {
         log.info("Artifact 准备完成: workflowId={}, 已解析 {} 个节点 artifact",
                 workflowId, nodeArtifacts.size());
 
-        nodeArtifacts.forEach((nodeId, path) ->
-                log.info("  节点 {} → {}", nodeId, path));
+        // 3. 提交给调度服务，部署 Actor 并获取物理 IR
+        PhysicalWorkflowGraph physicalGraph = schedulerService.schedule(graph, nodeArtifacts);
 
-        // TODO: 3. 根据 nodeArtifacts 为每个算子节点调度容器/进程
+        log.info("物理 IR 生成完成: workflowId={}, 共 {} 个节点, {} 个 Actor",
+                workflowId, physicalGraph.deployments().size(), physicalGraph.totalActorCount());
+
+        for (ActorDeployment deployment : physicalGraph.deployments()) {
+            for (ActorInstance actor : deployment.instances()) {
+                log.info("  节点 {} [{}] → actor={}, device={}, container={}, {}:{}",
+                        deployment.nodeId(), deployment.nodeKind(),
+                        actor.actorId(), actor.deviceId(), actor.containerId(),
+                        actor.host(), actor.port());
+            }
+        }
+
+        // TODO: 4. 根据物理 IR 建立 Actor 间的数据流连接
 
         log.info("工作流处理完成: workflowId={}", workflowId);
     }

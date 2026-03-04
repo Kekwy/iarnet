@@ -18,6 +18,7 @@
         <module>iarnet-common</module>
         <module>iarnet-proto</module>
         <module>iarnet-api/java</module>
+        <module>iarnet-adapter</module>
     </modules>
 
     <parent>
