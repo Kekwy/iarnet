@@ -59,6 +59,20 @@ public class KubernetesEngine implements AdapterEngine {
         log.info("K8s 集群连接成功: version={}, namespace={}", version.getGitVersion(), this.namespace);
     }
 
+    /**
+     * 接受预构建的 {@link KubernetesClient}，用于单元测试场景。
+     */
+    KubernetesEngine(KubernetesClient kubeClient, String namespace, List<String> tags,
+                     com.kekwy.iarnet.proto.ir.Resource totalResource,
+                     ArtifactStore artifactStore) {
+        this.kubeClient = kubeClient;
+        this.namespace = namespace != null ? namespace : "default";
+        this.tags = tags != null ? tags : List.of();
+        this.totalResource = totalResource;
+        this.artifactStore = artifactStore;
+        this.osArch = System.getProperty("os.name") + "/" + System.getProperty("os.arch");
+    }
+
     @Override
     public String adapterType() {
         return "k8s";

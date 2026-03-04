@@ -139,7 +139,8 @@ public class RegistryClient implements AutoCloseable {
         Metadata headers = new Metadata();
         headers.put(ADAPTER_ID_METADATA_KEY, adapterId);
         AdapterRegistryServiceGrpc.AdapterRegistryServiceStub headerStub =
-                MetadataUtils.attachHeaders(asyncStub, headers);
+                asyncStub.withInterceptors(
+                        MetadataUtils.newAttachHeadersInterceptor(headers));
 
         StreamObserver<CommandResponse> responseSender = headerStub.commandChannel(commandReceiver);
         proxy.setDelegate(responseSender);

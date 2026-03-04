@@ -76,6 +76,24 @@ public class DockerEngine implements AdapterEngine {
         log.info("Docker daemon 连接成功: host={}", dockerHost);
     }
 
+    /**
+     * 接受预构建的 {@link DockerClient}，用于单元测试场景。
+     */
+    DockerEngine(DockerClient dockerClient, String network, List<String> tags,
+                 com.kekwy.iarnet.proto.ir.Resource totalResource,
+                 ArtifactStore artifactStore) {
+        this.dockerClient = dockerClient;
+        this.network = network;
+        this.tags = tags != null ? tags : List.of();
+        this.artifactStore = artifactStore;
+        this.osArch = System.getProperty("os.name") + "/" + System.getProperty("os.arch");
+        this.capacity = ResourceCapacity.newBuilder()
+                .setTotal(totalResource)
+                .setUsed(com.kekwy.iarnet.proto.ir.Resource.newBuilder().build())
+                .setAvailable(totalResource)
+                .build();
+    }
+
     @Override
     public String adapterType() {
         return "docker";
