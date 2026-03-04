@@ -9,7 +9,7 @@ import io.fabric8.kubernetes.api.model.PodStatusBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
-import io.fabric8.kubernetes.client.dsl.Resource as K8sResource;
+import io.fabric8.kubernetes.client.dsl.PodResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -112,8 +112,7 @@ class KubernetesEngineTest {
         MixedOperation podsOp = mock(MixedOperation.class);
         @SuppressWarnings("rawtypes")
         NonNamespaceOperation nsOp = mock(NonNamespaceOperation.class);
-        @SuppressWarnings("unchecked")
-        K8sResource<Pod> resCreate = mock(K8sResource.class);
+        PodResource resCreate = mock(PodResource.class);
 
         when(kubeClient.pods()).thenReturn(podsOp);
         when(podsOp.inNamespace("default")).thenReturn(nsOp);
@@ -124,8 +123,9 @@ class KubernetesEngineTest {
         Pod podWithIp = new PodBuilder(createdPod)
                 .withStatus(new PodStatusBuilder().withPodIP("10.0.0.5").build())
                 .build();
-        when(kubeClient.pods().inNamespace("default").withName(podName).get())
-                .thenReturn(podWithIp);
+        PodResource podRes = mock(PodResource.class);
+        when(nsOp.withName(podName)).thenReturn(podRes);
+        when(podRes.get()).thenReturn(podWithIp);
 
         DeployInstanceRequest request = DeployInstanceRequest.newBuilder()
                 .setInstanceId(instanceId)
@@ -146,8 +146,14 @@ class KubernetesEngineTest {
     @Test
     @DisplayName("deployInstance：K8s 客户端异常时返回 FAILED 状态")
     void deployInstance_failure_shouldReturnFailed() {
-        when(kubeClient.pods().inNamespace("default").resource(any(Pod.class)))
-                .thenThrow(new RuntimeException("API 服务器不可用"));
+        @SuppressWarnings("rawtypes")
+        MixedOperation podsOp = mock(MixedOperation.class);
+        @SuppressWarnings("rawtypes")
+        NonNamespaceOperation nsOp = mock(NonNamespaceOperation.class);
+
+        when(kubeClient.pods()).thenReturn(podsOp);
+        when(podsOp.inNamespace("default")).thenReturn(nsOp);
+        when(nsOp.resource(any(Pod.class))).thenThrow(new RuntimeException("API 服务器不可用"));
 
         DeployInstanceResponse response = engine.deployInstance(
                 DeployInstanceRequest.newBuilder()
@@ -172,8 +178,7 @@ class KubernetesEngineTest {
         MixedOperation podsOp = mock(MixedOperation.class);
         @SuppressWarnings("rawtypes")
         NonNamespaceOperation nsOp = mock(NonNamespaceOperation.class);
-        @SuppressWarnings("unchecked")
-        K8sResource<Pod> resDelete = mock(K8sResource.class);
+        PodResource resDelete = mock(PodResource.class);
 
         when(kubeClient.pods()).thenReturn(podsOp);
         when(podsOp.inNamespace("default")).thenReturn(nsOp);
@@ -193,8 +198,7 @@ class KubernetesEngineTest {
         MixedOperation podsOp = mock(MixedOperation.class);
         @SuppressWarnings("rawtypes")
         NonNamespaceOperation nsOp = mock(NonNamespaceOperation.class);
-        @SuppressWarnings("unchecked")
-        K8sResource<Pod> resDelete = mock(K8sResource.class);
+        PodResource resDelete = mock(PodResource.class);
 
         when(kubeClient.pods()).thenReturn(podsOp);
         when(podsOp.inNamespace("default")).thenReturn(nsOp);
@@ -230,13 +234,6 @@ class KubernetesEngineTest {
     @DisplayName("getInstanceStatus：已部署实例应返回 Running 状态")
     void getInstanceStatus_existingInstance_shouldReturnStatus() {
         prepareDeployedPod("inst-status", "pod-status", "10.0.0.8");
-
-        Pod runningPod = new PodBuilder()
-                .withNewMetadata().withName("pod-status").endMetadata()
-                .withStatus(new PodStatusBuilder().withPhase("Running").withPodIP("10.0.0.8").build())
-                .build();
-        when(kubeClient.pods().inNamespace("default").withName("pod-status").get())
-                .thenReturn(runningPod);
 
         GetInstanceStatusResponse response = engine.getInstanceStatus("inst-status");
         assertEquals("inst-status", response.getInstance().getInstanceId());
@@ -283,8 +280,7 @@ class KubernetesEngineTest {
         MixedOperation podsOp = mock(MixedOperation.class);
         @SuppressWarnings("rawtypes")
         NonNamespaceOperation nsOp = mock(NonNamespaceOperation.class);
-        @SuppressWarnings("unchecked")
-        K8sResource<Pod> resCreate = mock(K8sResource.class);
+        PodResource resCreate = mock(PodResource.class);
 
         when(kubeClient.pods()).thenReturn(podsOp);
         when(podsOp.inNamespace("default")).thenReturn(nsOp);
@@ -293,10 +289,11 @@ class KubernetesEngineTest {
 
         // waitForPodIp 阶段
         Pod podWithIp = new PodBuilder(createdPod)
-                .withStatus(new PodStatusBuilder().withPodIP(ip).build())
+                .withStatus(new PodStatusBuilder().withPhase("Running").withPodIP(ip).build())
                 .build();
-        when(kubeClient.pods().inNamespace("default").withName(podName).get())
-                .thenReturn(podWithIp);
+        PodResource podRes = mock(PodResource.class);
+        when(nsOp.withName(podName)).thenReturn(podRes);
+        when(podRes.get()).thenReturn(podWithIp);
 
         // 触发 deployInstance，使内部 maps 填充
         DeployInstanceRequest request = DeployInstanceRequest.newBuilder()
