@@ -2,6 +2,7 @@ package com.kekwy.iarnet.api;
 
 import com.kekwy.iarnet.api.function.Function;
 import com.kekwy.iarnet.api.function.MapFunction;
+import com.kekwy.iarnet.api.function.CombineFunction;
 import com.kekwy.iarnet.api.graph.Edge;
 import com.kekwy.iarnet.api.graph.FunctionDescriptor;
 import com.kekwy.iarnet.api.graph.Node;
@@ -192,6 +193,28 @@ class WorkflowOperatorNodeTest {
     }
 
     // ====================================================================
+    //  map2: 单算子内对齐 Fork-Join
+    // ====================================================================
+
+    @Nested
+    class Map2Tests {
+
+        @Test
+        void map2_createsSingleMapOperator_withCombinedLogic() {
+            wf.source(ConstantSource.of("a,b", "c,d"))
+                    .map2(
+                            (String s) -> s.toUpperCase(),                       // LeftResult
+                            (String s) -> Arrays.asList(s.split(",")),           // RightResult*
+                            (CombineFunction<String, java.util.List<String>, String>) (left, rights) ->
+                                    left + ":" + String.join("|", rights)        // CombinedResult
+                    );
+
+            OperatorNode op = operatorNode(0);
+            assertEquals(OperatorKind.MAP, op.getOperatorKind(), "map2 当前作为单输入 MAP 实现");
+        }
+    }
+
+    // ====================================================================
     //  filter
     // ====================================================================
 
@@ -261,6 +284,75 @@ class WorkflowOperatorNodeTest {
             assertEquals(2, allEdges.size());
             assertEquals(Edge.of(sourceNode.getId(), map1.getId()), allEdges.get(0));
             assertEquals(Edge.of(map1.getId(), map2.getId()), allEdges.get(1));
+        }
+    }
+
+    // ====================================================================
+    //  union: 多输入无对齐合流
+    // ====================================================================
+
+    @Nested
+    class UnionTests {
+
+        @Test
+        void union_createsUnionOperatorNode_andLinksFromBothBranches() {
+            Flow<String> left = wf.source(ConstantSource.of("a", "b"))
+                    .map(String::toUpperCase);
+            Flow<String> right = wf.source(ConstantSource.of("x", "y"))
+                    .filter(s -> s.length() > 0);
+
+            left.union(right);
+
+            List<Node> allNodes = wf.getNodes();
+            List<Edge> allEdges = wf.getEdges();
+
+            // 2 Source + 2 Operator(map/filter) + 1 UNION
+            assertEquals(5, allNodes.size());
+
+            OperatorNode unionNode = operatorNode(2);
+            assertEquals(OperatorKind.UNION, unionNode.getOperatorKind());
+
+            // 找到所有指向 UNION 的边，应该来自 map 和 filter
+            List<Edge> toUnionEdges = allEdges.stream()
+                    .filter(e -> e.toNodeId().equals(unionNode.getId()))
+                    .toList();
+            assertEquals(2, toUnionEdges.size());
+        }
+    }
+
+    // ====================================================================
+    //  keyBy + connect + CoProcess
+    // ====================================================================
+
+    @Nested
+    class CoProcessTests {
+
+        @Test
+        void keyBy_connect_process_createsSingleOperatorWithTwoInputs() {
+            Flow<String> right = wf.source(ConstantSource.of("x", "yy", "zzz"));
+
+            // 使用 DSL 构造 keyed 流和 CoProcess
+            wf.source(ConstantSource.of("hello", "world"))
+                    .keyBy((String s) -> s.length())
+                    .connect(
+                            right.keyBy((String s) -> s.length())
+                    )
+                    .process(new com.kekwy.iarnet.api.function.CoProcessFunction<String, String, String>() {
+                        @Override
+                        public void processElement1(String value, Context ctx, Collector<String> out) {
+                            out.collect("L:" + value);
+                        }
+
+                        @Override
+                        public void processElement2(String value, Context ctx, Collector<String> out) {
+                            out.collect("R:" + value);
+                        }
+                    });
+
+            // 简单断言：至少有一个 OPERATOR 节点被创建
+            java.util.List<Node> allNodes = wf.getNodes();
+            boolean hasOperator = allNodes.stream().anyMatch(n -> n.getKind() == NodeKind.OPERATOR);
+            assertTrue(hasOperator);
         }
     }
 

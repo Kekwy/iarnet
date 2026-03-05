@@ -17,6 +17,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -98,7 +100,27 @@ public class DefaultExecutor implements Executor {
                 workflowId, nodeArtifacts.size());
 
         // 3. 提交给调度服务，部署 Actor 并获取物理 IR
-        PhysicalWorkflowGraph physicalGraph = schedulerService.schedule(graph, nodeArtifacts);
+
+        log.info("开始调度工作流: workflowId={}, nodes={}", workflowId, graph.getNodesCount());
+
+        List<ActorDeployment> deployments = new ArrayList<>();
+
+        for (Node node : graph.getNodesList()) {
+            ActorDeployment deployment =schedulerService.schedule(node, nodeArtifacts.get(node.getId()));
+            deployments.add(deployment);
+        }
+
+        PhysicalWorkflowGraph physicalGraph = new PhysicalWorkflowGraph(
+                workflowId,
+                graph.getApplicationId(),
+                deployments,
+                graph.getEdgesList()
+        );
+
+        log.info("调度完成: workflowId={}, 共部署 {} 个 Actor",
+                workflowId, physicalGraph.totalActorCount());
+
+
 
         log.info("物理 IR 生成完成: workflowId={}, 共 {} 个节点, {} 个 Actor",
                 workflowId, physicalGraph.deployments().size(), physicalGraph.totalActorCount());

@@ -16,6 +16,10 @@
     <name>iarnet-proto</name>
     <description>Protobuf / gRPC 定义及生成代码（Java + Python）</description>
 
+    <properties>
+        <skip.python.proto.generation>true</skip.python.proto.generation>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.google.protobuf</groupId>
@@ -94,6 +98,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>${skip.python.proto.generation}</skip>
                             <executable>python3</executable>
                             <arguments>
                                 <argument>-m</argument>

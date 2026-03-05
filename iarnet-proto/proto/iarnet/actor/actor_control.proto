@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package iarnet.actor;
+
+option java_package = "com.kekwy.iarnet.proto.actor";
+option java_multiple_files = true;
+
+// ======================== Actor 控制服务 ========================
+// 由控制平面实现，Actor 启动后主动建立 ControlChannel 双向流。
+// Actor → ControlPlane: 上报状态/心跳
+// ControlPlane → Actor: 下发配置/指令
+
+service ActorControlService {
+
+  // Actor 启动后主动建立控制通道，双向流。
+  rpc ControlChannel(stream ActorReport) returns (stream ActorDirective);
+}
+
+// ======================== ActorReport（Actor → 控制平面）========================
+
+message ActorReport {
+  string actor_id = 1;
+
+  oneof payload {
+    ActorReadyReport   ready         = 10;  // 启动就绪通知（首条消息）
+    ActorHeartbeat     heartbeat     = 11;  // 周期性心跳
+    ActorStatusChange  status_change = 12;  // 状态变更上报
+    ActorMetrics       metrics       = 13;  // 可选：性能指标上报
+  }
+}
+
+// 启动就绪通知：携带 workflow_id、node_id、replica_index、监听地址等
+message ActorReadyReport {
+  string workflow_id   = 1;
+  string application_id = 2;
+  string node_id       = 3;
+  int32  replica_index = 4;
+  string host          = 5;  // 本机监听地址
+  int32  listen_port   = 6;  // ActorService gRPC 端口
+  string device_id     = 7;  // 所属设备 ID（可选）
+}
+
+message ActorHeartbeat {
+  int64 timestamp_ms = 1;
+}
+
+message ActorStatusChange {
+  string status  = 1;  // 如 "error", "recovered", "draining"
+  string message = 2;
+}
+
+message ActorMetrics {
+  int64 timestamp_ms     = 1;
+  int64 processed_count = 2;
+  int64 queue_size      = 3;
+  int64 calc_latency_ms = 4;
+}
+
+// ======================== ActorDirective（控制平面 → Actor）========================
+
+message ActorDirective {
+  string directive_id = 1;
+
+  oneof payload {
+    ActorTopologyConfig  topology    = 10;  // 下发邻居拓扑/路由表
+    ActorStopDirective   stop        = 11;  // 停止指令
+    ActorReconfigure     reconfigure = 12;  // 重配置指令
+    ActorAck             ack         = 13;  // 对 ActorReport 的确认
+  }
+}
+
+// 下游/上游 Actor 地址信息（用于 P2P 建链或路由）
+message ActorEndpoint {
+  string actor_id = 1;
+  string host     = 2;
+  int32  port     = 3;
+  string device_id = 4;
+}
+
+message ActorTopologyConfig {
+  repeated ActorEndpoint upstream   = 1;  // 上游 Actor 列表
+  repeated ActorEndpoint downstream = 2;  // 下游 Actor 列表
+  string workflow_id = 3;
+  string node_id     = 4;
+}
+
+message ActorStopDirective {
+  string reason = 1;
+  bool  graceful = 2;  // 是否优雅停止
+}
+
+message ActorReconfigure {
+  map<string, string> params = 1;
+}
+
+message ActorAck {
+  string report_actor_id = 1;  // 对应 ActorReport.actor_id
+  string ack_for         = 2;  // 如 "ready", "heartbeat", "status_change"
+}

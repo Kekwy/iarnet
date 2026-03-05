@@ -28,3 +28,6 @@ iarnet:
   workspace-base-dir: ./workspaces
   # 构建产物（fat jar 等）基础目录，对应 DefaultArtifactService 中的 @Value("${iarnet.artifact-base-dir:./artifacts}")
   artifact-base-dir: ./artifacts
+  actor-image:
+    LANG_JAVA: iarnet-actor-java:latest
+    LANG_PYTHON: iarnet-actor-python:latest

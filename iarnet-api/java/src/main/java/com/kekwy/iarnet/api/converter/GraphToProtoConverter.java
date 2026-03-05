@@ -169,6 +169,10 @@ public class GraphToProtoConverter implements NodeVisitor<com.kekwy.iarnet.proto
             case MAP      -> com.kekwy.iarnet.proto.ir.OperatorKind.OPERATOR_MAP;
             case FLAT_MAP -> com.kekwy.iarnet.proto.ir.OperatorKind.OPERATOR_FLAT_MAP;
             case FILTER   -> com.kekwy.iarnet.proto.ir.OperatorKind.OPERATOR_FILTER;
+            case UNION    ->
+                    // 目前 proto 中尚无 UNION 专用枚举值，先映射为 UNSPECIFIED，
+                    // 由下游根据多输入边 + kind=UNION 的语义处理。
+                    com.kekwy.iarnet.proto.ir.OperatorKind.OPERATOR_KIND_UNSPECIFIED;
         };
     }
 

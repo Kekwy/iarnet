@@ -11,7 +11,11 @@ public class OperatorNode extends Node {
     public enum OperatorKind {
         MAP,
         FLAT_MAP,
-        FILTER
+        FILTER,
+        /**
+         * 多输入无对齐合流算子，对应 DSL 中的 union 操作。
+         */
+        UNION
     }
 
     private final OperatorKind operatorKind;

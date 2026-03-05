@@ -281,6 +281,81 @@ public class Workflow {
             return this;
         }
 
+        // -------- keyBy --------
+
+        @Override
+        public <K> KeyedFlow<T, K> keyBy(com.kekwy.iarnet.api.function.KeySelector<? super T, ? extends K> selector) {
+            if (selector == null) {
+                throw new IllegalArgumentException("key selector must not be null");
+            }
+            return new DefaultKeyedFlow<>(new java.util.ArrayList<>(precursors), selector);
+        }
+
+        // -------- map2 (对齐 Fork-Join，单算子实现) --------
+
+        @Override
+        public <L, R, OUT> Flow<OUT> map2(
+                MapFunction<? super T, ? extends L> left,
+                FlatMapFunction<? super T, ? extends R> right,
+                com.kekwy.iarnet.api.function.CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner) {
+
+            if (left == null || right == null || combiner == null) {
+                throw new IllegalArgumentException("left/right/combiner must not be null");
+            }
+
+            MapFunction<T, OUT> combined = new MapFunction<>() {
+                @Override
+                public OUT apply(T value) {
+                    L l = left.apply(value);
+                    Iterable<? extends R> rightsIterable = right.apply(value);
+                    java.util.List<R> rights = new java.util.ArrayList<>();
+                    if (rightsIterable != null) {
+                        for (R r : rightsIterable) {
+                            rights.add(r);
+                        }
+                    }
+                    return combiner.apply(l, rights);
+                }
+            };
+
+            return this.map(combined);
+        }
+
+        // -------- union --------
+
+        @Override
+        public Flow<T> union(Flow<T> other) {
+            if (other == null) {
+                throw new IllegalArgumentException("other flow must not be null");
+            }
+            if (!(other instanceof DefaultFlow<?> otherFlow)) {
+                throw new IllegalArgumentException("只能与同一 Workflow 创建的 Flow 执行 union");
+            }
+
+            // 合流节点的输出类型与输入流保持一致
+            DataType outputType = null;
+            if (!precursors.isEmpty()) {
+                outputType = precursors.get(0).getOutputType();
+            } else if (!otherFlow.precursors.isEmpty()) {
+                outputType = otherFlow.precursors.get(0).getOutputType();
+            }
+
+            OperatorNode unionNode = OperatorNode.builder()
+                    .id(IDUtil.genUUID())
+                    .outputType(outputType)
+                    .operatorKind(OperatorKind.UNION)
+                    .replicas(1)
+                    .resource(Resource.of(0.5, "512Mi"))
+                    .build();
+
+            // 当前流与另一条流的所有前驱都连到同一个 UNION 节点
+            precursors.forEach(p -> edges.add(Edge.of(p.getId(), unionNode.getId())));
+            otherFlow.precursors.forEach(p -> edges.add(Edge.of(p.getId(), unionNode.getId())));
+            nodes.add(unionNode);
+
+            return new DefaultFlow<>(List.of(unionNode));
+        }
+
         // -------- after / sink --------
 
         @Override
@@ -334,6 +409,92 @@ public class Workflow {
         private void linkAndRegister(OperatorNode node) {
             precursors.forEach(p -> edges.add(Edge.of(p.getId(), node.getId())));
             nodes.add(node);
+        }
+    }
+
+    // ======== KeyedFlow / CoKeyedFlow 实现 ========
+
+    private class DefaultKeyedFlow<T, K> implements KeyedFlow<T, K> {
+
+        private final java.util.List<Node> precursors;
+        @SuppressWarnings("unused")
+        private final com.kekwy.iarnet.api.function.KeySelector<? super T, ? extends K> keySelector;
+
+        private DefaultKeyedFlow(java.util.List<Node> precursors,
+                                 com.kekwy.iarnet.api.function.KeySelector<? super T, ? extends K> keySelector) {
+            this.precursors = precursors;
+            this.keySelector = keySelector;
+        }
+
+        @Override
+        public <R> CoKeyedFlow<T, R, K> connect(KeyedFlow<R, K> other) {
+            if (other == null) {
+                throw new IllegalArgumentException("other keyed flow must not be null");
+            }
+            if (!(other instanceof DefaultKeyedFlow<?, ?> otherKeyed)) {
+                throw new IllegalArgumentException("只能连接由同一 Workflow 创建的 KeyedFlow");
+            }
+            @SuppressWarnings("unchecked")
+            DefaultKeyedFlow<R, K> right = (DefaultKeyedFlow<R, K>) otherKeyed;
+            return new DefaultCoKeyedFlow<>(this, right);
+        }
+    }
+
+    private class DefaultCoKeyedFlow<L, R, K> implements CoKeyedFlow<L, R, K> {
+
+        private final DefaultKeyedFlow<L, K> left;
+        private final DefaultKeyedFlow<R, K> right;
+
+        private DefaultCoKeyedFlow(DefaultKeyedFlow<L, K> left,
+                                   DefaultKeyedFlow<R, K> right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        @Override
+        public <OUT> Flow<OUT> process(com.kekwy.iarnet.api.function.CoProcessFunction<L, R, OUT> fn) {
+            if (fn == null) {
+                throw new IllegalArgumentException("CoProcessFunction must not be null");
+            }
+
+            java.lang.reflect.Type returnType =
+                    com.kekwy.iarnet.api.util.TypeExtractor.extractOutputType(
+                            fn,
+                            com.kekwy.iarnet.api.function.CoProcessFunction.class,
+                            2);
+            DataType outputType = returnType != null ? DataTypeInfer.infer(returnType) : null;
+
+            // 构造 OperatorNode（使用 FLAT_MAP 语义：一次输入可产生 0..N 条输出）
+            com.kekwy.iarnet.api.graph.FunctionDescriptor fd;
+            if (fn instanceof com.kekwy.iarnet.api.function.Function.PythonFunction pf) {
+                fd = com.kekwy.iarnet.api.graph.FunctionDescriptor.builder()
+                        .lang(Lang.LANG_PYTHON)
+                        .functionIdentifier(pf.codeFile() + ":" + pf.function())
+                        .artifactPath(pf.artifactPath())
+                        .build();
+            } else {
+                fd = com.kekwy.iarnet.api.graph.FunctionDescriptor.builder()
+                        .lang(fn.getLang())
+                        .functionIdentifier(fn.getClass().getName())
+                        .serializedFunction(SerializationUtil.serialize(fn))
+                        .build();
+            }
+
+            OperatorNode node = OperatorNode.builder()
+                    .id(IDUtil.genUUID())
+                    .outputType(outputType)
+                    .operatorKind(OperatorKind.FLAT_MAP)
+                    .function(fd)
+                    .replicas(1)
+                    .resource(Resource.of(0.5, "512Mi"))
+                    .build();
+
+            // 两侧 keyed 流的末端都指向同一个 CoProcess 节点
+            left.precursors.forEach(p -> edges.add(Edge.of(p.getId(), node.getId())));
+            right.precursors.forEach(p -> edges.add(Edge.of(p.getId(), node.getId())));
+            nodes.add(node);
+
+            return new DefaultFlow<>(java.util.List.of(node));
         }
     }
 }

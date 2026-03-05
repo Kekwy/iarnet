@@ -63,6 +63,13 @@ public class ArtifactPrepareVisitor implements ProtoNodeVisitor {
 
     @Override
     public void visitOperator(Node node, OperatorNodeDetail detail) {
+        // UNION 等内建算子本身不携带用户函数，不需要 artifact。
+        // 目前 UNION 在 proto 中被映射为 OPERATOR_KIND_UNSPECIFIED。
+        if (detail.getOperatorKind() == OperatorKind.OPERATOR_KIND_UNSPECIFIED) {
+            log.debug("内建算子（如 UNION）无需 artifact 准备: nodeId={}", node.getId());
+            return;
+        }
+
         FunctionDescriptor fd = detail.getFunction();
         String nodeId = node.getId();
         String artifactPath = fd.getArtifactPath();
