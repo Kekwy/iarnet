@@ -104,12 +104,26 @@ public class DefaultExecutor implements Executor {
         log.info("Artifact 准备完成: workflowId={}, 已解析 {} 个节点 artifact",
                 workflowId, nodeArtifacts.size());
 
-        // 若有 OSS，上传 artifact 并得到拉取 URL，供部署请求下发给 Adapter
+        // 若有 OSS，上传 artifact 并得到拉取 URL，供部署请求下发给 Adapter。
+        // 同一 artifact 文件可能被多个节点复用，这里进行去重：相同 Path 只上传一次，后续节点复用同一 URL。
         Map<String, String> nodeArtifactUrls = new HashMap<>();
         if (artifactUrlProvider != null) {
+            Map<Path, String> artifactUrlCache = new HashMap<>();
             for (Map.Entry<String, Path> e : nodeArtifacts.entrySet()) {
-                artifactUrlProvider.uploadAndGetUrl(e.getKey(), e.getValue())
-                        .ifPresent(url -> nodeArtifactUrls.put(e.getKey(), url));
+                String nodeId = e.getKey();
+                Path artifactPath = e.getValue();
+
+                String url = artifactUrlCache.get(artifactPath);
+                if (url == null) {
+                    var optionalUrl = artifactUrlProvider.uploadAndGetUrl(nodeId, artifactPath);
+                    if (optionalUrl.isEmpty()) {
+                        continue;
+                    }
+                    url = optionalUrl.get();
+                    artifactUrlCache.put(artifactPath, url);
+                }
+
+                nodeArtifactUrls.put(nodeId, url);
             }
             log.info("Artifact URL 已生成: workflowId={}, urls={}", workflowId, nodeArtifactUrls.size());
         }
