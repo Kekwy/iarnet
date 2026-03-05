@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.adapter;
 
+import com.kekwy.iarnet.adapter.agent.LocalAgentServiceImpl;
 import com.kekwy.iarnet.adapter.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.adapter.artifact.ArtifactStore;
 import com.kekwy.iarnet.adapter.config.AdapterProperties;
@@ -8,6 +9,8 @@ import com.kekwy.iarnet.adapter.engine.docker.DockerEngine;
 import com.kekwy.iarnet.adapter.engine.k8s.KubernetesEngine;
 import com.kekwy.iarnet.adapter.registry.RegistryClient;
 import jakarta.annotation.PreDestroy;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -34,6 +37,7 @@ public class AdapterApplication {
 
     private AdapterEngine engine;
     private RegistryClient registryClient;
+    private Server localAgentServer;
 
     public AdapterApplication(AdapterProperties props) {
         this.props = props;
@@ -57,6 +61,19 @@ public class AdapterApplication {
         engine = createEngine(props, totalResource, artifactStore);
         ArtifactFetcher artifactFetcher = new ArtifactFetcher(artifactStore);
 
+        // 启动本地 Device Agent（基础版），监听在固定端口，供 Actor 回连
+        int agentPort = props.getDeviceAgent().getPort();
+        try {
+            LocalAgentServiceImpl localAgentService = new LocalAgentServiceImpl();
+            localAgentServer = ServerBuilder.forPort(agentPort)
+                    .addService(localAgentService)
+                    .build()
+                    .start();
+            log.info("Local Device Agent 已启动: port={}", agentPort);
+        } catch (Exception e) {
+            throw new IllegalStateException("启动本地 Device Agent 失败: port=" + agentPort, e);
+        }
+
         var cp = props.getControlPlane();
         registryClient = new RegistryClient(
                 props.getName(), props.getDescription(), engine, artifactFetcher,
@@ -79,6 +96,10 @@ public class AdapterApplication {
             } catch (Exception e) {
                 log.warn("关闭 AdapterEngine 时出错", e);
             }
+        }
+        if (localAgentServer != null) {
+            localAgentServer.shutdown();
+            log.info("Local Device Agent 已停止");
         }
         log.info("Adapter 已停止");
     }

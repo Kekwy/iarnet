@@ -101,8 +101,9 @@ public class KubernetesEngine implements AdapterEngine {
     public DeployInstanceResponse deployInstance(DeployInstanceRequest request, java.nio.file.Path artifactLocalPath) {
         String instanceId = request.getInstanceId();
         String podName = sanitizePodName(instanceId);
-        log.info("部署 K8s Pod: instanceId={}, podName={}, image={}, hasArtifact={}",
-                instanceId, podName, request.getImage(), artifactLocalPath != null);
+        var lang = request.getLang();
+        log.info("部署 K8s Pod: instanceId={}, podName={}, lang={}, hasArtifact={}",
+                instanceId, podName, lang, artifactLocalPath != null);
 
         try {
             Pod pod = buildPod(podName, request, artifactLocalPath);
@@ -272,6 +273,9 @@ public class KubernetesEngine implements AdapterEngine {
 
         List<EnvVar> envVars = new ArrayList<>();
         request.getEnvVarsMap().forEach((k, v) -> envVars.add(new EnvVarBuilder().withName(k).withValue(v).build()));
+        // 默认假设 Actor Pod 可访问 NodeIP:10000；后续可根据需要改为配置化
+        envVars.add(new EnvVarBuilder().withName("IARNET_DEVICE_AGENT_ADDR")
+                .withValue("127.0.0.1:10000").build());
         if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
             String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
             envVars.add(new EnvVarBuilder().withName("IARNET_ARTIFACT_PATH").withValue(inContainerPath).build());
@@ -282,6 +286,7 @@ public class KubernetesEngine implements AdapterEngine {
         labels.put("iarnet.instance-id", request.getInstanceId());
 
         boolean hasArtifact = artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath);
+        String image = resolveImageForLang(request.getLang());
 
         if (hasArtifact) {
             return new PodBuilder()
@@ -300,7 +305,7 @@ public class KubernetesEngine implements AdapterEngine {
                         .endVolume()
                         .addNewContainer()
                             .withName("main")
-                            .withImage(request.getImage())
+                            .withImage(image)
                             .withImagePullPolicy("IfNotPresent")
                             .withEnv(envVars)
                             .addNewVolumeMount()
@@ -327,7 +332,7 @@ public class KubernetesEngine implements AdapterEngine {
                 .withNewSpec()
                     .addNewContainer()
                         .withName("main")
-                        .withImage(request.getImage())
+                        .withImage(image)
                         .withImagePullPolicy("IfNotPresent")
                         .withEnv(envVars)
                         .withNewResources()
@@ -338,6 +343,17 @@ public class KubernetesEngine implements AdapterEngine {
                     .withRestartPolicy("Never")
                 .endSpec()
                 .build();
+    }
+
+    private String resolveImageForLang(com.kekwy.iarnet.proto.ir.Lang lang) {
+        if (lang == null) {
+            return "iarnet-actor-java:latest";
+        }
+        return switch (lang) {
+            case LANG_PYTHON -> "iarnet-actor-python:latest";
+//            case LANG_GO -> "iarnet-actor-go:latest";
+            default -> "iarnet-actor-java:latest";
+        };
     }
 
     private String waitForPodIp(String podName) {

@@ -128,6 +128,21 @@ class WorkflowOperatorNodeTest {
         }
     }
 
+    /** 在 static 上下文中创建 CoProcessFunction，避免捕获测试类实例 */
+    private static com.kekwy.iarnet.api.function.CoProcessFunction<String, String, String> simpleCoProcessFunction() {
+        return new com.kekwy.iarnet.api.function.CoProcessFunction<String, String, String>() {
+            @Override
+            public void processElement1(String value, Context ctx, Collector<String> out) {
+                out.collect("L:" + value);
+            }
+
+            @Override
+            public void processElement2(String value, Context ctx, Collector<String> out) {
+                out.collect("R:" + value);
+            }
+        };
+    }
+
     // ====================================================================
     //  map: Python 函数
     // ====================================================================
@@ -337,17 +352,7 @@ class WorkflowOperatorNodeTest {
                     .connect(
                             right.keyBy((String s) -> s.length())
                     )
-                    .process(new com.kekwy.iarnet.api.function.CoProcessFunction<String, String, String>() {
-                        @Override
-                        public void processElement1(String value, Context ctx, Collector<String> out) {
-                            out.collect("L:" + value);
-                        }
-
-                        @Override
-                        public void processElement2(String value, Context ctx, Collector<String> out) {
-                            out.collect("R:" + value);
-                        }
-                    });
+                    .process(simpleCoProcessFunction());
 
             // 简单断言：至少有一个 OPERATOR 节点被创建
             java.util.List<Node> allNodes = wf.getNodes();

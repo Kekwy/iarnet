@@ -12,6 +12,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import com.kekwy.iarnet.adapter.artifact.ArtifactStore;
 import com.kekwy.iarnet.adapter.engine.AdapterEngine;
 import com.kekwy.iarnet.proto.adapter.*;
+import com.kekwy.iarnet.proto.ir.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,8 @@ public class DockerEngine implements AdapterEngine {
     /** instanceId → 分配的资源 */
     private final Map<String, com.kekwy.iarnet.proto.ir.Resource> instanceResources = new ConcurrentHashMap<>();
 
+    private final String deviceAgentAddr;
+
     public DockerEngine(String dockerHost, String network, List<String> tags,
                         com.kekwy.iarnet.proto.ir.Resource totalResource,
                         ArtifactStore artifactStore) {
@@ -52,6 +55,8 @@ public class DockerEngine implements AdapterEngine {
         this.tags = tags != null ? tags : List.of();
         this.artifactStore = artifactStore;
         this.osArch = System.getProperty("os.name") + "/" + System.getProperty("os.arch");
+        // 默认假设 Actor 容器与 Adapter 共用 host 网络，通过 127.0.0.1 回连本机 Device Agent
+        this.deviceAgentAddr = "172.30.23.95:10000"; // TODO: 使用配置文件中的配置
 
         this.capacity = ResourceCapacity.newBuilder()
                 .setTotal(totalResource)
@@ -88,6 +93,7 @@ public class DockerEngine implements AdapterEngine {
         this.tags = tags != null ? tags : List.of();
         this.artifactStore = artifactStore;
         this.osArch = System.getProperty("os.name") + "/" + System.getProperty("os.arch");
+        this.deviceAgentAddr = "127.0.0.1:10000";
         this.capacity = ResourceCapacity.newBuilder()
                 .setTotal(totalResource)
                 .setUsed(com.kekwy.iarnet.proto.ir.Resource.newBuilder().build())
@@ -121,15 +127,29 @@ public class DockerEngine implements AdapterEngine {
 
     private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
 
+    private String resolveImageForLang(Lang lang) {
+        if (lang == null) {
+            return "iarnet-actor-java:latest";
+        }
+        return switch (lang) {
+            case LANG_PYTHON -> "iarnet-actor-python:latest";
+//            case LANG_GO -> "iarnet-actor-go:latest";
+            default -> "iarnet-actor-java:latest";
+        };
+    }
+
     @Override
     public DeployInstanceResponse deployInstance(DeployInstanceRequest request, Path artifactLocalPath) {
         String instanceId = request.getInstanceId();
-        log.info("部署 Docker 实例: instanceId={}, artifactId={}, image={}, hasArtifact={}",
-                instanceId, request.getArtifactId(), request.getImage(), artifactLocalPath != null);
+        Lang lang = request.getLang();
+        String image = resolveImageForLang(lang);
+        log.info("部署 Docker 实例: instanceId={}, artifactId={}, lang={}, image={}, hasArtifact={}",
+                instanceId, request.getArtifactId(), lang, image, artifactLocalPath != null);
 
         try {
             List<String> envList = new ArrayList<>();
             request.getEnvVarsMap().forEach((k, v) -> envList.add(k + "=" + v));
+            envList.add("IARNET_DEVICE_AGENT_ADDR=" + deviceAgentAddr);
             if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
                 String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
                 envList.add("IARNET_ARTIFACT_PATH=" + inContainerPath);
@@ -139,7 +159,7 @@ public class DockerEngine implements AdapterEngine {
             labels.put("iarnet.managed", "true");
             labels.put("iarnet.instance_id", instanceId);
 
-            var createCmd = dockerClient.createContainerCmd(request.getImage())
+            var createCmd = dockerClient.createContainerCmd(image)
                     .withName(instanceId)
                     .withEnv(envList)
                     .withLabels(labels)

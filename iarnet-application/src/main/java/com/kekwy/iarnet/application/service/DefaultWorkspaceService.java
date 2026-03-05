@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -97,6 +96,48 @@ public class DefaultWorkspaceService implements WorkspaceService {
         workspaceRepository.save(entity);
 
         log.info("工作空间已创建并完成克隆: applicationId={}, dir={}", applicationId, workspacePath.toAbsolutePath());
+        return workspacePath.toAbsolutePath().toString();
+    }
+
+    /**
+     * 为指定应用创建一个「空」工作空间，不执行 git clone。
+     * <p>
+     * 适用于通过 shell / CLI 直接上传 JAR 的场景：
+     * 仅用于在本地创建 workspace 目录与 WorkspaceEntity 记录，
+     * 方便后续在该目录下保存 artifact 并运行进程。
+     */
+    @Override
+    @Transactional
+    public String createEmptyWorkspace(String applicationId) {
+        if (applicationId == null || applicationId.isBlank()) {
+            throw new IllegalArgumentException("applicationId 不能为空");
+        }
+
+        try {
+            Files.createDirectories(baseDir);
+        } catch (IOException e) {
+            throw new IllegalStateException("无法创建工作空间基础目录: " + baseDir, e);
+        }
+
+        Path workspacePath = baseDir.resolve(applicationId);
+
+        // 若已有旧目录，直接清理掉，确保是干净的 workspace
+        try {
+            if (Files.exists(workspacePath)) {
+                FileSystemUtils.deleteRecursively(workspacePath);
+            }
+            Files.createDirectories(workspacePath);
+        } catch (IOException e) {
+            throw new IllegalStateException("创建空工作空间目录失败: " + workspacePath, e);
+        }
+
+        WorkspaceEntity entity = new WorkspaceEntity();
+        entity.setWorkspaceID(IDUtil.genWorkspaceID().getValue());
+        entity.setApplicationID(applicationId);
+        entity.setWorkspaceDir(workspacePath.toAbsolutePath().toString());
+        workspaceRepository.save(entity);
+
+        log.info("空工作空间已创建: applicationId={}, dir={}", applicationId, workspacePath.toAbsolutePath());
         return workspacePath.toAbsolutePath().toString();
     }
 

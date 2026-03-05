@@ -6,7 +6,7 @@ import java.util.List;
 
 @ConfigurationProperties(prefix = "iarnet.adapter")
 public class AdapterProperties {
-
+    private String host;
     private String name;
     private String description = "";
     private String type = "docker";
@@ -16,6 +16,7 @@ public class AdapterProperties {
     private String artifactDir = "/tmp/iarnet-adapter/artifacts";
     private DockerConfig docker = new DockerConfig();
     private K8sConfig k8s = new K8sConfig();
+    private DeviceAgent deviceAgent = new DeviceAgent();
 
     // ===== Getters / Setters =====
 
@@ -45,6 +46,14 @@ public class AdapterProperties {
 
     public K8sConfig getK8s() { return k8s; }
     public void setK8s(K8sConfig k8s) { this.k8s = k8s; }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getHost() {
+        return host;
+    }
 
     // ===== 嵌套配置类 =====
 
@@ -92,5 +101,16 @@ public class AdapterProperties {
         public void setInCluster(boolean inCluster) { this.inCluster = inCluster; }
         public String getNamespace() { return namespace; }
         public void setNamespace(String namespace) { this.namespace = namespace; }
+    }
+
+    public DeviceAgent getDeviceAgent() { return deviceAgent; }
+    public void setDeviceAgent(DeviceAgent deviceAgent) { this.deviceAgent = deviceAgent; }
+
+    public static class DeviceAgent {
+        /** Device Agent 本地监听端口（对 Adapter 所在宿主机），Actor 通过 env 回连该端口 */
+        private int port = 10000;
+
+        public int getPort() { return port; }
+        public void setPort(int port) { this.port = port; }
     }
 }

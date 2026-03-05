@@ -57,6 +57,7 @@ public class GrpcServerLifecycle implements SmartLifecycle {
         }
 
         try {
+            builder.maxInboundMessageSize(properties.getMaxInboundMessageSize());
             server = builder.build().start();
             running = true;
             log.info("gRPC Server 启动成功，监听端口: {}", port);

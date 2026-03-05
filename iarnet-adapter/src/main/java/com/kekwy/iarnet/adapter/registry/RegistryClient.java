@@ -60,11 +60,7 @@ public class RegistryClient implements AutoCloseable {
                 .build();
         this.blockingStub = AdapterRegistryServiceGrpc.newBlockingStub(channel);
         this.asyncStub = AdapterRegistryServiceGrpc.newStub(channel);
-        this.scheduler = Executors.newScheduledThreadPool(2, r -> {
-            Thread t = new Thread(r, "adapter-scheduler");
-            t.setDaemon(true);
-            return t;
-        });
+        this.scheduler = Executors.newScheduledThreadPool(2);
     }
 
     /**

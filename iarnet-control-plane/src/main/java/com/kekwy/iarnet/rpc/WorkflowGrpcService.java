@@ -35,7 +35,11 @@ public class WorkflowGrpcService extends WorkflowServiceGrpc.WorkflowServiceImpl
                 request.getArtifact().size());
 
         try {
-            applicationFacade.submitWorkflow(request.getGraph());
+            applicationFacade.submitWorkflow(
+                    request.getGraph(),
+                    request.getArtifact(),
+                    request.getArtifactName()
+            );
 
             SubmitWorkflowResponse response = SubmitWorkflowResponse.newBuilder()
                     .setSubmissionId(submissionId)

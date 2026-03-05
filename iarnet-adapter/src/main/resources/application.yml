@@ -1,5 +1,7 @@
 iarnet:
   adapter:
+    host: 172.30.23.95
+
     # 适配器名称（用户自定义，注册时提交给控制平面）
     name: docker-adapter-01
     # 适配器描述

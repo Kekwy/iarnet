@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package iarnet.agent;
+
+option java_package = "com.kekwy.iarnet.proto.agent";
+option java_multiple_files = true;
+
+// ======================== 本地 Device Agent 服务（Actor ↔ DeviceAgent） ========================
+// 运行在资源节点上，由 Adapter 进程内嵌，实现 Actor 与本机 Device Agent 之间的本地控制通道。
+
+service LocalAgentService {
+  // 基础版：单条双向流，后续在 LocalAgentMessage 中扩展消息类型。
+  rpc LocalChannel(stream LocalAgentMessage) returns (stream LocalAgentMessage);
+}
+
+message LocalAgentMessage {
+  oneof payload {
+    LocalRegisterActor register_actor = 1;
+  }
+}
+
+// Actor 向本机 Device Agent 注册自身监听地址。
+message LocalRegisterActor {
+  string actor_addr = 1; // 虚拟地址（ActorAddr）
+}
+

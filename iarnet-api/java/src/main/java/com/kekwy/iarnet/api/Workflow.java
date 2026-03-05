@@ -195,6 +195,39 @@ public class Workflow {
 
     // ======== DefaultFlow ========
 
+    /**
+     * map2 组合函数的静态实现，避免捕获外部 DefaultFlow/Workflow 实例，
+     * 只持有 left/right/combiner 三个可序列化的函数引用。
+     */
+    private static final class Map2CombinedFunction<T, L, R, OUT> implements MapFunction<T, OUT> {
+
+        private final MapFunction<? super T, ? extends L> left;
+        private final FlatMapFunction<? super T, ? extends R> right;
+        private final com.kekwy.iarnet.api.function.CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner;
+
+        private Map2CombinedFunction(
+                MapFunction<? super T, ? extends L> left,
+                FlatMapFunction<? super T, ? extends R> right,
+                com.kekwy.iarnet.api.function.CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner) {
+            this.left = left;
+            this.right = right;
+            this.combiner = combiner;
+        }
+
+        @Override
+        public OUT apply(T value) {
+            L l = left.apply(value);
+            Iterable<? extends R> rightsIterable = right.apply(value);
+            java.util.List<R> rights = new java.util.ArrayList<>();
+            if (rightsIterable != null) {
+                for (R r : rightsIterable) {
+                    rights.add(r);
+                }
+            }
+            return combiner.apply(l, rights);
+        }
+    }
+
     private class DefaultFlow<T> implements Flow<T> {
 
         private final List<Node> precursors;
@@ -303,20 +336,7 @@ public class Workflow {
                 throw new IllegalArgumentException("left/right/combiner must not be null");
             }
 
-            MapFunction<T, OUT> combined = new MapFunction<>() {
-                @Override
-                public OUT apply(T value) {
-                    L l = left.apply(value);
-                    Iterable<? extends R> rightsIterable = right.apply(value);
-                    java.util.List<R> rights = new java.util.ArrayList<>();
-                    if (rightsIterable != null) {
-                        for (R r : rightsIterable) {
-                            rights.add(r);
-                        }
-                    }
-                    return combiner.apply(l, rights);
-                }
-            };
+            MapFunction<T, OUT> combined = new Map2CombinedFunction<>(left, right, combiner);
 
             return this.map(combined);
         }

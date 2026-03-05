@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package iarnet.api;
+
+// import "iarnet/ir/workflow.proto";
+
+option java_package = "com.kekwy.iarnet.proto.api";
+option java_multiple_files = true;
+
+service ApplicationService {
+  rpc submitJar(SubmitJarRequest) returns (SubmitJarResponse);
+}
+
+message SubmitJarRequest {
+  bytes content = 1;
+}
+
+message SubmitJarResponse {
+  string msg = 1;
+}

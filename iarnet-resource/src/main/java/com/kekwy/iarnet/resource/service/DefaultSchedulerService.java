@@ -14,7 +14,6 @@ import com.kekwy.iarnet.resource.model.ActorInstance;
 import com.kekwy.iarnet.resource.model.PhysicalWorkflowGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -35,10 +34,34 @@ public class DefaultSchedulerService implements SchedulerService {
     private static final Logger log = LoggerFactory.getLogger(DefaultSchedulerService.class);
 
     private static final String DEFAULT_HOST = "127.0.0.1";
-    private static final String ENV_ACTOR_IMAGE = "IARNET_ACTOR_IMAGE";
-    private static final String DEFAULT_ACTOR_IMAGE = "iarnet/actor:latest";
 
     private final AdapterRegistry adapterRegistry;
+
+    private static final class Placement {
+        final String actorId;
+        final String actorAddr;
+        final String nodeId;
+        final int replicaIndex;
+        final AdapterInfo adapter;
+        final Resource resourceRequest;
+        final Path artifactPath;
+        final String artifactUrl;
+        final Lang lang;
+
+        Placement(String actorId, String actorAddr, String nodeId, int replicaIndex,
+                  AdapterInfo adapter, Resource resourceRequest,
+                  Path artifactPath, String artifactUrl, Lang lang) {
+            this.actorId = actorId;
+            this.actorAddr = actorAddr;
+            this.nodeId = nodeId;
+            this.replicaIndex = replicaIndex;
+            this.adapter = adapter;
+            this.resourceRequest = resourceRequest;
+            this.artifactPath = artifactPath;
+            this.artifactUrl = artifactUrl;
+            this.lang = lang;
+        }
+    }
 
     public DefaultSchedulerService(AdapterRegistry adapterRegistry) {
         this.adapterRegistry = adapterRegistry;
@@ -48,20 +71,89 @@ public class DefaultSchedulerService implements SchedulerService {
     public PhysicalWorkflowGraph schedule(WorkflowGraph graph, Map<String, Path> nodeArtifacts,
                                           Map<String, String> nodeArtifactUrls) {
         String workflowId = graph.getWorkflowId();
+        String applicationId = graph.getApplicationId();
         log.info("开始调度工作流: workflowId={}, nodes={}", workflowId, graph.getNodesCount());
 
-        List<ActorDeployment> deployments = new ArrayList<>();
         Map<String, String> urls = nodeArtifactUrls != null ? nodeArtifactUrls : Map.of();
 
+        // 1) 预计算每个节点的副本数与 Node 映射
+        Map<String, Integer> replicasByNodeId = new HashMap<>();
+        Map<String, Node> nodeById = new HashMap<>();
         for (Node node : graph.getNodesList()) {
-            ActorDeployment deployment = scheduleNode(node, nodeArtifacts.get(node.getId()),
-                    urls.getOrDefault(node.getId(), ""));
-            deployments.add(deployment);
+            nodeById.put(node.getId(), node);
+            replicasByNodeId.put(node.getId(), determineReplicas(node));
+        }
+
+        // 2) Phase 1: Placement（只选设备和生成 ActorAddr，不真正部署）
+        List<Placement> placements = new ArrayList<>();
+        Map<String, List<Placement>> placementsByNode = new HashMap<>();
+        Map<String, String> actorAddrByKey = new HashMap<>(); // nodeId#replicaIndex -> actorAddr
+
+        for (Node node : graph.getNodesList()) {
+            String nodeId = node.getId();
+            int replicas = replicasByNodeId.get(nodeId);
+            for (int replicaIndex = 0; replicaIndex < replicas; replicaIndex++) {
+                String actorId = "actor-" + nodeId + "-" + replicaIndex;
+                String actorAddr = buildActorAddr(applicationId, workflowId, nodeId, replicaIndex);
+
+                Resource resourceRequest = extractResourceRequest(node);
+                AdapterInfo adapter = selectAdapter(resourceRequest);
+                Path artifactPath = nodeArtifacts.get(nodeId);
+                String artifactUrl = urls.getOrDefault(nodeId, "");
+                Lang lang = resolveNodeLang(node);
+
+                Placement placement = new Placement(
+                        actorId, actorAddr, nodeId, replicaIndex,
+                        adapter, resourceRequest, artifactPath, artifactUrl, lang);
+                placements.add(placement);
+                placementsByNode.computeIfAbsent(nodeId, k -> new ArrayList<>()).add(placement);
+                actorAddrByKey.put(actorKey(nodeId, replicaIndex), actorAddr);
+            }
+        }
+
+        // 3) 基于 Edge 构建每个 Actor 的上游/下游 ActorAddr 列表
+        Map<String, List<String>> upstreamByActorAddr = new HashMap<>();
+        Map<String, List<String>> downstreamByActorAddr = new HashMap<>();
+        for (Edge edge : graph.getEdgesList()) {
+            String srcNodeId = edge.getFromNodeId();
+            String dstNodeId = edge.getToNodeId();
+            int srcReplicas = replicasByNodeId.getOrDefault(srcNodeId, 1);
+            int dstReplicas = replicasByNodeId.getOrDefault(dstNodeId, 1);
+            for (int i = 0; i < srcReplicas; i++) {
+                String srcAddr = actorAddrByKey.get(actorKey(srcNodeId, i));
+                int j = i % dstReplicas;
+                String dstAddr = actorAddrByKey.get(actorKey(dstNodeId, j));
+                if (srcAddr == null || dstAddr == null) {
+                    continue;
+                }
+                downstreamByActorAddr
+                        .computeIfAbsent(srcAddr, k -> new ArrayList<>())
+                        .add(dstAddr);
+                upstreamByActorAddr
+                        .computeIfAbsent(dstAddr, k -> new ArrayList<>())
+                        .add(srcAddr);
+            }
+        }
+
+        // 4) Phase 2: 按 Placement 真正部署，并构建 PhysicalWorkflowGraph
+        List<ActorDeployment> deployments = new ArrayList<>();
+
+        for (Node node : graph.getNodesList()) {
+            String nodeId = node.getId();
+            List<Placement> nodePlacements = placementsByNode.getOrDefault(nodeId, List.of());
+            List<ActorInstance> instances = new ArrayList<>();
+            for (Placement p : nodePlacements) {
+                List<String> upstream = upstreamByActorAddr.getOrDefault(p.actorAddr, List.of());
+                List<String> downstream = downstreamByActorAddr.getOrDefault(p.actorAddr, List.of());
+                ActorInstance actor = deployActor(applicationId, workflowId, node, p, upstream, downstream);
+                instances.add(actor);
+            }
+            deployments.add(new ActorDeployment(nodeId, node.getKind(), instances));
         }
 
         PhysicalWorkflowGraph physicalGraph = new PhysicalWorkflowGraph(
                 workflowId,
-                graph.getApplicationId(),
+                applicationId,
                 deployments,
                 graph.getEdgesList()
         );
@@ -72,55 +164,59 @@ public class DefaultSchedulerService implements SchedulerService {
         return physicalGraph;
     }
 
-    private ActorDeployment scheduleNode(Node node, Path artifactPath, String artifactUrl) {
-        int replicas = determineReplicas(node);
-
-        log.info("调度节点: id={}, kind={}, replicas={}, artifact={}, hasUrl={}",
-                node.getId(), node.getKind(), replicas,
-                artifactPath != null ? artifactPath : "<none>", !artifactUrl.isBlank());
-
-        List<ActorInstance> instances = new ArrayList<>();
-        for (int i = 0; i < replicas; i++) {
-            ActorInstance actor = deployActor(node, i, artifactPath, artifactUrl);
-            instances.add(actor);
-        }
-
-        return new ActorDeployment(node.getId(), node.getKind(), instances);
+    private String buildActorAddr(String applicationId, String workflowId, String nodeId, int replicaIndex) {
+        return "actor://" + applicationId + "/" + workflowId + "/" + nodeId + "/" + replicaIndex;
     }
 
-    @Value("#{${iarnet.actor-image:{}}}")
-    private Map<Lang, String> langToImageMap;
+    private String actorKey(String nodeId, int replicaIndex) {
+        return nodeId + "#" + replicaIndex;
+    }
 
+    private Lang resolveNodeLang(Node node) {
+        if (node.getKind() == NodeKind.OPERATOR
+                && node.hasOperatorDetail()
+                && node.getOperatorDetail().hasFunction()) {
+            return node.getOperatorDetail().getFunction().getLang();
+        }
+        // Source / Sink 或未设置语言时，默认使用 Java
+        return Lang.LANG_JAVA;
+    }
 
     /**
-     * 部署单个 Actor 实例。
-     * <p>
-     * TODO: 实际实现应在此处：
-     * <ul>
-     *   <li>选择目标设备（基于资源需求和设备可用资源）</li>
-     *   <li>创建容器/进程，注入 artifact</li>
-     *   <li>启动 Actor 并获取通信地址</li>
-     * </ul>
+     * 部署单个 Actor 实例（Phase 2）。
      */
-    private ActorInstance deployActor(Node node, int replicaIndex, Path artifactPath, String artifactUrl) {
-        String actorId = "actor-" + node.getId() + "-" + replicaIndex;
+    private ActorInstance deployActor(String applicationId,
+                                      String workflowId,
+                                      Node node,
+                                      Placement placement,
+                                      List<String> upstreamAddrs,
+                                      List<String> downstreamAddrs) {
+        String actorId = placement.actorId;
+        String actorAddr = placement.actorAddr;
+        AdapterInfo adapter = placement.adapter;
 
-        // 1. 解析该节点的资源需求
-        Resource resourceRequest = extractResourceRequest(node);
-
-        // 2. 选择一个在线且资源满足需求的 Adapter
-        AdapterInfo adapter = selectAdapter(resourceRequest); // TODO: 优化选择算法，解决不一致的问题
-
-        // 3. 构造部署请求并通过 AdapterRegistry 发送命令
-        String artifactId = artifactPath != null ? artifactPath.getFileName().toString() : "";
-        String image = resolveActorImage();
+        // 1. 构造部署请求并通过 AdapterRegistry 发送命令
+        String artifactId = placement.artifactPath != null
+                ? placement.artifactPath.getFileName().toString()
+                : "";
 
         Map<String, String> env = new HashMap<>();
+        env.put("IARNET_APPLICATION_ID", applicationId);
+        env.put("IARNET_WORKFLOW_ID", workflowId);
         env.put("IARNET_WORKFLOW_NODE_ID", node.getId());
         env.put("IARNET_ACTOR_ID", actorId);
+        env.put("IARNET_ACTOR_ADDR", actorAddr);
+        env.put("IARNET_DEVICE_ID", adapter.getAdapterId());
+        if (!upstreamAddrs.isEmpty()) {
+            env.put("IARNET_UPSTREAMS", String.join(",", upstreamAddrs));
+        }
+        if (!downstreamAddrs.isEmpty()) {
+            env.put("IARNET_SUCCESSORS", String.join(",", downstreamAddrs));
+        }
         // 无 artifact_url 时用本地路径；有 artifact_url 时由 Adapter 拉取后注入容器内路径
-        if (artifactPath != null && (artifactUrl == null || artifactUrl.isBlank())) {
-            env.put("IARNET_ARTIFACT_PATH", artifactPath.toString());
+        if (placement.artifactPath != null
+                && (placement.artifactUrl == null || placement.artifactUrl.isBlank())) {
+            env.put("IARNET_ARTIFACT_PATH", placement.artifactPath.toString());
         }
 
         Map<String, String> labels = new HashMap<>();
@@ -130,16 +226,18 @@ public class DefaultSchedulerService implements SchedulerService {
         DeployInstanceRequest.Builder reqBuilder = DeployInstanceRequest.newBuilder()
                 .setInstanceId(actorId)
                 .setArtifactId(artifactId)
-                .setImage(image);
-        if (artifactUrl != null && !artifactUrl.isBlank()) {
-            reqBuilder.setArtifactUrl(artifactUrl);
+                .setResourceRequest(placement.resourceRequest)
+                .setLang(placement.lang)
+                .addAllUpstreamActorAddrs(upstreamAddrs)
+                .addAllDownstreamActorAddrs(downstreamAddrs)
+                .putAllEnvVars(env)
+                .putAllLabels(labels);
+
+        if (placement.artifactUrl != null && !placement.artifactUrl.isBlank()) {
+            reqBuilder.setArtifactUrl(placement.artifactUrl);
         }
 
-        DeployInstanceRequest deployReq = reqBuilder
-                .setResourceRequest(resourceRequest)
-                .putAllEnvVars(env)
-                .putAllLabels(labels)
-                .build();
+        DeployInstanceRequest deployReq = reqBuilder.build();
 
         Command.Builder commandBuilder = Command.newBuilder()
                 .setDeployInstance(deployReq);
@@ -257,17 +355,6 @@ public class DefaultSchedulerService implements SchedulerService {
             log.warn("解析内存字符串失败: '{}'", memory, e);
             return 0L;
         }
-    }
-
-    /**
-     * 解析 Actor 运行镜像；优先从环境变量 {@code IARNET_ACTOR_IMAGE} 读取。
-     */
-    private String resolveActorImage() {
-        String fromEnv = System.getenv(ENV_ACTOR_IMAGE);
-        if (fromEnv != null && !fromEnv.isBlank()) {
-            return fromEnv;
-        }
-        return DEFAULT_ACTOR_IMAGE;
     }
 
     private int determineReplicas(Node node) {

@@ -17,6 +17,8 @@ spring:
 grpc:
   server:
     port: 9090
+    # 允许最大入站消息大小（字节），默认 4MB；这里调大到 64MB
+    max-inbound-message-size: 67108864
 
 iarnet:
   supported-lang:
