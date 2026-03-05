@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.adapter.registry;
 
+import com.kekwy.iarnet.adapter.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.adapter.engine.AdapterEngine;
 import com.kekwy.iarnet.proto.adapter.*;
 import io.grpc.stub.StreamObserver;
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +27,7 @@ public class CommandChannelHandler implements StreamObserver<Command> {
     private static final Logger log = LoggerFactory.getLogger(CommandChannelHandler.class);
 
     private final AdapterEngine engine;
+    private final ArtifactFetcher artifactFetcher;
     private final StreamObserver<CommandResponse> responseObserver;
     private final Runnable onDisconnect;
 
@@ -32,9 +35,11 @@ public class CommandChannelHandler implements StreamObserver<Command> {
     private final Map<String, ArtifactTransferContext> artifactBuffers = new ConcurrentHashMap<>();
 
     public CommandChannelHandler(AdapterEngine engine,
+                                 ArtifactFetcher artifactFetcher,
                                  StreamObserver<CommandResponse> responseObserver,
                                  Runnable onDisconnect) {
         this.engine = engine;
+        this.artifactFetcher = artifactFetcher;
         this.responseObserver = responseObserver;
         this.onDisconnect = onDisconnect;
     }
@@ -83,10 +88,7 @@ public class CommandChannelHandler implements StreamObserver<Command> {
 
             case TRANSFER_ARTIFACT -> handleTransferArtifact(rid, command.getTransferArtifact());
 
-            case DEPLOY_INSTANCE -> CommandResponse.newBuilder()
-                    .setRequestId(rid)
-                    .setDeployInstance(engine.deployInstance(command.getDeployInstance()))
-                    .build();
+            case DEPLOY_INSTANCE -> handleDeployInstance(rid, command.getDeployInstance());
 
             case STOP_INSTANCE -> CommandResponse.newBuilder()
                     .setRequestId(rid)
@@ -124,6 +126,22 @@ public class CommandChannelHandler implements StreamObserver<Command> {
                         .build();
             }
         };
+    }
+
+    /**
+     * 若请求带 artifact_url 则先拉取到本地（按 artifact_id 去重），再部署。
+     */
+    private CommandResponse handleDeployInstance(String requestId, DeployInstanceRequest request) throws IOException {
+        Path artifactPath = null;
+        if (!request.getArtifactUrl().isBlank()
+                && !request.getArtifactId().isBlank()) {
+            artifactPath = artifactFetcher.fetch(request.getArtifactId(), request.getArtifactUrl());
+        }
+        DeployInstanceResponse response = engine.deployInstance(request, artifactPath);
+        return CommandResponse.newBuilder()
+                .setRequestId(requestId)
+                .setDeployInstance(response)
+                .build();
     }
 
     /**

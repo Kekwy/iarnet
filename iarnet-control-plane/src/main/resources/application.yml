@@ -31,3 +31,12 @@ iarnet:
   actor-image:
     LANG_JAVA: iarnet-actor-java:latest
     LANG_PYTHON: iarnet-actor-python:latest
+  # OSS（MinIO）配置，用于 artifact 存储与拉取；enabled=false 时不创建 MinIO 客户端
+  oss:
+    enabled: true
+    endpoint: http://localhost:9002
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: iarnet-artifacts
+    # 预签名 URL 有效期（秒），Adapter 拉取 artifact 使用
+    presigned-expiry-seconds: 3600

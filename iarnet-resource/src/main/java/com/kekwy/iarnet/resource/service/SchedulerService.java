@@ -1,6 +1,5 @@
 package com.kekwy.iarnet.resource.service;
 
-import com.kekwy.iarnet.proto.ir.Node;
 import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 import com.kekwy.iarnet.resource.model.PhysicalWorkflowGraph;
 
@@ -16,8 +15,11 @@ public interface SchedulerService {
     /**
      * 调度并部署工作流中的所有节点。
      *
-     * @param nodeArtifacts nodeId → artifact 文件路径的映射（仅 Operator 节点有值）
+     * @param graph           工作流图
+     * @param nodeArtifacts   nodeId → artifact 本地路径（仅 Operator 节点有值）
+     * @param nodeArtifactUrls nodeId → artifact 拉取 URL（OSS 预签名等）；可为空，有 URL 时写入部署请求供 Adapter 拉取
      * @return 物理工作流 IR，包含每个节点的 Actor 部署信息
      */
-    PhysicalWorkflowGraph schedule(Node node, Map<String, Path> nodeArtifacts);
+    PhysicalWorkflowGraph schedule(WorkflowGraph graph, Map<String, Path> nodeArtifacts,
+                                   Map<String, String> nodeArtifactUrls);
 }

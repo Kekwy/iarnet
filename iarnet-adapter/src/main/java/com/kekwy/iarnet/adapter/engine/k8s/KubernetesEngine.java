@@ -98,13 +98,14 @@ public class KubernetesEngine implements AdapterEngine {
     }
 
     @Override
-    public DeployInstanceResponse deployInstance(DeployInstanceRequest request) {
+    public DeployInstanceResponse deployInstance(DeployInstanceRequest request, java.nio.file.Path artifactLocalPath) {
         String instanceId = request.getInstanceId();
         String podName = sanitizePodName(instanceId);
-        log.info("部署 K8s Pod: instanceId={}, podName={}, image={}", instanceId, podName, request.getImage());
+        log.info("部署 K8s Pod: instanceId={}, podName={}, image={}, hasArtifact={}",
+                instanceId, podName, request.getImage(), artifactLocalPath != null);
 
         try {
-            Pod pod = buildPod(podName, request);
+            Pod pod = buildPod(podName, request, artifactLocalPath);
             Pod created = kubeClient.pods().inNamespace(namespace).resource(pod).create();
 
             instancePods.put(instanceId, created.getMetadata().getName());
@@ -246,7 +247,9 @@ public class KubernetesEngine implements AdapterEngine {
 
     // ======================== 内部方法 ========================
 
-    private Pod buildPod(String podName, DeployInstanceRequest request) {
+    private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
+
+    private Pod buildPod(String podName, DeployInstanceRequest request, java.nio.file.Path artifactLocalPath) {
         var resource = request.getResourceRequest();
 
         Map<String, Quantity> resourceRequests = new HashMap<>();
@@ -269,10 +272,51 @@ public class KubernetesEngine implements AdapterEngine {
 
         List<EnvVar> envVars = new ArrayList<>();
         request.getEnvVarsMap().forEach((k, v) -> envVars.add(new EnvVarBuilder().withName(k).withValue(v).build()));
+        if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
+            String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
+            envVars.add(new EnvVarBuilder().withName("IARNET_ARTIFACT_PATH").withValue(inContainerPath).build());
+        }
 
         Map<String, String> labels = new HashMap<>(request.getLabelsMap());
         labels.put("iarnet.managed", "true");
         labels.put("iarnet.instance-id", request.getInstanceId());
+
+        boolean hasArtifact = artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath);
+
+        if (hasArtifact) {
+            return new PodBuilder()
+                    .withNewMetadata()
+                        .withName(podName)
+                        .withNamespace(namespace)
+                        .withLabels(labels)
+                    .endMetadata()
+                    .withNewSpec()
+                        .addNewVolume()
+                            .withName("artifact")
+                            .withNewHostPath()
+                                .withPath(artifactLocalPath.getParent().toAbsolutePath().toString())
+                                .withType("Directory")
+                            .endHostPath()
+                        .endVolume()
+                        .addNewContainer()
+                            .withName("main")
+                            .withImage(request.getImage())
+                            .withImagePullPolicy("IfNotPresent")
+                            .withEnv(envVars)
+                            .addNewVolumeMount()
+                                .withName("artifact")
+                                .withMountPath(CONTAINER_ARTIFACT_DIR)
+                                .withReadOnly(true)
+                            .endVolumeMount()
+                            .withNewResources()
+                                .withRequests(resourceRequests)
+                                .withLimits(resourceLimits)
+                            .endResources()
+                        .endContainer()
+                        .withRestartPolicy("Never")
+                    .endSpec()
+                    .build();
+        }
 
         return new PodBuilder()
                 .withNewMetadata()

@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,15 +119,21 @@ public class DockerEngine implements AdapterEngine {
                 .build();
     }
 
+    private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
+
     @Override
-    public DeployInstanceResponse deployInstance(DeployInstanceRequest request) {
+    public DeployInstanceResponse deployInstance(DeployInstanceRequest request, Path artifactLocalPath) {
         String instanceId = request.getInstanceId();
-        log.info("部署 Docker 实例: instanceId={}, artifactId={}, image={}",
-                instanceId, request.getArtifactId(), request.getImage());
+        log.info("部署 Docker 实例: instanceId={}, artifactId={}, image={}, hasArtifact={}",
+                instanceId, request.getArtifactId(), request.getImage(), artifactLocalPath != null);
 
         try {
             List<String> envList = new ArrayList<>();
             request.getEnvVarsMap().forEach((k, v) -> envList.add(k + "=" + v));
+            if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
+                String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
+                envList.add("IARNET_ARTIFACT_PATH=" + inContainerPath);
+            }
 
             Map<String, String> labels = new HashMap<>(request.getLabelsMap());
             labels.put("iarnet.managed", "true");
@@ -136,7 +143,7 @@ public class DockerEngine implements AdapterEngine {
                     .withName(instanceId)
                     .withEnv(envList)
                     .withLabels(labels)
-                    .withHostConfig(buildHostConfig(request));
+                    .withHostConfig(buildHostConfig(request, artifactLocalPath));
 
             CreateContainerResponse container = createCmd.exec();
             String containerId = container.getId();
@@ -282,16 +289,19 @@ public class DockerEngine implements AdapterEngine {
 
     // ======================== 内部方法 ========================
 
-    private HostConfig buildHostConfig(DeployInstanceRequest request) {
+    private HostConfig buildHostConfig(DeployInstanceRequest request, Path artifactLocalPath) {
         var resource = request.getResourceRequest();
         HostConfig hostConfig = HostConfig.newHostConfig();
 
         if (resource.getCpu() > 0) {
-            // CPU: proto 是 double cores, Docker 需要 nanoCPUs
             hostConfig.withNanoCPUs((long) (resource.getCpu() * 1_000_000_000));
         }
         if (resource.getMemory() != null && !resource.getMemory().isEmpty()) {
             hostConfig.withMemory(parseMemory(resource.getMemory()));
+        }
+        if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
+            Path hostDir = artifactLocalPath.getParent();
+            hostConfig.withBinds(new Bind(hostDir.toAbsolutePath().toString(), new Volume(CONTAINER_ARTIFACT_DIR)));
         }
 
         return hostConfig;

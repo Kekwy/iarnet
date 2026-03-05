@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.application.executor;
 
+import com.kekwy.iarnet.application.artifact.ArtifactUrlProvider;
 import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.service.WorkspaceService;
 import com.kekwy.iarnet.model.ID;
@@ -12,13 +13,13 @@ import com.kekwy.iarnet.resource.service.SchedulerService;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -30,13 +31,16 @@ public class DefaultExecutor implements Executor {
 
     private final WorkspaceService workspaceService;
     private final SchedulerService schedulerService;
+    private final ArtifactUrlProvider artifactUrlProvider;
     private final BlockingQueue<WorkflowGraph> queue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
     private Thread workerThread;
 
-    public DefaultExecutor(WorkspaceService workspaceService, SchedulerService schedulerService) {
+    public DefaultExecutor(WorkspaceService workspaceService, SchedulerService schedulerService,
+                           @Autowired(required = false) ArtifactUrlProvider artifactUrlProvider) {
         this.workspaceService = workspaceService;
         this.schedulerService = schedulerService;
+        this.artifactUrlProvider = artifactUrlProvider;
     }
 
     @Override
@@ -95,32 +99,28 @@ public class DefaultExecutor implements Executor {
             visitor.dispatch(node);
         }
 
+        //TODO: 测试 python 打包（论文中的目标检测示例要使用 python 来编写，目标符合主流应用场景）
         Map<String, Path> nodeArtifacts = visitor.getNodeArtifacts();
         log.info("Artifact 准备完成: workflowId={}, 已解析 {} 个节点 artifact",
                 workflowId, nodeArtifacts.size());
 
-        // 3. 提交给调度服务，部署 Actor 并获取物理 IR
-
-        log.info("开始调度工作流: workflowId={}, nodes={}", workflowId, graph.getNodesCount());
-
-        List<ActorDeployment> deployments = new ArrayList<>();
-
-        for (Node node : graph.getNodesList()) {
-            ActorDeployment deployment =schedulerService.schedule(node, nodeArtifacts.get(node.getId()));
-            deployments.add(deployment);
+        // 若有 OSS，上传 artifact 并得到拉取 URL，供部署请求下发给 Adapter
+        Map<String, String> nodeArtifactUrls = new HashMap<>();
+        if (artifactUrlProvider != null) {
+            for (Map.Entry<String, Path> e : nodeArtifacts.entrySet()) {
+                artifactUrlProvider.uploadAndGetUrl(e.getKey(), e.getValue())
+                        .ifPresent(url -> nodeArtifactUrls.put(e.getKey(), url));
+            }
+            log.info("Artifact URL 已生成: workflowId={}, urls={}", workflowId, nodeArtifactUrls.size());
         }
 
-        PhysicalWorkflowGraph physicalGraph = new PhysicalWorkflowGraph(
-                workflowId,
-                graph.getApplicationId(),
-                deployments,
-                graph.getEdgesList()
-        );
+        // 3. 提交给调度服务，部署 Actor 并获取物理 IR
+        log.info("开始调度工作流: workflowId={}, nodes={}", workflowId, graph.getNodesCount());
+
+        PhysicalWorkflowGraph physicalGraph = schedulerService.schedule(graph, nodeArtifacts, nodeArtifactUrls);
 
         log.info("调度完成: workflowId={}, 共部署 {} 个 Actor",
                 workflowId, physicalGraph.totalActorCount());
-
-
 
         log.info("物理 IR 生成完成: workflowId={}, 共 {} 个节点, {} 个 Actor",
                 workflowId, physicalGraph.deployments().size(), physicalGraph.totalActorCount());

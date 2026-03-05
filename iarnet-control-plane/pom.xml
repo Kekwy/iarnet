@@ -32,6 +32,13 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- ========== MinIO / OSS ========== -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.11</version>
+        </dependency>
+
         <!-- ========== gRPC ========== -->
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>

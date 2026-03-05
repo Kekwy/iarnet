@@ -4,6 +4,7 @@ import com.kekwy.iarnet.proto.adapter.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 /**
  * 资源适配器核心 SPI 接口。
@@ -22,8 +23,18 @@ public interface AdapterEngine extends AutoCloseable {
     /** 接收 artifact 流并存储到本地，返回存储路径 */
     TransferArtifactResponse transferArtifact(String artifactId, String fileName, InputStream data) throws IOException;
 
-    /** 部署一个实例 */
-    DeployInstanceResponse deployInstance(DeployInstanceRequest request);
+    /**
+     * 部署一个实例。
+     *
+     * @param request           部署请求（可含 artifact_url，由调用方先拉取后再传 artifactLocalPath）
+     * @param artifactLocalPath 已拉取到本地的 artifact 文件路径；为 null 表示无 artifact 或由其他方式提供
+     */
+    DeployInstanceResponse deployInstance(DeployInstanceRequest request, Path artifactLocalPath);
+
+    /** 部署一个实例（无本地 artifact，兼容旧调用） */
+    default DeployInstanceResponse deployInstance(DeployInstanceRequest request) {
+        return deployInstance(request, null);
+    }
 
     /** 停止一个实例 */
     StopInstanceResponse stopInstance(String instanceId);

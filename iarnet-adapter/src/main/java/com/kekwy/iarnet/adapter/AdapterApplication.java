@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.adapter;
 
+import com.kekwy.iarnet.adapter.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.adapter.artifact.ArtifactStore;
 import com.kekwy.iarnet.adapter.config.AdapterProperties;
 import com.kekwy.iarnet.adapter.engine.AdapterEngine;
@@ -54,10 +55,11 @@ public class AdapterApplication {
                         .build();
 
         engine = createEngine(props, totalResource, artifactStore);
+        ArtifactFetcher artifactFetcher = new ArtifactFetcher(artifactStore);
 
         var cp = props.getControlPlane();
         registryClient = new RegistryClient(
-                props.getName(), props.getDescription(), engine,
+                props.getName(), props.getDescription(), engine, artifactFetcher,
                 props.getTags(),
                 cp.getHost(), cp.getPort());
         registryClient.start();

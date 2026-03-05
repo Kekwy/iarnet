@@ -1,14 +1,14 @@
 # MinIO 本地 OSS 部署
 # 使用: 在 deploy 目录下执行 docker compose up -d
-# API: http://localhost:9000  控制台: http://localhost:9001
+# API: http://localhost:9002  控制台: http://localhost:9003
 
 services:
   minio:
     image: minio/minio:latest
     container_name: iarnet-minio
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9002:9000"
+      - "9003:9001"
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin

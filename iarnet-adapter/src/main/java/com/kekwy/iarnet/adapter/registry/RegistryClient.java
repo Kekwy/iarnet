@@ -33,6 +33,7 @@ public class RegistryClient implements AutoCloseable {
     private final String adapterName;
     private final String description;
     private final AdapterEngine engine;
+    private final com.kekwy.iarnet.adapter.artifact.ArtifactFetcher artifactFetcher;
     private final List<String> tags;
 
     private final ManagedChannel channel;
@@ -45,10 +46,12 @@ public class RegistryClient implements AutoCloseable {
     private volatile boolean closed = false;
 
     public RegistryClient(String adapterName, String description, AdapterEngine engine,
+                          com.kekwy.iarnet.adapter.artifact.ArtifactFetcher artifactFetcher,
                           List<String> tags, String cpHost, int cpPort) {
         this.adapterName = adapterName;
         this.description = description != null ? description : "";
         this.engine = engine;
+        this.artifactFetcher = artifactFetcher;
         this.tags = tags != null ? tags : List.of();
 
         this.channel = ManagedChannelBuilder
@@ -133,7 +136,7 @@ public class RegistryClient implements AutoCloseable {
         DelegatingObserver<CommandResponse> proxy = new DelegatingObserver<>();
 
         StreamObserver<Command> commandReceiver = new CommandChannelHandler(
-                engine, proxy, this::onChannelDisconnect);
+                engine, artifactFetcher, proxy, this::onChannelDisconnect);
 
         // 通过 gRPC metadata 传递 adapter_id，供 control-plane 识别本 Adapter
         Metadata headers = new Metadata();

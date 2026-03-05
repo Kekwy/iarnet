@@ -45,14 +45,17 @@ public class DefaultSchedulerService implements SchedulerService {
     }
 
     @Override
-    public PhysicalWorkflowGraph schedule(WorkflowGraph graph, Map<String, Path> nodeArtifacts) {
+    public PhysicalWorkflowGraph schedule(WorkflowGraph graph, Map<String, Path> nodeArtifacts,
+                                          Map<String, String> nodeArtifactUrls) {
         String workflowId = graph.getWorkflowId();
         log.info("开始调度工作流: workflowId={}, nodes={}", workflowId, graph.getNodesCount());
 
         List<ActorDeployment> deployments = new ArrayList<>();
+        Map<String, String> urls = nodeArtifactUrls != null ? nodeArtifactUrls : Map.of();
 
         for (Node node : graph.getNodesList()) {
-            ActorDeployment deployment = scheduleNode(node, nodeArtifacts.get(node.getId()));
+            ActorDeployment deployment = scheduleNode(node, nodeArtifacts.get(node.getId()),
+                    urls.getOrDefault(node.getId(), ""));
             deployments.add(deployment);
         }
 
@@ -69,16 +72,16 @@ public class DefaultSchedulerService implements SchedulerService {
         return physicalGraph;
     }
 
-    private ActorDeployment scheduleNode(Node node, Path artifactPath) {
+    private ActorDeployment scheduleNode(Node node, Path artifactPath, String artifactUrl) {
         int replicas = determineReplicas(node);
 
-        log.info("调度节点: id={}, kind={}, replicas={}, artifact={}",
+        log.info("调度节点: id={}, kind={}, replicas={}, artifact={}, hasUrl={}",
                 node.getId(), node.getKind(), replicas,
-                artifactPath != null ? artifactPath : "<none>");
+                artifactPath != null ? artifactPath : "<none>", !artifactUrl.isBlank());
 
         List<ActorInstance> instances = new ArrayList<>();
         for (int i = 0; i < replicas; i++) {
-            ActorInstance actor = deployActor(node, i, artifactPath);
+            ActorInstance actor = deployActor(node, i, artifactPath, artifactUrl);
             instances.add(actor);
         }
 
@@ -99,10 +102,8 @@ public class DefaultSchedulerService implements SchedulerService {
      *   <li>启动 Actor 并获取通信地址</li>
      * </ul>
      */
-    private ActorInstance deployActor(Node node, int replicaIndex, Path artifactPath) {
+    private ActorInstance deployActor(Node node, int replicaIndex, Path artifactPath, String artifactUrl) {
         String actorId = "actor-" + node.getId() + "-" + replicaIndex;
-
-
 
         // 1. 解析该节点的资源需求
         Resource resourceRequest = extractResourceRequest(node);
@@ -117,7 +118,8 @@ public class DefaultSchedulerService implements SchedulerService {
         Map<String, String> env = new HashMap<>();
         env.put("IARNET_WORKFLOW_NODE_ID", node.getId());
         env.put("IARNET_ACTOR_ID", actorId);
-        if (artifactPath != null) {
+        // 无 artifact_url 时用本地路径；有 artifact_url 时由 Adapter 拉取后注入容器内路径
+        if (artifactPath != null && (artifactUrl == null || artifactUrl.isBlank())) {
             env.put("IARNET_ARTIFACT_PATH", artifactPath.toString());
         }
 
@@ -125,10 +127,15 @@ public class DefaultSchedulerService implements SchedulerService {
         labels.put("iarnet.workflow_node_id", node.getId());
         labels.put("iarnet.actor_id", actorId);
 
-        DeployInstanceRequest deployReq = DeployInstanceRequest.newBuilder()
+        DeployInstanceRequest.Builder reqBuilder = DeployInstanceRequest.newBuilder()
                 .setInstanceId(actorId)
                 .setArtifactId(artifactId)
-                .setImage(image)
+                .setImage(image);
+        if (artifactUrl != null && !artifactUrl.isBlank()) {
+            reqBuilder.setArtifactUrl(artifactUrl);
+        }
+
+        DeployInstanceRequest deployReq = reqBuilder
                 .setResourceRequest(resourceRequest)
                 .putAllEnvVars(env)
                 .putAllLabels(labels)

@@ -1,6 +1,7 @@
 package com.kekwy.iarnet;
 
 import com.kekwy.iarnet.config.GrpcServerProperties;
+import com.kekwy.iarnet.config.OssProperties;
 import com.kekwy.iarnet.config.SupportedLangProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-@EnableConfigurationProperties({SupportedLangProperties.class, GrpcServerProperties.class})
+@EnableConfigurationProperties({SupportedLangProperties.class, GrpcServerProperties.class, OssProperties.class})
 public class MainApplication {
     public static void main(String[] args) {
         org.springframework.boot.SpringApplication.run(MainApplication.class, args);
