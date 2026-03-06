@@ -5,9 +5,7 @@ import com.kekwy.iarnet.proto.ir.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -68,11 +66,12 @@ public final class FunctionDescriptorLoader {
             return null;
         }
 
+        String artifactPath = resolveArtifactPath(fd);
+
         if (fd.getSerializedFunction() != null && !fd.getSerializedFunction().isEmpty()) {
-            return loadFromSerializedFunction(fd.getSerializedFunction().toByteArray());
+            return loadFromSerializedFunction(fd.getSerializedFunction().toByteArray(), artifactPath);
         }
 
-        String artifactPath = fd.getArtifactPath();
         String identifier = fd.getFunctionIdentifier();
         if (artifactPath == null || artifactPath.isBlank() || identifier == null || identifier.isBlank()) {
             log.warn("artifact_path 或 function_identifier 为空，无法从 JAR 加载");
@@ -83,11 +82,40 @@ public final class FunctionDescriptorLoader {
     }
 
     /**
-     * 从 serialized_function 字节反序列化得到对象，查找单参方法后包装为 Handler。
+     * 解析容器内可用的 artifact 路径：
+     * 1) 优先使用 IARNET_ARTIFACT_PATH（Adapter 注入的容器内 JAR 路径）；
+     * 2) 其次回退到 IARNET_ACTOR_JAR（手动运行 Actor 时可设置）。
+     * <p>
+     * 注意：fd.getArtifactPath() 是控制平面侧的缓存路径，在容器内不可用，不使用。
      */
-    private static JavaInvokeHandler loadFromSerializedFunction(byte[] serialized) {
-        try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(serialized))) {
+    private static String resolveArtifactPath(FunctionDescriptor fd) {
+        String envArtifact = System.getenv("IARNET_ARTIFACT_PATH");
+        if (envArtifact != null && !envArtifact.isBlank()) {
+            return envArtifact;
+        }
+        String envJar = System.getenv(UserJarLoader.ENV_JAR);
+        if (envJar != null && !envJar.isBlank()) {
+            return envJar;
+        }
+        return null;
+    }
+
+    /**
+     * 从 serialized_function 字节反序列化得到对象，查找单参方法后包装为 Handler。
+     * 若提供了 artifactPath，则使用包含用户 JAR 的 ClassLoader 进行反序列化，
+     * 以解析 lambda 捕获的定义类。
+     */
+    private static JavaInvokeHandler loadFromSerializedFunction(byte[] serialized, String artifactPath) {
+        URLClassLoader jarLoader = null;
+        try {
+            jarLoader = buildJarClassLoader(artifactPath);
+            ObjectInputStream ois = jarLoader != null
+                    ? new ClassLoaderObjectInputStream(new ByteArrayInputStream(serialized), jarLoader)
+                    : new ObjectInputStream(new ByteArrayInputStream(serialized));
+
             Object udf = ois.readObject();
+            ois.close();
+
             Method m = SerializedFunctionInvokeHandler.findSingleArgMethod(udf);
             if (m == null) {
                 log.error("反序列化得到的对象未找到单参非 void 方法: {}", udf.getClass().getName());
@@ -99,6 +127,47 @@ public final class FunctionDescriptorLoader {
         } catch (Exception e) {
             log.error("反序列化 serialized_function 失败", e);
             return null;
+        }
+        // 注意：此处不关闭 jarLoader，因为反序列化出来的 UDF 对象仍依赖该 ClassLoader
+    }
+
+    private static URLClassLoader buildJarClassLoader(String artifactPath) {
+        if (artifactPath == null || artifactPath.isBlank()) {
+            return null;
+        }
+        Path path = Paths.get(artifactPath).toAbsolutePath();
+        if (!path.toFile().exists() || !path.toFile().isFile()) {
+            log.warn("artifact 不存在或不是文件，反序列化将使用默认 ClassLoader: {}", path);
+            return null;
+        }
+        try {
+            URL jarUrl = path.toUri().toURL();
+            return new URLClassLoader(new URL[]{jarUrl}, FunctionDescriptorLoader.class.getClassLoader());
+        } catch (Exception e) {
+            log.warn("构建 JAR ClassLoader 失败: {}", artifactPath, e);
+            return null;
+        }
+    }
+
+    /**
+     * 使用指定 ClassLoader 解析类的 ObjectInputStream，
+     * 用于在用户 JAR 的 ClassLoader 下反序列化 lambda / 函数对象。
+     */
+    private static class ClassLoaderObjectInputStream extends ObjectInputStream {
+        private final ClassLoader classLoader;
+
+        ClassLoaderObjectInputStream(InputStream in, ClassLoader classLoader) throws IOException {
+            super(in);
+            this.classLoader = classLoader;
+        }
+
+        @Override
+        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+            try {
+                return Class.forName(desc.getName(), false, classLoader);
+            } catch (ClassNotFoundException e) {
+                return super.resolveClass(desc);
+            }
         }
     }
 

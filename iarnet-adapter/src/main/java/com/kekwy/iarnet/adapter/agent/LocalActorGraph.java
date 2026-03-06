@@ -134,8 +134,10 @@ public final class LocalActorGraph {
                 log.warn("LocalActorGraph: 无法从 actorAddr 解析 application/workflow: {}", srcActor);
                 return;
             }
-            String applicationId = segs[1];
-            String workflowId = segs[2];
+            // buildActorAddr 定义为 actor://applicationId/workflowId/nodeId/replica
+            // 因此 segs[0]=applicationId, segs[1]=workflowId, segs[2]=nodeId, segs[3]=replica
+            String applicationId = segs[0];
+            String workflowId = segs[1];
 
             ActorChannelStatus status = ActorChannelStatus.newBuilder()
                     .setWorkflowId(workflowId)

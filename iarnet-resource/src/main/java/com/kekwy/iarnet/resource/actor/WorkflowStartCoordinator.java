@@ -164,11 +164,21 @@ public class WorkflowStartCoordinator implements ActorLifecycleListener {
      * 在所有 Actor Ready 且链路已建立后触发 Source 启动。
      */
     private void maybeStartSources(WorkflowState state) {
-        if (!state.started
-                && state.edgesConnected
-                && state.readyActorIds.containsAll(state.allActorIds)) {
-            startSources(state);
+        if (state.started) {
+            return;
         }
+        if (!state.edgesConnected) {
+            return;
+        }
+        if (!state.readyActorIds.containsAll(state.allActorIds)) {
+            // 辅助排查：哪些 Actor 还没 Ready
+            java.util.Set<String> pending = new java.util.HashSet<>(state.allActorIds);
+            pending.removeAll(state.readyActorIds);
+            log.info("WorkflowStartCoordinator: 链路已建立但仍有 Actor 未 Ready: workflowId={}, pending={}",
+                    state.workflowId, pending);
+            return;
+        }
+        startSources(state);
     }
 }
 

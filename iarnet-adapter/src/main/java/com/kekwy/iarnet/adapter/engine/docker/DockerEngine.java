@@ -48,16 +48,19 @@ public class DockerEngine implements AdapterEngine {
     private final Map<String, com.kekwy.iarnet.proto.ir.Resource> instanceResources = new ConcurrentHashMap<>();
 
     private final String deviceAgentAddr;
+    private final String controlPlaneAddr;
 
     public DockerEngine(String dockerHost, String network, List<String> tags,
                         com.kekwy.iarnet.proto.ir.Resource totalResource,
-                        ArtifactStore artifactStore) {
+                        ArtifactStore artifactStore,
+                        String deviceAgentAddr,
+                        String controlPlaneAddr) {
         this.network = network;
         this.tags = tags != null ? tags : List.of();
         this.artifactStore = artifactStore;
         this.osArch = System.getProperty("os.name") + "/" + System.getProperty("os.arch");
-        // 默认假设 Actor 容器与 Adapter 共用 host 网络，通过 127.0.0.1 回连本机 Device Agent
-        this.deviceAgentAddr = "172.30.23.95:10000"; // TODO: 使用配置文件中的配置
+        this.deviceAgentAddr = deviceAgentAddr;
+        this.controlPlaneAddr = controlPlaneAddr;
 
         this.capacity = ResourceCapacity.newBuilder()
                 .setTotal(totalResource)
@@ -159,6 +162,9 @@ public class DockerEngine implements AdapterEngine {
             List<String> envList = new ArrayList<>();
             request.getEnvVarsMap().forEach((k, v) -> envList.add(k + "=" + v));
             envList.add("IARNET_DEVICE_AGENT_ADDR=" + deviceAgentAddr);
+            if (controlPlaneAddr != null && !controlPlaneAddr.isBlank()) {
+                envList.add("IARNET_CONTROL_PLANE_ADDR=" + controlPlaneAddr);
+            }
             if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
                 String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
                 envList.add("IARNET_ARTIFACT_PATH=" + inContainerPath);

@@ -149,13 +149,19 @@ public class AdapterApplication {
     private static AdapterEngine createEngine(AdapterProperties props,
                                                com.kekwy.iarnet.proto.ir.Resource totalResource,
                                                ArtifactStore artifactStore) {
+        var cp = props.getControlPlane();
+        String deviceAgentAddr = props.getHost() + ":" + props.getDeviceAgent().getPort();
+        String controlPlaneAddr = cp.getHost() + ":" + cp.getPort();
+
         return switch (props.getType().toLowerCase()) {
             case "docker" -> new DockerEngine(
                     props.getDocker().getHost(),
                     props.getDocker().getNetwork(),
                     props.getTags(),
                     totalResource,
-                    artifactStore);
+                    artifactStore,
+                    deviceAgentAddr,
+                    controlPlaneAddr);
             case "k8s", "kubernetes" -> new KubernetesEngine(
                     props.getK8s().getKubeconfig(),
                     props.getK8s().isInCluster(),
