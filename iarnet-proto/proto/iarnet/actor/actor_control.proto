@@ -62,10 +62,11 @@ message ActorDirective {
   string directive_id = 1;
 
   oneof payload {
-    ActorTopologyConfig  topology    = 10;  // 下发邻居拓扑/路由表
-    ActorStopDirective   stop        = 11;  // 停止指令
-    ActorReconfigure     reconfigure = 12;  // 重配置指令
-    ActorAck             ack         = 13;  // 对 ActorReport 的确认
+    ActorTopologyConfig   topology     = 10;  // 下发邻居拓扑/路由表
+    ActorStopDirective    stop         = 11;  // 停止指令
+    ActorReconfigure      reconfigure  = 12;  // 重配置指令
+    ActorAck              ack          = 13;  // 对 ActorReport 的确认
+    StartSourceDirective  start_source = 14;  // 仅对 Source Actor 生效的“开始执行”指令
   }
 }
 
@@ -96,4 +97,9 @@ message ActorReconfigure {
 message ActorAck {
   string report_actor_id = 1;  // 对应 ActorReport.actor_id
   string ack_for         = 2;  // 如 "ready", "heartbeat", "status_change"
+}
+
+// 控制平面 → Source Actor：显式开始执行的指令。
+// 当前为占位消息，不带参数；后续可扩展起始 offset、限速等字段。
+message StartSourceDirective {
 }

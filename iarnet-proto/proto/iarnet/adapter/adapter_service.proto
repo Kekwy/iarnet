@@ -3,6 +3,7 @@ syntax = "proto3";
 package iarnet.adapter;
 
 import "iarnet/ir/common.proto";
+import "iarnet/ir/workflow.proto";
 
 option java_package = "com.kekwy.iarnet.proto.adapter";
 option java_multiple_files = true;
@@ -49,6 +50,7 @@ message DeployInstanceRequest {
   iarnet.ir.Lang      lang             = 7;  // 算子使用的编程语言 / 运行时
   repeated string     upstream_actor_addrs   = 8;  // 上游 Actor 的虚拟地址列表
   repeated string     downstream_actor_addrs = 9;  // 下游 Actor 的虚拟地址列表
+  iarnet.ir.FunctionDescriptor function_descriptor = 10;  // 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
 }
 
 message DeployInstanceResponse {

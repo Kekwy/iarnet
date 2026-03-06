@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.adapter;
 
+import com.kekwy.iarnet.adapter.agent.LocalActorGraph;
 import com.kekwy.iarnet.adapter.agent.LocalAgentServiceImpl;
 import com.kekwy.iarnet.adapter.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.adapter.artifact.ArtifactStore;
@@ -9,6 +10,9 @@ import com.kekwy.iarnet.adapter.engine.docker.DockerEngine;
 import com.kekwy.iarnet.adapter.engine.k8s.KubernetesEngine;
 import com.kekwy.iarnet.adapter.registry.RegistryClient;
 import jakarta.annotation.PreDestroy;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.slf4j.Logger;
@@ -38,6 +42,7 @@ public class AdapterApplication {
     private AdapterEngine engine;
     private RegistryClient registryClient;
     private Server localAgentServer;
+    private ManagedChannel signalingChannel;
 
     public AdapterApplication(AdapterProperties props) {
         this.props = props;
@@ -81,6 +86,39 @@ public class AdapterApplication {
                 cp.getHost(), cp.getPort());
         registryClient.start();
 
+        // 建立 DeviceAgentRegistryService.SignalingChannel，用于上报 ActorChannelStatus
+        try {
+            signalingChannel = ManagedChannelBuilder
+                    .forAddress(cp.getHost(), cp.getPort())
+                    .usePlaintext()
+                    .build();
+            com.kekwy.iarnet.proto.agent.DeviceAgentRegistryServiceGrpc.DeviceAgentRegistryServiceStub stub =
+                    com.kekwy.iarnet.proto.agent.DeviceAgentRegistryServiceGrpc.newStub(signalingChannel);
+
+            StreamObserver<com.kekwy.iarnet.proto.agent.SignalingMessage> sender =
+                    stub.signalingChannel(new StreamObserver<>() {
+                        @Override
+                        public void onNext(com.kekwy.iarnet.proto.agent.SignalingMessage value) {
+                            // 当前不处理来自控制平面的信令
+                        }
+
+                        @Override
+                        public void onError(Throwable t) {
+                            log.warn("DeviceAgent SignalingChannel 出错: {}", t.getMessage());
+                        }
+
+                        @Override
+                        public void onCompleted() {
+                            log.info("DeviceAgent SignalingChannel 已关闭");
+                        }
+                    });
+
+            LocalActorGraph.getInstance().setSignalingSender(sender);
+            log.info("DeviceAgent SignalingChannel 已建立，准备上报本地 Actor 通道状态");
+        } catch (Exception e) {
+            log.warn("建立 DeviceAgent SignalingChannel 失败，将不会上报 ActorChannelStatus", e);
+        }
+
         log.info("Adapter 已启动: type={}, name={}, control-plane={}:{}",
                 props.getType(), props.getName(), cp.getHost(), cp.getPort());
     }
@@ -100,6 +138,10 @@ public class AdapterApplication {
         if (localAgentServer != null) {
             localAgentServer.shutdown();
             log.info("Local Device Agent 已停止");
+        }
+        if (signalingChannel != null) {
+            signalingChannel.shutdown();
+            log.info("DeviceAgent SignalingChannel 通道已关闭");
         }
         log.info("Adapter 已停止");
     }

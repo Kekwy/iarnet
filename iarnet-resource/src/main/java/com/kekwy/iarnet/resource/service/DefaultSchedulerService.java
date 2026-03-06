@@ -36,6 +36,7 @@ public class DefaultSchedulerService implements SchedulerService {
     private static final String DEFAULT_HOST = "127.0.0.1";
 
     private final AdapterRegistry adapterRegistry;
+    private final com.kekwy.iarnet.resource.actor.WorkflowStartCoordinator workflowStartCoordinator;
 
     private static final class Placement {
         final String actorId;
@@ -63,8 +64,10 @@ public class DefaultSchedulerService implements SchedulerService {
         }
     }
 
-    public DefaultSchedulerService(AdapterRegistry adapterRegistry) {
+    public DefaultSchedulerService(AdapterRegistry adapterRegistry,
+                                   com.kekwy.iarnet.resource.actor.WorkflowStartCoordinator workflowStartCoordinator) {
         this.adapterRegistry = adapterRegistry;
+        this.workflowStartCoordinator = workflowStartCoordinator;
     }
 
     @Override
@@ -161,6 +164,9 @@ public class DefaultSchedulerService implements SchedulerService {
         log.info("调度完成: workflowId={}, 共部署 {} 个 Actor",
                 workflowId, physicalGraph.totalActorCount());
 
+        // 将物理 IR 注册到工作流启动协调器，用于在所有 Actor Ready 后下发 StartSource 指令
+        workflowStartCoordinator.registerWorkflow(physicalGraph);
+
         return physicalGraph;
     }
 
@@ -207,6 +213,13 @@ public class DefaultSchedulerService implements SchedulerService {
         env.put("IARNET_ACTOR_ID", actorId);
         env.put("IARNET_ACTOR_ADDR", actorAddr);
         env.put("IARNET_DEVICE_ID", adapter.getAdapterId());
+        // 方案 A：通过 NodeKind / SourceKind / SinkKind 为 Actor 注入内建算子类型
+        env.put("IARNET_NODE_KIND", node.getKind().name());
+        if (node.getKind() == NodeKind.SOURCE && node.hasSourceDetail()) {
+            env.put("IARNET_SOURCE_KIND", node.getSourceDetail().getSourceKind().name());
+        } else if (node.getKind() == NodeKind.SINK && node.hasSinkDetail()) {
+            env.put("IARNET_SINK_KIND", node.getSinkDetail().getSinkKind().name());
+        }
         if (!upstreamAddrs.isEmpty()) {
             env.put("IARNET_UPSTREAMS", String.join(",", upstreamAddrs));
         }
@@ -235,6 +248,11 @@ public class DefaultSchedulerService implements SchedulerService {
 
         if (placement.artifactUrl != null && !placement.artifactUrl.isBlank()) {
             reqBuilder.setArtifactUrl(placement.artifactUrl);
+        }
+        if (node.getKind() == NodeKind.OPERATOR
+                && node.hasOperatorDetail()
+                && node.getOperatorDetail().hasFunction()) {
+            reqBuilder.setFunctionDescriptor(node.getOperatorDetail().getFunction());
         }
 
         DeployInstanceRequest deployReq = reqBuilder.build();
@@ -274,15 +292,20 @@ public class DefaultSchedulerService implements SchedulerService {
     }
 
     /**
-     * 从 IR 节点中提取资源需求；若无显式设置则返回一个空的 Resource。
+     * 从 IR 节点中提取资源需求。
+     * - Operator 且显式声明 resource 时，使用节点上的 resource
+     * - Source / Sink 或未声明 resource 时，使用默认资源：cpu=0.5, memory=256Mi
      */
     private Resource extractResourceRequest(Node node) {
-        if (node.getKind() == NodeKind.OPERATOR && node.hasOperatorDetail()
+        if (node.getKind() == NodeKind.OPERATOR
+                && node.hasOperatorDetail()
                 && node.getOperatorDetail().hasResource()) {
             return node.getOperatorDetail().getResource();
         }
-        // Source / Sink 或未声明资源时，返回默认空资源
-        return Resource.newBuilder().build();
+        return Resource.newBuilder()
+                .setCpu(0.5)
+                .setMemory("256Mi")
+                .build();
     }
 
     /**

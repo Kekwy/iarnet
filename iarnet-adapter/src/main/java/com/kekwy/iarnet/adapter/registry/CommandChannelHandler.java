@@ -137,6 +137,17 @@ public class CommandChannelHandler implements StreamObserver<Command> {
                 && !request.getArtifactId().isBlank()) {
             artifactPath = artifactFetcher.fetch(request.getArtifactId(), request.getArtifactUrl());
         }
+
+        // 仅处理“所有 Actor 在同一 Device”场景下的本地拓扑记录：
+        // 从 env_vars 中解析当前 ActorAddr 以及下游 ActorAddr 列表，
+        // 在 LocalActorGraph 中记录边关系，后续由 LocalActorGraph 在 Actor
+        // 完成 LocalChannel 注册后判断通道是否就绪。
+        String actorAddr = request.getEnvVarsOrDefault("IARNET_ACTOR_ADDR", "");
+        if (!actorAddr.isBlank()) {
+            com.kekwy.iarnet.adapter.agent.LocalActorGraph.getInstance()
+                    .onDeploy(actorAddr, request.getDownstreamActorAddrsList());
+        }
+
         DeployInstanceResponse response = engine.deployInstance(request, artifactPath);
         return CommandResponse.newBuilder()
                 .setRequestId(requestId)

@@ -1,19 +1,20 @@
 package com.kekwy.iarnet.actor;
 
-import com.kekwy.iarnet.actor.runtime.ActorServer;
+import com.kekwy.iarnet.actor.runtime.DelegatingInvokeHandler;
+import com.kekwy.iarnet.actor.runtime.FunctionDescriptorLoader;
 import com.kekwy.iarnet.actor.runtime.JavaInvokeHandler;
+import com.kekwy.iarnet.actor.runtime.UserJarLoader;
 import com.kekwy.iarnet.actor.runtime.handlers.EchoInvokeHandler;
+import com.kekwy.iarnet.actor.runtime.handlers.PrintInvokeHandler;
 import com.kekwy.iarnet.proto.agent.LocalAgentMessage;
 import com.kekwy.iarnet.proto.agent.LocalAgentServiceGrpc;
 import com.kekwy.iarnet.proto.agent.LocalRegisterActor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.netty.shaded.io.netty.channel.socket.nio.NioSocketChannel;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -21,44 +22,71 @@ import java.util.concurrent.CountDownLatch;
  * <p>
  * 责任：
  * <ul>
+ *   <li>启动时即加载执行函数（无需等待 gRPC）：若设置 {@code IARNET_ACTOR_FUNCTION_FILE}，从该文件读取 IR FunctionDescriptor（proto 二进制）并加载；否则从 env {@code IARNET_ACTOR_JAR} / {@code IARNET_ACTOR_CLASS} / {@code IARNET_ACTOR_METHOD} 加载；均未配置时使用 {@link EchoInvokeHandler}</li>
  *   <li>解析端口配置（环境变量 ACTOR_SERVER_PORT，默认 9000）</li>
  *   <li>创建 {@link ActorServer} 并启动 gRPC ActorService</li>
+ *   <li>回连 Device Agent 并注册自身地址</li>
  *   <li>阻塞主线程直到进程退出</li>
  * </ul>
- * 初始版本使用 {@link EchoInvokeHandler} 作为默认实现。
  */
 public class Main {
 
     private static final Logger log = LoggerFactory.getLogger(Main.class);
-    private static final String ENV_PORT = "ACTOR_SERVER_PORT";
-    private static final int DEFAULT_PORT = 9000;
-
+    private static final String ENV_FUNCTION_FILE = "IARNET_ACTOR_FUNCTION_FILE";
+    private static final String ENV_NODE_KIND = "IARNET_NODE_KIND";
+    private static final String ENV_SINK_KIND = "IARNET_SINK_KIND";
     public static void main(String[] args) throws InterruptedException {
+        DelegatingInvokeHandler delegatingHandler = new DelegatingInvokeHandler(createHandler());
+
         String agentAddr = System.getenv("IARNET_DEVICE_AGENT_ADDR");
         String actorAddr = System.getenv("IARNET_ACTOR_ADDR");
 
-        LocalAgentStreamObserver streamObserver = new LocalAgentStreamObserver();
+        LocalAgentStreamObserver streamObserver = new LocalAgentStreamObserver(null, delegatingHandler);
         ManagedChannel channel = connectToDeviceAgent(agentAddr, actorAddr, streamObserver);
 
-        log.info("Actor 启动成功！");
+        log.info("Actor 启动成功，并已连接本机 Device Agent");
 
         CountDownLatch latch = new CountDownLatch(1);
 
-        // 收到 Ctrl+C / SIGTERM 时，关闭 channel 并唤醒主线程
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             log.info("收到关闭信号，准备退出 Actor");
             channel.shutdown();
             latch.countDown();
         }));
 
-        // 像 Go 里阻塞在 <-sigCh 一样
         latch.await();
         log.info("Actor 进程退出");
-
     }
 
-    private static JavaInvokeHandler createDefaultHandler() {
-        // 目前使用简单回显实现；未来可根据配置替换为用户函数执行逻辑
+    /**
+     * 按优先级加载执行函数（均在连接 Device Agent 前完成，无需等待 gRPC）：
+     * 1）若设置 IARNET_ACTOR_FUNCTION_FILE，从该文件读取 FunctionDescriptor（proto 二进制）并加载；
+     * 2）否则从 IARNET_ACTOR_JAR / IARNET_ACTOR_CLASS / IARNET_ACTOR_METHOD 反射加载；
+     * 3）否则使用默认回显 Handler。
+     */
+    private static JavaInvokeHandler createHandler() {
+        // 方案 A：根据 NodeKind / SinkKind 选择内建算子
+        String nodeKind = System.getenv(ENV_NODE_KIND);
+        if (nodeKind != null && nodeKind.equalsIgnoreCase("SINK")) {
+            String sinkKind = System.getenv(ENV_SINK_KIND);
+            if (sinkKind != null && sinkKind.equalsIgnoreCase("PRINT")) {
+                log.info("检测到 Sink=PRINT，使用内建 PrintInvokeHandler");
+                return new PrintInvokeHandler();
+            }
+        }
+
+        String functionFile = System.getenv(ENV_FUNCTION_FILE);
+        if (functionFile != null && !functionFile.isBlank()) {
+            JavaInvokeHandler fromFile = FunctionDescriptorLoader.fromFile(functionFile.trim());
+            if (fromFile != null) {
+                return fromFile;
+            }
+            log.warn("从 {} 加载失败，尝试其他方式", ENV_FUNCTION_FILE);
+        }
+        JavaInvokeHandler fromJar = UserJarLoader.loadFromEnv();
+        if (fromJar != null) {
+            return fromJar;
+        }
         return new EchoInvokeHandler();
     }
 

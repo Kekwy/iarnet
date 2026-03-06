@@ -92,7 +92,19 @@ message SignalingMessage {
 
     // DeviceAgent → 控制平面：上报本机可用候选地址信息
     CandidateUpdate    candidate_update    = 12;
+
+    // DeviceAgent → 控制平面：上报本机某条 Actor 通道的连接状态
+    ActorChannelStatus actor_channel       = 13;
   }
+}
+
+// 由 Device Agent 上报某条 Actor 间通道的状态
+message ActorChannelStatus {
+  string workflow_id     = 1;
+  string application_id  = 2;
+  string src_actor_addr  = 3;
+  string dst_actor_addr  = 4;
+  bool   connected       = 5; // true 表示该方向的通道已建立
 }
 
 // 控制平面下发的“建立连接”指令。

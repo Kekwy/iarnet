@@ -3,10 +3,13 @@ package com.kekwy.iarnet.api.converter;
 import com.google.protobuf.ByteString;
 import com.kekwy.iarnet.api.*;
 import com.kekwy.iarnet.api.graph.*;
-import com.kekwy.iarnet.api.util.SerializationUtil;
 
-import java.io.Serializable;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 将 Java DSL 的图对象转换为 Protobuf IR 对象。
@@ -222,12 +225,93 @@ public class GraphToProtoConverter implements NodeVisitor<com.kekwy.iarnet.proto
         com.kekwy.iarnet.proto.ir.Row.Builder b =
                 com.kekwy.iarnet.proto.ir.Row.newBuilder();
 
-        if (row.getValue() != null && row.getValue() instanceof Serializable ser) {
-            b.setValue(ByteString.copyFrom(SerializationUtil.serialize(ser)));
-        }
         if (row.getDataType() != null) {
             b.setDataType(convertDataType(row.getDataType()));
+            if (row.getValue() != null) {
+                b.setValue(ByteString.copyFrom(encodeValue(row.getValue(), row.getDataType())));
+            }
         }
         return b.build();
+    }
+
+    // ======================== Row.value 编码（与 actor 侧 UpstreamRowDeserializer 对称） ========================
+
+    private static byte[] encodeValue(Object value, DataType dataType) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (DataOutputStream dos = new DataOutputStream(bos)) {
+            writeValue(dos, value, dataType);
+        } catch (IOException e) {
+            throw new IllegalStateException("Row value 编码失败: " + e.getMessage(), e);
+        }
+        return bos.toByteArray();
+    }
+
+    private static void writeValue(DataOutputStream dos, Object value, DataType dataType)
+            throws IOException {
+        switch (dataType.getKind()) {
+            case STRING  -> dos.writeUTF(value != null ? value.toString() : "");
+            case INT32   -> dos.writeInt(value instanceof Number n ? n.intValue() : 0);
+            case INT64   -> dos.writeLong(value instanceof Number n ? n.longValue() : 0L);
+            case DOUBLE  -> dos.writeDouble(value instanceof Number n ? n.doubleValue() : 0.0);
+            case BOOLEAN -> dos.writeBoolean(value instanceof Boolean b && b);
+            case ARRAY   -> writeArray(dos, value, (ArrayType) dataType);
+            case MAP     -> writeMap(dos, value, (MapType) dataType);
+            case STRUCT  -> writeStruct(dos, value, (StructType) dataType);
+        }
+    }
+
+    private static void writeArray(DataOutputStream dos, Object value, ArrayType arrayType)
+            throws IOException {
+        Collection<?> coll;
+        if (value instanceof Collection<?> c) {
+            coll = c;
+        } else if (value != null && value.getClass().isArray()) {
+            coll = java.util.Arrays.asList((Object[]) value);
+        } else {
+            dos.writeInt(0);
+            return;
+        }
+        dos.writeInt(coll.size());
+        DataType elementType = arrayType.getElementType();
+        for (Object elem : coll) {
+            writeValue(dos, elem, elementType);
+        }
+    }
+
+    private static void writeMap(DataOutputStream dos, Object value, MapType mapType)
+            throws IOException {
+        if (!(value instanceof Map<?, ?> map)) {
+            dos.writeInt(0);
+            return;
+        }
+        dos.writeInt(map.size());
+        DataType keyType = mapType.getKeyType();
+        DataType valueType = mapType.getValueType();
+        for (Map.Entry<?, ?> entry : map.entrySet()) {
+            writeValue(dos, entry.getKey(), keyType);
+            writeValue(dos, entry.getValue(), valueType);
+        }
+    }
+
+    private static void writeStruct(DataOutputStream dos, Object value, StructType structType)
+            throws IOException {
+        if (value == null) {
+            for (Field f : structType.getFields()) {
+                writeValue(dos, null, f.getType());
+            }
+            return;
+        }
+        Class<?> clazz = value.getClass();
+        for (Field field : structType.getFields()) {
+            Object fieldValue;
+            try {
+                java.lang.reflect.Field javaField = clazz.getDeclaredField(field.getName());
+                javaField.setAccessible(true);
+                fieldValue = javaField.get(value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                fieldValue = null;
+            }
+            writeValue(dos, fieldValue, field.getType());
+        }
     }
 }

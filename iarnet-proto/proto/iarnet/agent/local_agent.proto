@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package iarnet.agent;
 
+import "iarnet/ir/common.proto";
+import "iarnet/ir/workflow.proto";
+
 option java_package = "com.kekwy.iarnet.proto.agent";
 option java_multiple_files = true;
 
@@ -16,6 +19,10 @@ service LocalAgentService {
 message LocalAgentMessage {
   oneof payload {
     LocalRegisterActor register_actor = 1;
+    // 上游 Actor 经 Device Agent 转发的行数据（ir.Row），下游 Actor 可反序列化为 Java 对象
+    iarnet.ir.Row row_delivery = 2;
+    // 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
+    iarnet.ir.FunctionDescriptor assign_function = 3;
   }
 }
 

@@ -12,6 +12,7 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import com.kekwy.iarnet.adapter.artifact.ArtifactStore;
 import com.kekwy.iarnet.adapter.engine.AdapterEngine;
 import com.kekwy.iarnet.proto.adapter.*;
+import com.kekwy.iarnet.proto.ir.FunctionDescriptor;
 import com.kekwy.iarnet.proto.ir.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,6 +127,8 @@ public class DockerEngine implements AdapterEngine {
     }
 
     private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
+    private static final String CONTAINER_FUNCTION_DIR = "/opt/iarnet/function";
+    private static final String CONTAINER_FUNCTION_FILE = CONTAINER_FUNCTION_DIR + "/function.pb";
 
     private String resolveImageForLang(Lang lang) {
         if (lang == null) {
@@ -143,16 +146,25 @@ public class DockerEngine implements AdapterEngine {
         String instanceId = request.getInstanceId();
         Lang lang = request.getLang();
         String image = resolveImageForLang(lang);
-        log.info("部署 Docker 实例: instanceId={}, artifactId={}, lang={}, image={}, hasArtifact={}",
-                instanceId, request.getArtifactId(), lang, image, artifactLocalPath != null);
+        log.info("部署 Docker 实例: instanceId={}, artifactId={}, lang={}, image={}, hasArtifact={}, hasFunctionDescriptor={}",
+                instanceId, request.getArtifactId(), lang, image, artifactLocalPath != null, request.hasFunctionDescriptor());
 
         try {
+            Path functionDescriptorPath = null;
+            if (request.hasFunctionDescriptor()) {
+                FunctionDescriptor fd = request.getFunctionDescriptor();
+                functionDescriptorPath = artifactStore.storeFunctionDescriptor(instanceId, fd.toByteArray());
+            }
+
             List<String> envList = new ArrayList<>();
             request.getEnvVarsMap().forEach((k, v) -> envList.add(k + "=" + v));
             envList.add("IARNET_DEVICE_AGENT_ADDR=" + deviceAgentAddr);
             if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
                 String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
                 envList.add("IARNET_ARTIFACT_PATH=" + inContainerPath);
+            }
+            if (functionDescriptorPath != null) {
+                envList.add("IARNET_ACTOR_FUNCTION_FILE=" + CONTAINER_FUNCTION_FILE);
             }
 
             Map<String, String> labels = new HashMap<>(request.getLabelsMap());
@@ -163,7 +175,7 @@ public class DockerEngine implements AdapterEngine {
                     .withName(instanceId)
                     .withEnv(envList)
                     .withLabels(labels)
-                    .withHostConfig(buildHostConfig(request, artifactLocalPath));
+                    .withHostConfig(buildHostConfig(request, artifactLocalPath, functionDescriptorPath));
 
             CreateContainerResponse container = createCmd.exec();
             String containerId = container.getId();
@@ -309,7 +321,7 @@ public class DockerEngine implements AdapterEngine {
 
     // ======================== 内部方法 ========================
 
-    private HostConfig buildHostConfig(DeployInstanceRequest request, Path artifactLocalPath) {
+    private HostConfig buildHostConfig(DeployInstanceRequest request, Path artifactLocalPath, Path functionDescriptorPath) {
         var resource = request.getResourceRequest();
         HostConfig hostConfig = HostConfig.newHostConfig();
 
@@ -319,16 +331,29 @@ public class DockerEngine implements AdapterEngine {
         if (resource.getMemory() != null && !resource.getMemory().isEmpty()) {
             hostConfig.withMemory(parseMemory(resource.getMemory()));
         }
+        List<Bind> binds = new ArrayList<>();
         if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
             Path hostDir = artifactLocalPath.getParent();
-            hostConfig.withBinds(new Bind(hostDir.toAbsolutePath().toString(), new Volume(CONTAINER_ARTIFACT_DIR)));
+            binds.add(new Bind(hostDir.toAbsolutePath().toString(), new Volume(CONTAINER_ARTIFACT_DIR)));
         }
-
+        if (functionDescriptorPath != null && java.nio.file.Files.isRegularFile(functionDescriptorPath)) {
+            String hostDir = functionDescriptorPath.getParent().toAbsolutePath().toString();
+            binds.add(new Bind(hostDir, new Volume(CONTAINER_FUNCTION_DIR)));
+        }
+        if (!binds.isEmpty()) {
+            hostConfig.withBinds(binds);
+        }
         return hostConfig;
     }
 
     private long parseMemory(String memory) {
+        if (memory == null) {
+            return 0L;
+        }
         memory = memory.trim().toUpperCase();
+        if (memory.isEmpty()) {
+            return 0L;
+        }
         if (memory.endsWith("GI") || memory.endsWith("G")) {
             return (long) (Double.parseDouble(memory.replaceAll("[^\\d.]", "")) * 1024 * 1024 * 1024);
         }
@@ -338,7 +363,11 @@ public class DockerEngine implements AdapterEngine {
         if (memory.endsWith("KI") || memory.endsWith("K")) {
             return (long) (Double.parseDouble(memory.replaceAll("[^\\d.]", "")) * 1024);
         }
-        return Long.parseLong(memory.replaceAll("[^\\d]", ""));
+        String digits = memory.replaceAll("[^\\d]", "");
+        if (digits.isEmpty()) {
+            return 0L;
+        }
+        return Long.parseLong(digits);
     }
 
     private ResourceCapacity computeCapacity() {

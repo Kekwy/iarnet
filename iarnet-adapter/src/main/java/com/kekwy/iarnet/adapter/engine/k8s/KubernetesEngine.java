@@ -3,6 +3,7 @@ package com.kekwy.iarnet.adapter.engine.k8s;
 import com.kekwy.iarnet.adapter.artifact.ArtifactStore;
 import com.kekwy.iarnet.adapter.engine.AdapterEngine;
 import com.kekwy.iarnet.proto.adapter.*;
+import com.kekwy.iarnet.proto.ir.FunctionDescriptor;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -97,16 +98,23 @@ public class KubernetesEngine implements AdapterEngine {
                 .build();
     }
 
+    private static final String CONTAINER_FUNCTION_DIR = "/opt/iarnet/function";
+    private static final String CONTAINER_FUNCTION_FILE = CONTAINER_FUNCTION_DIR + "/function.pb";
+
     @Override
     public DeployInstanceResponse deployInstance(DeployInstanceRequest request, java.nio.file.Path artifactLocalPath) {
         String instanceId = request.getInstanceId();
         String podName = sanitizePodName(instanceId);
         var lang = request.getLang();
-        log.info("部署 K8s Pod: instanceId={}, podName={}, lang={}, hasArtifact={}",
-                instanceId, podName, lang, artifactLocalPath != null);
+        log.info("部署 K8s Pod: instanceId={}, podName={}, lang={}, hasArtifact={}, hasFunctionDescriptor={}",
+                instanceId, podName, lang, artifactLocalPath != null, request.hasFunctionDescriptor());
 
         try {
-            Pod pod = buildPod(podName, request, artifactLocalPath);
+            String functionConfigMapName = null;
+            if (request.hasFunctionDescriptor()) {
+                functionConfigMapName = createFunctionDescriptorConfigMap(instanceId, request.getFunctionDescriptor());
+            }
+            Pod pod = buildPod(podName, request, artifactLocalPath, functionConfigMapName);
             Pod created = kubeClient.pods().inNamespace(namespace).resource(pod).create();
 
             instancePods.put(instanceId, created.getMetadata().getName());
@@ -250,7 +258,26 @@ public class KubernetesEngine implements AdapterEngine {
 
     private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
 
-    private Pod buildPod(String podName, DeployInstanceRequest request, java.nio.file.Path artifactLocalPath) {
+    /**
+     * 创建存放 FunctionDescriptor 的 ConfigMap，供 Pod 挂载为 /opt/iarnet/function/function.pb。
+     * @return ConfigMap 名称
+     */
+    private String createFunctionDescriptorConfigMap(String instanceId, FunctionDescriptor fd) {
+        String name = "iarnet-fd-" + sanitizePodName(instanceId);
+        ConfigMap cm = new ConfigMapBuilder()
+                .withNewMetadata()
+                    .withName(name)
+                    .withNamespace(namespace)
+                .endMetadata()
+                .addToBinaryData("function.pb", Arrays.toString(fd.toByteArray()))
+                .build();
+        kubeClient.configMaps().inNamespace(namespace).resource(cm).create();
+        log.info("已创建函数描述 ConfigMap: instanceId={}, name={}", instanceId, name);
+        return name;
+    }
+
+    private Pod buildPod(String podName, DeployInstanceRequest request, java.nio.file.Path artifactLocalPath,
+                        String functionDescriptorConfigMapName) {
         var resource = request.getResourceRequest();
 
         Map<String, Quantity> resourceRequests = new HashMap<>();
@@ -273,12 +300,14 @@ public class KubernetesEngine implements AdapterEngine {
 
         List<EnvVar> envVars = new ArrayList<>();
         request.getEnvVarsMap().forEach((k, v) -> envVars.add(new EnvVarBuilder().withName(k).withValue(v).build()));
-        // 默认假设 Actor Pod 可访问 NodeIP:10000；后续可根据需要改为配置化
         envVars.add(new EnvVarBuilder().withName("IARNET_DEVICE_AGENT_ADDR")
                 .withValue("127.0.0.1:10000").build());
         if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
             String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
             envVars.add(new EnvVarBuilder().withName("IARNET_ARTIFACT_PATH").withValue(inContainerPath).build());
+        }
+        if (functionDescriptorConfigMapName != null) {
+            envVars.add(new EnvVarBuilder().withName("IARNET_ACTOR_FUNCTION_FILE").withValue(CONTAINER_FUNCTION_FILE).build());
         }
 
         Map<String, String> labels = new HashMap<>(request.getLabelsMap());
@@ -286,63 +315,65 @@ public class KubernetesEngine implements AdapterEngine {
         labels.put("iarnet.instance-id", request.getInstanceId());
 
         boolean hasArtifact = artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath);
+        boolean hasFunction = functionDescriptorConfigMapName != null && !functionDescriptorConfigMapName.isBlank();
         String image = resolveImageForLang(request.getLang());
 
-        if (hasArtifact) {
-            return new PodBuilder()
-                    .withNewMetadata()
-                        .withName(podName)
-                        .withNamespace(namespace)
-                        .withLabels(labels)
-                    .endMetadata()
-                    .withNewSpec()
-                        .addNewVolume()
-                            .withName("artifact")
-                            .withNewHostPath()
-                                .withPath(artifactLocalPath.getParent().toAbsolutePath().toString())
-                                .withType("Directory")
-                            .endHostPath()
-                        .endVolume()
-                        .addNewContainer()
-                            .withName("main")
-                            .withImage(image)
-                            .withImagePullPolicy("IfNotPresent")
-                            .withEnv(envVars)
-                            .addNewVolumeMount()
-                                .withName("artifact")
-                                .withMountPath(CONTAINER_ARTIFACT_DIR)
-                                .withReadOnly(true)
-                            .endVolumeMount()
-                            .withNewResources()
-                                .withRequests(resourceRequests)
-                                .withLimits(resourceLimits)
-                            .endResources()
-                        .endContainer()
-                        .withRestartPolicy("Never")
-                    .endSpec()
-                    .build();
-        }
-
-        return new PodBuilder()
-                .withNewMetadata()
-                    .withName(podName)
-                    .withNamespace(namespace)
-                    .withLabels(labels)
-                .endMetadata()
-                .withNewSpec()
-                    .addNewContainer()
-                        .withName("main")
-                        .withImage(image)
-                        .withImagePullPolicy("IfNotPresent")
-                        .withEnv(envVars)
-                        .withNewResources()
-                            .withRequests(resourceRequests)
-                            .withLimits(resourceLimits)
-                        .endResources()
-                    .endContainer()
-                    .withRestartPolicy("Never")
-                .endSpec()
-                .build();
+//        PodBuilder specBuilder = new PodBuilder()
+//                .withNewMetadata()
+//                    .withName(podName)
+//                    .withNamespace(namespace)
+//                    .withLabels(labels)
+//                .endMetadata()
+//                .withNewSpec();
+//
+//        if (hasArtifact) {
+//            specBuilder.addNewVolume()
+//                    .withName("artifact")
+//                    .withNewHostPath()
+//                        .withPath(artifactLocalPath.getParent().toAbsolutePath().toString())
+//                        .withType("Directory")
+//                    .endHostPath()
+//                .endVolume();
+//        }
+//        if (hasFunction) {
+//            specBuilder.addNewVolume()
+//                    .withName("function")
+//                    .withNewConfigMap()
+//                        .withName(functionDescriptorConfigMapName)
+//                        .withDefaultMode(0444)
+//                    .endConfigMap()
+//                .endVolume();
+//        }
+//
+//        var containerBuilder = new ContainerBuilder()
+//                .withName("main")
+//                .withImage(image)
+//                .withImagePullPolicy("IfNotPresent")
+//                .withEnv(envVars)
+//                .withNewResources()
+//                    .withRequests(resourceRequests)
+//                    .withLimits(resourceLimits)
+//                .endResources();
+//        if (hasArtifact) {
+//            containerBuilder.addNewVolumeMount()
+//                    .withName("artifact")
+//                    .withMountPath(CONTAINER_ARTIFACT_DIR)
+//                    .withReadOnly(true)
+//                .endVolumeMount();
+//        }
+//        if (hasFunction) {
+//            containerBuilder.addNewVolumeMount()
+//                    .withName("function")
+//                    .withMountPath(CONTAINER_FUNCTION_DIR)
+//                    .withReadOnly(true)
+//                .endVolumeMount();
+//        }
+//
+//        specBuilder.addToContainers(containerBuilder.build())
+//                .withRestartPolicy("Never")
+//                .endSpec();
+//        return specBuilder.build();
+        return null;
     }
 
     private String resolveImageForLang(com.kekwy.iarnet.proto.ir.Lang lang) {

@@ -60,4 +60,23 @@ public class ArtifactStore {
     public boolean exists(String artifactId) {
         return Files.isDirectory(baseDir.resolve(artifactId));
     }
+
+    /** 存放各实例函数描述文件的子目录名 */
+    private static final String FUNCTIONS_SUBDIR = "_functions";
+
+    /**
+     * 将函数描述（Proto 二进制）写入实例专属文件，供部署时挂载到 Actor 容器。
+     *
+     * @param instanceId 实例 ID
+     * @param descriptorBytes FunctionDescriptor 的 proto 序列化字节
+     * @return 写入后的文件路径（主机路径，用于 Docker bind mount）
+     */
+    public Path storeFunctionDescriptor(String instanceId, byte[] descriptorBytes) throws IOException {
+        Path dir = baseDir.resolve(FUNCTIONS_SUBDIR).resolve(instanceId);
+        Files.createDirectories(dir);
+        Path file = dir.resolve("function.pb");
+        Files.write(file, descriptorBytes != null ? descriptorBytes : new byte[0]);
+        log.info("函数描述已写入: instanceId={}, path={}", instanceId, file);
+        return file;
+    }
 }
