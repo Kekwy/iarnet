@@ -138,7 +138,6 @@ class DockerEngineTest {
         DeployInstanceRequest request = DeployInstanceRequest.newBuilder()
                 .setInstanceId(instanceId)
                 .setArtifactId("art-001")
-                .setImage("openjdk:17")
                 .setResourceRequest(Resource.newBuilder().setCpu(2.0).setMemory("4Gi").build())
                 .putEnvVars("APP_MODE", "worker")
                 .putLabels("app", "test")
@@ -171,7 +170,6 @@ class DockerEngineTest {
         DeployInstanceResponse response = engine.deployInstance(
                 DeployInstanceRequest.newBuilder()
                         .setInstanceId("inst-fail")
-                        .setImage("non-existent:latest")
                         .build());
 
         assertEquals("inst-fail", response.getInstance().getInstanceId());
@@ -315,7 +313,6 @@ class DockerEngineTest {
         DeployInstanceResponse deployResp = engine.deployInstance(
                 DeployInstanceRequest.newBuilder()
                         .setInstanceId(instanceId)
-                        .setImage("openjdk:17")
                         .setResourceRequest(Resource.newBuilder().setCpu(1.0).setMemory("2Gi").build())
                         .build());
         assertEquals(InstanceStatus.RUNNING, deployResp.getInstance().getStatus());
@@ -366,7 +363,6 @@ class DockerEngineTest {
 
         engine.deployInstance(DeployInstanceRequest.newBuilder()
                 .setInstanceId(instanceId)
-                .setImage("test:latest")
                 .setResourceRequest(resource)
                 .build());
     }

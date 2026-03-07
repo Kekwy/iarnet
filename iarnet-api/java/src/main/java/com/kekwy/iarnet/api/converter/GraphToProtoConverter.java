@@ -222,14 +222,13 @@ public class GraphToProtoConverter implements NodeVisitor<com.kekwy.iarnet.proto
     }
 
     private com.kekwy.iarnet.proto.ir.Row convertRow(Row row) {
-        com.kekwy.iarnet.proto.ir.Row.Builder b =
-                com.kekwy.iarnet.proto.ir.Row.newBuilder();
-
-        if (row.getDataType() != null) {
-            b.setDataType(convertDataType(row.getDataType()));
-            if (row.getValue() != null) {
-                b.setValue(ByteString.copyFrom(encodeValue(row.getValue(), row.getDataType())));
-            }
+        if (row.getDataType() == null) {
+            throw new IllegalArgumentException("Row 必须携带 data_type，与 DSL 约定一致；当前 row 的 dataType 为 null");
+        }
+        com.kekwy.iarnet.proto.ir.Row.Builder b = com.kekwy.iarnet.proto.ir.Row.newBuilder()
+                .setDataType(convertDataType(row.getDataType()));
+        if (row.getValue() != null) {
+            b.setValue(ByteString.copyFrom(encodeValue(row.getValue(), row.getDataType())));
         }
         return b.build();
     }

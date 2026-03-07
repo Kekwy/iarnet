@@ -42,12 +42,37 @@ public class WorkflowStartCoordinator implements ActorLifecycleListener {
     }
 
     /**
+     * 在部署开始前预注册 workflow 的 Actor 列表，避免 Actor 早于 registerWorkflow 上报 Ready 时被丢弃。
+     * 由调度器在 deployActor 之前调用。
+     */
+    public void registerWorkflowEarly(String workflowId, java.util.Set<String> allActorIds,
+                                      java.util.Set<String> sourceActorIds) {
+        if (allActorIds == null || allActorIds.isEmpty()) {
+            log.warn("registerWorkflowEarly: workflow 无 Actor: workflowId={}", workflowId);
+            return;
+        }
+        WorkflowState state = new WorkflowState(workflowId);
+        state.allActorIds.addAll(allActorIds);
+        state.sourceActorIds.addAll(sourceActorIds);
+        workflows.put(workflowId, state);
+        log.info("已预注册 workflow(部署前): workflowId={}, actors={}, sources={}",
+                workflowId, state.allActorIds.size(), state.sourceActorIds.size());
+    }
+
+    /**
      * 在调度完成后注册物理工作流信息。
+     * 若已通过 registerWorkflowEarly 预注册，则保留已有的 readyActorIds，不再覆盖。
      */
     public void registerWorkflow(PhysicalWorkflowGraph graph) {
         String workflowId = graph.workflowId();
-        WorkflowState state = new WorkflowState(workflowId);
+        WorkflowState existing = workflows.get(workflowId);
+        if (existing != null) {
+            // 已预注册，保留 readyActorIds，仅确保 allActorIds/sourceActorIds 一致
+            log.debug("workflow 已预注册，跳过重复 registerWorkflow: workflowId={}", workflowId);
+            return;
+        }
 
+        WorkflowState state = new WorkflowState(workflowId);
         for (ActorDeployment dep : graph.deployments()) {
             boolean isSource = dep.nodeKind() == NodeKind.SOURCE;
             for (ActorInstance inst : dep.instances()) {

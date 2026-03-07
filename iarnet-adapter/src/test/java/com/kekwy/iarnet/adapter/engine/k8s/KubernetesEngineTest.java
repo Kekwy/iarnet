@@ -129,7 +129,6 @@ class KubernetesEngineTest {
 
         DeployInstanceRequest request = DeployInstanceRequest.newBuilder()
                 .setInstanceId(instanceId)
-                .setImage("nginx:latest")
                 .setResourceRequest(Resource.newBuilder().setCpu(1.0).setMemory("2Gi").build())
                 .putEnvVars("APP_MODE", "worker")
                 .putLabels("app", "test")
@@ -158,7 +157,6 @@ class KubernetesEngineTest {
         DeployInstanceResponse response = engine.deployInstance(
                 DeployInstanceRequest.newBuilder()
                         .setInstanceId("inst-fail")
-                        .setImage("nginx:latest")
                         .build());
 
         assertEquals("inst-fail", response.getInstance().getInstanceId());
@@ -298,7 +296,6 @@ class KubernetesEngineTest {
         // 触发 deployInstance，使内部 maps 填充
         DeployInstanceRequest request = DeployInstanceRequest.newBuilder()
                 .setInstanceId(instanceId)
-                .setImage("nginx:latest")
                 .setResourceRequest(res)
                 .build();
         DeployInstanceResponse resp = engine.deployInstance(request);

@@ -1,5 +1,7 @@
 package com.kekwy.iarnet.adapter.agent;
 
+import com.kekwy.iarnet.proto.actor.ActorDirective;
+import com.kekwy.iarnet.proto.actor.ActorReadyReport;
 import com.kekwy.iarnet.proto.agent.ActorChannelStatus;
 import com.kekwy.iarnet.proto.agent.SignalingMessage;
 import io.grpc.stub.StreamObserver;
@@ -39,8 +41,34 @@ public final class LocalActorGraph {
      */
     private volatile StreamObserver<SignalingMessage> signalingSender;
 
+    /**
+     * 本地 Device Agent 实现，用于将控制平面下发的 ActorDirective 转发给对应 Actor。
+     */
+    private volatile LocalAgentServiceImpl localAgentService;
+
     public void setSignalingSender(StreamObserver<SignalingMessage> signalingSender) {
         this.signalingSender = signalingSender;
+    }
+
+    public void setLocalAgentService(LocalAgentServiceImpl localAgentService) {
+        this.localAgentService = localAgentService;
+    }
+
+    public LocalAgentServiceImpl getLocalAgentService() {
+        return this.localAgentService;
+    }
+
+    /**
+     * 将控制平面经 SignalingChannel 下发的指令转发给指定 Actor。
+     * 由 AdapterApplication 的 SignalingChannel 接收端在收到 actor_directive_forward 时调用。
+     */
+    public void forwardDirectiveToActor(String actorId, ActorDirective directive) {
+        LocalAgentServiceImpl service = this.localAgentService;
+        if (service != null) {
+            service.forwardDirectiveToActor(actorId, directive);
+        } else {
+            log.warn("LocalAgentService 未注入，无法转发 ActorDirective: actorId={}", actorId);
+        }
     }
 
     /**
@@ -93,6 +121,9 @@ public final class LocalActorGraph {
         }
         registeredActors.add(actorAddr);
         log.info("LocalActorGraph: actor 已注册本地通道: actorAddr={}", actorAddr);
+
+        // 通过 SignalingChannel 向控制平面上报 Actor Ready
+        reportActorReady(actorAddr);
 
         // 检查以该 actor 作为 src 或 dst 的所有预期边
         for (String edge : expectedEdges) {
@@ -158,6 +189,49 @@ public final class LocalActorGraph {
                     workflowId, srcActor, dstActor);
         } catch (Exception e) {
             log.warn("LocalActorGraph: 上报 ActorChannelStatus 失败: src={}, dst={}", srcActor, dstActor, e);
+        }
+    }
+
+    /**
+     * 通过 SignalingChannel 向控制平面上报 Actor 已就绪。
+     * actorAddr 形如 actor://{app}/{workflow}/{node}/{replica}
+     */
+    private void reportActorReady(String actorAddr) {
+        StreamObserver<SignalingMessage> sender = this.signalingSender;
+        if (sender == null) {
+            return;
+        }
+        try {
+            String[] parts = actorAddr.split("://", 2);
+            String rest = parts.length == 2 ? parts[1] : actorAddr;
+            String[] segs = rest.split("/");
+            if (segs.length < 4) {
+                log.warn("LocalActorGraph: 无法从 actorAddr 解析: {}", actorAddr);
+                return;
+            }
+            String applicationId = segs[0];
+            String workflowId = segs[1];
+            String nodeId = segs[2];
+            int replicaIndex = Integer.parseInt(segs[3]);
+            String actorId = "actor-" + nodeId + "-" + replicaIndex;
+
+            ActorReadyReport ready = ActorReadyReport.newBuilder()
+                    .setWorkflowId(workflowId)
+                    .setApplicationId(applicationId)
+                    .setNodeId(nodeId)
+                    .setReplicaIndex(replicaIndex)
+                    .build();
+
+            SignalingMessage msg = SignalingMessage.newBuilder()
+                    .setDeviceId("")
+                    .setTimestampMs(System.currentTimeMillis())
+                    .setActorReady(ready)
+                    .build();
+
+            sender.onNext(msg);
+            log.info("LocalActorGraph: 已上报 ActorReadyReport: actorId={}, workflowId={}", actorId, workflowId);
+        } catch (Exception e) {
+            log.warn("LocalActorGraph: 上报 ActorReadyReport 失败: actorAddr={}", actorAddr, e);
         }
     }
 

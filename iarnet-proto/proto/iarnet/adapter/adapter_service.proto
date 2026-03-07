@@ -51,6 +51,7 @@ message DeployInstanceRequest {
   repeated string     upstream_actor_addrs   = 8;  // 上游 Actor 的虚拟地址列表
   repeated string     downstream_actor_addrs = 9;  // 下游 Actor 的虚拟地址列表
   iarnet.ir.FunctionDescriptor function_descriptor = 10;  // 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
+  repeated iarnet.ir.Row       source_rows         = 11;  // Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
 }
 
 message DeployInstanceResponse {

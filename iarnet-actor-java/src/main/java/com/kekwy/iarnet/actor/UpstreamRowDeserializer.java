@@ -42,6 +42,9 @@ public final class UpstreamRowDeserializer {
             return null;
         }
         DataType dataType = row.getDataType();
+        if (dataType == null || dataType.getKind() == TypeKind.TYPE_KIND_UNSPECIFIED) {
+            throw new IllegalArgumentException("Row 必须携带 data_type，与 DSL 约定一致；当前 row 的 data_type 为空或 UNSPECIFIED");
+        }
         byte[] bytes = row.getValue().toByteArray();
         try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(bytes))) {
             return readValue(dis, dataType, targetType);

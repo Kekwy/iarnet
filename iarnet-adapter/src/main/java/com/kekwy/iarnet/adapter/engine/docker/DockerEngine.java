@@ -98,6 +98,7 @@ public class DockerEngine implements AdapterEngine {
         this.artifactStore = artifactStore;
         this.osArch = System.getProperty("os.name") + "/" + System.getProperty("os.arch");
         this.deviceAgentAddr = "127.0.0.1:10000";
+        this.controlPlaneAddr = "127.0.0.1:10000";
         this.capacity = ResourceCapacity.newBuilder()
                 .setTotal(totalResource)
                 .setUsed(com.kekwy.iarnet.proto.ir.Resource.newBuilder().build())

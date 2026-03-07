@@ -146,6 +146,15 @@ public class CommandChannelHandler implements StreamObserver<Command> {
         if (!actorAddr.isBlank()) {
             com.kekwy.iarnet.adapter.agent.LocalActorGraph.getInstance()
                     .onDeploy(actorAddr, request.getDownstreamActorAddrsList());
+
+            com.kekwy.iarnet.adapter.agent.LocalAgentServiceImpl localAgent =
+                    com.kekwy.iarnet.adapter.agent.LocalActorGraph.getInstance().getLocalAgentService();
+            if (localAgent != null) {
+                localAgent.setDownstreamsForActor(actorAddr, request.getDownstreamActorAddrsList());
+                if (request.getSourceRowsCount() > 0) {
+                    localAgent.setSourceRowsForActor(actorAddr, request.getSourceRowsList());
+                }
+            }
         }
 
         DeployInstanceResponse response = engine.deployInstance(request, artifactPath);

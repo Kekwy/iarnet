@@ -35,6 +35,11 @@ public class SerializedFunctionInvokeHandler implements JavaInvokeHandler {
         return singleArgMethod.getParameterTypes()[0];
     }
 
+    /** 返回用户函数单参方法的返回值类型（用于下行 Row 携带 data_type） */
+    public Class<?> getReturnType() {
+        return singleArgMethod.getReturnType();
+    }
+
     @Override
     public ActorInvokeResponse handle(ActorInvokeRequest request) throws Exception {
         byte[] inputBytes = request.getPayload() != null && !request.getPayload().isEmpty()

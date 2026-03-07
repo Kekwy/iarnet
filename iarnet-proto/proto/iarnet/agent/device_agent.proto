@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package iarnet.agent;
 
+import "iarnet/actor/actor_control.proto";
+
 option java_package = "com.kekwy.iarnet.proto.agent";
 option java_multiple_files = true;
 
@@ -95,7 +97,19 @@ message SignalingMessage {
 
     // DeviceAgent → 控制平面：上报本机某条 Actor 通道的连接状态
     ActorChannelStatus actor_channel       = 13;
+
+    // DeviceAgent → 控制平面：上报本机某 Actor 已启动并就绪（通过 LocalChannel 注册后）
+    iarnet.actor.ActorReadyReport actor_ready = 14;
+
+    // 控制平面 → DeviceAgent：转发给指定 Actor 的指令（如 StartSourceDirective）
+    ActorDirectiveForward actor_directive = 15;
   }
+}
+
+// 控制平面经 SignalingChannel 下发给 Device Agent，由 Device Agent 转发给对应 Actor
+message ActorDirectiveForward {
+  string actor_id = 1;
+  iarnet.actor.ActorDirective directive = 2;
 }
 
 // 由 Device Agent 上报某条 Actor 间通道的状态

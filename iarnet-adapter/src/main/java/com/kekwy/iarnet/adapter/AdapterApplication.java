@@ -9,6 +9,7 @@ import com.kekwy.iarnet.adapter.engine.AdapterEngine;
 import com.kekwy.iarnet.adapter.engine.docker.DockerEngine;
 import com.kekwy.iarnet.adapter.engine.k8s.KubernetesEngine;
 import com.kekwy.iarnet.adapter.registry.RegistryClient;
+import com.kekwy.iarnet.proto.agent.SignalingMessage;
 import jakarta.annotation.PreDestroy;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -68,12 +69,14 @@ public class AdapterApplication {
 
         // 启动本地 Device Agent（基础版），监听在固定端口，供 Actor 回连
         int agentPort = props.getDeviceAgent().getPort();
+        LocalAgentServiceImpl localAgentService;
         try {
-            LocalAgentServiceImpl localAgentService = new LocalAgentServiceImpl();
+            localAgentService = new LocalAgentServiceImpl();
             localAgentServer = ServerBuilder.forPort(agentPort)
                     .addService(localAgentService)
                     .build()
                     .start();
+            LocalActorGraph.getInstance().setLocalAgentService(localAgentService);
             log.info("Local Device Agent 已启动: port={}", agentPort);
         } catch (Exception e) {
             throw new IllegalStateException("启动本地 Device Agent 失败: port=" + agentPort, e);
@@ -99,12 +102,22 @@ public class AdapterApplication {
                     stub.signalingChannel(new StreamObserver<>() {
                         @Override
                         public void onNext(com.kekwy.iarnet.proto.agent.SignalingMessage value) {
-                            // 当前不处理来自控制平面的信令
+                            try {
+                                if (value != null && value.getPayloadCase() == SignalingMessage.PayloadCase.ACTOR_DIRECTIVE) {
+                                    var forward = value.getActorDirective();
+                                    LocalActorGraph.getInstance().forwardDirectiveToActor(
+                                            forward.getActorId(), forward.getDirective());
+                                }
+                            } catch (Exception e) {
+                                // 未捕获异常会导致 gRPC 客户端取消流，控制平面会看到 "client cancelled"
+                                log.error("处理控制平面下发的 Signaling 消息异常（流保持打开）: payloadCase={}",
+                                        value != null ? value.getPayloadCase() : "null", e);
+                            }
                         }
 
                         @Override
                         public void onError(Throwable t) {
-                            log.warn("DeviceAgent SignalingChannel 出错: {}", t.getMessage());
+                            log.warn("DeviceAgent SignalingChannel 出错: {}", t.getMessage(), t);
                         }
 
                         @Override
@@ -150,8 +163,13 @@ public class AdapterApplication {
                                                com.kekwy.iarnet.proto.ir.Resource totalResource,
                                                ArtifactStore artifactStore) {
         var cp = props.getControlPlane();
-        String deviceAgentAddr = props.getHost() + ":" + props.getDeviceAgent().getPort();
-        String controlPlaneAddr = cp.getHost() + ":" + cp.getPort();
+        String host = props.getHost() != null && !props.getHost().isBlank()
+                ? props.getHost() : "host.docker.internal";
+        String deviceAgentAddr = host + ":" + props.getDeviceAgent().getPort();
+        // 容器内 127.0.0.1 指向容器自身，需用宿主机可达地址
+        String cpHost = ("127.0.0.1".equals(cp.getHost()) || "localhost".equalsIgnoreCase(cp.getHost()))
+                ? host : cp.getHost();
+        String controlPlaneAddr = cpHost + ":" + cp.getPort();
 
         return switch (props.getType().toLowerCase()) {
             case "docker" -> new DockerEngine(

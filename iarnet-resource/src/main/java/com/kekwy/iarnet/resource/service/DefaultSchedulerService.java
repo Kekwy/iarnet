@@ -138,7 +138,19 @@ public class DefaultSchedulerService implements SchedulerService {
             }
         }
 
-        // 4) Phase 2: 按 Placement 真正部署，并构建 PhysicalWorkflowGraph
+        // 4) 部署前预注册 workflow，避免 Actor 早于 registerWorkflow 上报 Ready 时被丢弃
+        java.util.Set<String> allActorIds = new java.util.HashSet<>();
+        java.util.Set<String> sourceActorIds = new java.util.HashSet<>();
+        for (Node node : graph.getNodesList()) {
+            boolean isSource = node.getKind() == NodeKind.SOURCE;
+            for (Placement p : placementsByNode.getOrDefault(node.getId(), List.of())) {
+                allActorIds.add(p.actorId);
+                if (isSource) sourceActorIds.add(p.actorId);
+            }
+        }
+        workflowStartCoordinator.registerWorkflowEarly(workflowId, allActorIds, sourceActorIds);
+
+        // 5) Phase 2: 按 Placement 真正部署，并构建 PhysicalWorkflowGraph
         List<ActorDeployment> deployments = new ArrayList<>();
 
         for (Node node : graph.getNodesList()) {
@@ -253,6 +265,11 @@ public class DefaultSchedulerService implements SchedulerService {
                 && node.hasOperatorDetail()
                 && node.getOperatorDetail().hasFunction()) {
             reqBuilder.setFunctionDescriptor(node.getOperatorDetail().getFunction());
+        }
+        if (node.getKind() == NodeKind.SOURCE
+                && node.hasSourceDetail()
+                && node.getSourceDetail().getRowsCount() > 0) {
+            reqBuilder.addAllSourceRows(node.getSourceDetail().getRowsList());
         }
 
         DeployInstanceRequest deployReq = reqBuilder.build();
