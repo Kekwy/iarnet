@@ -30,7 +30,7 @@
         <!-- 引入 proto 生成的 Java 代码 + gRPC stub -->
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-proto</artifactId>
+            <artifactId>iarnet-proto-java</artifactId>
             <version>${project.version}</version>
         </dependency>
 
