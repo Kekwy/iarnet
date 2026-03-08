@@ -14,10 +14,12 @@
     <artifactId>iarnet-proto</artifactId>
     <packaging>jar</packaging>
     <name>iarnet-proto</name>
-    <description>Protobuf / gRPC 定义及生成代码（Java + Python）</description>
+    <description>Protobuf / gRPC 定义及生成代码（Java + Python + Go）</description>
 
     <properties>
         <skip.python.proto.generation>true</skip.python.proto.generation>
+        <!-- 各语言生成/人工代码目录：generated 放生成代码，support 放人工编写代码 -->
+        <proto.lang.dir>${project.basedir}/iarnet-proto-lang</proto.lang.dir>
     </properties>
 
     <dependencies>
