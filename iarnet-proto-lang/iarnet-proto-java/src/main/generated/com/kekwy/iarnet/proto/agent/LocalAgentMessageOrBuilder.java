@@ -27,7 +27,7 @@ public interface LocalAgentMessageOrBuilder extends
    * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
    * </pre>
    *
-   * <code>.iarnet.ir.Row row_delivery = 2;</code>
+   * <code>.iarnet.common.Value row_delivery = 2;</code>
    * @return Whether the rowDelivery field is set.
    */
   boolean hasRowDelivery();
@@ -36,25 +36,25 @@ public interface LocalAgentMessageOrBuilder extends
    * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
    * </pre>
    *
-   * <code>.iarnet.ir.Row row_delivery = 2;</code>
+   * <code>.iarnet.common.Value row_delivery = 2;</code>
    * @return The rowDelivery.
    */
-  com.kekwy.iarnet.proto.ir.Row getRowDelivery();
+  com.kekwy.iarnet.proto.common.Value getRowDelivery();
   /**
    * <pre>
    * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
    * </pre>
    *
-   * <code>.iarnet.ir.Row row_delivery = 2;</code>
+   * <code>.iarnet.common.Value row_delivery = 2;</code>
    */
-  com.kekwy.iarnet.proto.ir.RowOrBuilder getRowDeliveryOrBuilder();
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getRowDeliveryOrBuilder();
 
   /**
    * <pre>
    * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+   * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
    * @return Whether the assignFunction field is set.
    */
   boolean hasAssignFunction();
@@ -63,18 +63,18 @@ public interface LocalAgentMessageOrBuilder extends
    * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+   * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
    * @return The assignFunction.
    */
-  com.kekwy.iarnet.proto.ir.FunctionDescriptor getAssignFunction();
+  com.kekwy.iarnet.proto.common.FunctionDescriptor getAssignFunction();
   /**
    * <pre>
    * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+   * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
    */
-  com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder getAssignFunctionOrBuilder();
+  com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getAssignFunctionOrBuilder();
 
   /**
    * <pre>

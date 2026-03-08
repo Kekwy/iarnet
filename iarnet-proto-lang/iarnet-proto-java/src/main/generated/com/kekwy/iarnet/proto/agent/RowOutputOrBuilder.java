@@ -8,17 +8,17 @@ public interface RowOutputOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>.iarnet.ir.Row row = 1;</code>
+   * <code>.iarnet.common.Value row = 1;</code>
    * @return Whether the row field is set.
    */
   boolean hasRow();
   /**
-   * <code>.iarnet.ir.Row row = 1;</code>
+   * <code>.iarnet.common.Value row = 1;</code>
    * @return The row.
    */
-  com.kekwy.iarnet.proto.ir.Row getRow();
+  com.kekwy.iarnet.proto.common.Value getRow();
   /**
-   * <code>.iarnet.ir.Row row = 1;</code>
+   * <code>.iarnet.common.Value row = 1;</code>
    */
-  com.kekwy.iarnet.proto.ir.RowOrBuilder getRowOrBuilder();
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getRowOrBuilder();
 }

@@ -72,7 +72,7 @@ public interface DeployInstanceRequestOrBuilder extends
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.ir.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.Resource resource_request = 4;</code>
    * @return Whether the resourceRequest field is set.
    */
   boolean hasResourceRequest();
@@ -81,18 +81,18 @@ public interface DeployInstanceRequestOrBuilder extends
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.ir.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.Resource resource_request = 4;</code>
    * @return The resourceRequest.
    */
-  com.kekwy.iarnet.proto.ir.Resource getResourceRequest();
+  com.kekwy.iarnet.proto.common.Resource getResourceRequest();
   /**
    * <pre>
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.ir.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.Resource resource_request = 4;</code>
    */
-  com.kekwy.iarnet.proto.ir.ResourceOrBuilder getResourceRequestOrBuilder();
+  com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceRequestOrBuilder();
 
   /**
    * <pre>
@@ -207,7 +207,7 @@ java.lang.String defaultValue);
    * 算子使用的编程语言 / 运行时
    * </pre>
    *
-   * <code>.iarnet.ir.Lang lang = 7;</code>
+   * <code>.iarnet.common.Lang lang = 7;</code>
    * @return The enum numeric value on the wire for lang.
    */
   int getLangValue();
@@ -216,10 +216,10 @@ java.lang.String defaultValue);
    * 算子使用的编程语言 / 运行时
    * </pre>
    *
-   * <code>.iarnet.ir.Lang lang = 7;</code>
+   * <code>.iarnet.common.Lang lang = 7;</code>
    * @return The lang.
    */
-  com.kekwy.iarnet.proto.ir.Lang getLang();
+  com.kekwy.iarnet.proto.common.Lang getLang();
 
   /**
    * <pre>
@@ -308,7 +308,7 @@ java.lang.String defaultValue);
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+   * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
    * @return Whether the functionDescriptor field is set.
    */
   boolean hasFunctionDescriptor();
@@ -317,42 +317,42 @@ java.lang.String defaultValue);
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+   * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
    * @return The functionDescriptor.
    */
-  com.kekwy.iarnet.proto.ir.FunctionDescriptor getFunctionDescriptor();
+  com.kekwy.iarnet.proto.common.FunctionDescriptor getFunctionDescriptor();
   /**
    * <pre>
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+   * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
    */
-  com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder();
+  com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder();
 
   /**
    * <pre>
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
-  java.util.List<com.kekwy.iarnet.proto.ir.Row> 
+  java.util.List<com.kekwy.iarnet.proto.common.Value> 
       getSourceRowsList();
   /**
    * <pre>
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
-  com.kekwy.iarnet.proto.ir.Row getSourceRows(int index);
+  com.kekwy.iarnet.proto.common.Value getSourceRows(int index);
   /**
    * <pre>
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
   int getSourceRowsCount();
   /**
@@ -360,17 +360,17 @@ java.lang.String defaultValue);
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
-  java.util.List<? extends com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+  java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
       getSourceRowsOrBuilderList();
   /**
    * <pre>
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
-  com.kekwy.iarnet.proto.ir.RowOrBuilder getSourceRowsOrBuilder(
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getSourceRowsOrBuilder(
       int index);
 }

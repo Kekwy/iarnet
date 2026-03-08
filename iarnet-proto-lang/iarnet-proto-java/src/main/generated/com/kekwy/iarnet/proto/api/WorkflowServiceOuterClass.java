@@ -54,38 +54,38 @@ public final class WorkflowServiceOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n!iarnet/api/workflow_service.proto\022\niar" +
-      "net.api\032\030iarnet/ir/workflow.proto\"i\n\025Sub" +
-      "mitWorkflowRequest\022\'\n\005graph\030\001 \001(\0132\030.iarn" +
-      "et.ir.WorkflowGraph\022\020\n\010artifact\030\002 \001(\014\022\025\n" +
-      "\rartifact_name\030\003 \001(\t\"n\n\026SubmitWorkflowRe" +
-      "sponse\022\025\n\rsubmission_id\030\001 \001(\t\022,\n\006status\030" +
-      "\002 \001(\0162\034.iarnet.api.SubmissionStatus\022\017\n\007m" +
-      "essage\030\003 \001(\t\"1\n\030GetWorkflowStatusRequest" +
-      "\022\025\n\rsubmission_id\030\001 \001(\t\"o\n\031GetWorkflowSt" +
-      "atusResponse\022\025\n\rsubmission_id\030\001 \001(\t\022*\n\006s" +
-      "tatus\030\002 \001(\0162\032.iarnet.api.WorkflowStatus\022" +
-      "\017\n\007message\030\003 \001(\t\".\n\025CancelWorkflowReques" +
-      "t\022\025\n\rsubmission_id\030\001 \001(\t\":\n\026CancelWorkfl" +
-      "owResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007message\030\002" +
-      " \001(\t*Q\n\020SubmissionStatus\022!\n\035SUBMISSION_S" +
-      "TATUS_UNSPECIFIED\020\000\022\014\n\010ACCEPTED\020\001\022\014\n\010REJ" +
-      "ECTED\020\002*u\n\016WorkflowStatus\022\037\n\033WORKFLOW_ST" +
-      "ATUS_UNSPECIFIED\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNNI" +
-      "NG\020\002\022\r\n\tSUCCEEDED\020\003\022\n\n\006FAILED\020\004\022\r\n\tCANCE" +
-      "LLED\020\0052\245\002\n\017WorkflowService\022W\n\016SubmitWork" +
-      "flow\022!.iarnet.api.SubmitWorkflowRequest\032" +
-      "\".iarnet.api.SubmitWorkflowResponse\022`\n\021G" +
-      "etWorkflowStatus\022$.iarnet.api.GetWorkflo" +
-      "wStatusRequest\032%.iarnet.api.GetWorkflowS" +
-      "tatusResponse\022W\n\016CancelWorkflow\022!.iarnet" +
-      ".api.CancelWorkflowRequest\032\".iarnet.api." +
-      "CancelWorkflowResponseB\036\n\032com.kekwy.iarn" +
-      "et.proto.apiP\001b\006proto3"
+      "net.api\032\036iarnet/workflow/workflow.proto\"" +
+      "o\n\025SubmitWorkflowRequest\022-\n\005graph\030\001 \001(\0132" +
+      "\036.iarnet.workflow.WorkflowGraph\022\020\n\010artif" +
+      "act\030\002 \001(\014\022\025\n\rartifact_name\030\003 \001(\t\"n\n\026Subm" +
+      "itWorkflowResponse\022\025\n\rsubmission_id\030\001 \001(" +
+      "\t\022,\n\006status\030\002 \001(\0162\034.iarnet.api.Submissio" +
+      "nStatus\022\017\n\007message\030\003 \001(\t\"1\n\030GetWorkflowS" +
+      "tatusRequest\022\025\n\rsubmission_id\030\001 \001(\t\"o\n\031G" +
+      "etWorkflowStatusResponse\022\025\n\rsubmission_i" +
+      "d\030\001 \001(\t\022*\n\006status\030\002 \001(\0162\032.iarnet.api.Wor" +
+      "kflowStatus\022\017\n\007message\030\003 \001(\t\".\n\025CancelWo" +
+      "rkflowRequest\022\025\n\rsubmission_id\030\001 \001(\t\":\n\026" +
+      "CancelWorkflowResponse\022\017\n\007success\030\001 \001(\010\022" +
+      "\017\n\007message\030\002 \001(\t*Q\n\020SubmissionStatus\022!\n\035" +
+      "SUBMISSION_STATUS_UNSPECIFIED\020\000\022\014\n\010ACCEP" +
+      "TED\020\001\022\014\n\010REJECTED\020\002*u\n\016WorkflowStatus\022\037\n" +
+      "\033WORKFLOW_STATUS_UNSPECIFIED\020\000\022\013\n\007PENDIN" +
+      "G\020\001\022\013\n\007RUNNING\020\002\022\r\n\tSUCCEEDED\020\003\022\n\n\006FAILE" +
+      "D\020\004\022\r\n\tCANCELLED\020\0052\245\002\n\017WorkflowService\022W" +
+      "\n\016SubmitWorkflow\022!.iarnet.api.SubmitWork" +
+      "flowRequest\032\".iarnet.api.SubmitWorkflowR" +
+      "esponse\022`\n\021GetWorkflowStatus\022$.iarnet.ap" +
+      "i.GetWorkflowStatusRequest\032%.iarnet.api." +
+      "GetWorkflowStatusResponse\022W\n\016CancelWorkf" +
+      "low\022!.iarnet.api.CancelWorkflowRequest\032\"" +
+      ".iarnet.api.CancelWorkflowResponseB\036\n\032co" +
+      "m.kekwy.iarnet.proto.apiP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          com.kekwy.iarnet.proto.ir.Workflow.getDescriptor(),
+          com.kekwy.iarnet.proto.workflow.Workflow.getDescriptor(),
         });
     internal_static_iarnet_api_SubmitWorkflowRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -123,7 +123,7 @@ public final class WorkflowServiceOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_api_CancelWorkflowResponse_descriptor,
         new java.lang.String[] { "Success", "Message", });
-    com.kekwy.iarnet.proto.ir.Workflow.getDescriptor();
+    com.kekwy.iarnet.proto.workflow.Workflow.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

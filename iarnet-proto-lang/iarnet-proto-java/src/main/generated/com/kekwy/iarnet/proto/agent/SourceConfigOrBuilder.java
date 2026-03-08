@@ -8,26 +8,26 @@ public interface SourceConfigOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
-  java.util.List<com.kekwy.iarnet.proto.ir.Row> 
+  java.util.List<com.kekwy.iarnet.proto.common.Value> 
       getRowsList();
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
-  com.kekwy.iarnet.proto.ir.Row getRows(int index);
+  com.kekwy.iarnet.proto.common.Value getRows(int index);
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
   int getRowsCount();
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
-  java.util.List<? extends com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+  java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
       getRowsOrBuilderList();
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
-  com.kekwy.iarnet.proto.ir.RowOrBuilder getRowsOrBuilder(
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getRowsOrBuilder(
       int index);
 }

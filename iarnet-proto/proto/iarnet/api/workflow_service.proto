@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package iarnet.api;
 
-import "iarnet/ir/workflow.proto";
+import "iarnet/workflow/workflow.proto";
 
 option java_package = "com.kekwy.iarnet.proto.api";
 option java_multiple_files = true;
@@ -26,7 +26,7 @@ service WorkflowService {
 
 message SubmitWorkflowRequest {
   // 工作流图 IR
-  iarnet.ir.WorkflowGraph graph = 1;
+  iarnet.workflow.WorkflowGraph graph = 1;
 
   // 打包后的工件（Java: JAR 字节, Python: tar.gz 字节）
   // 后端用于部署算子运行时环境

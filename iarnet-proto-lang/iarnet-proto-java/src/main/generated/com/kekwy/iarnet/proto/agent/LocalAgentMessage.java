@@ -129,7 +129,7 @@ private static final long serialVersionUID = 0L;
    * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
    * </pre>
    *
-   * <code>.iarnet.ir.Row row_delivery = 2;</code>
+   * <code>.iarnet.common.Value row_delivery = 2;</code>
    * @return Whether the rowDelivery field is set.
    */
   @java.lang.Override
@@ -141,29 +141,29 @@ private static final long serialVersionUID = 0L;
    * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
    * </pre>
    *
-   * <code>.iarnet.ir.Row row_delivery = 2;</code>
+   * <code>.iarnet.common.Value row_delivery = 2;</code>
    * @return The rowDelivery.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Row getRowDelivery() {
+  public com.kekwy.iarnet.proto.common.Value getRowDelivery() {
     if (payloadCase_ == 2) {
-       return (com.kekwy.iarnet.proto.ir.Row) payload_;
+       return (com.kekwy.iarnet.proto.common.Value) payload_;
     }
-    return com.kekwy.iarnet.proto.ir.Row.getDefaultInstance();
+    return com.kekwy.iarnet.proto.common.Value.getDefaultInstance();
   }
   /**
    * <pre>
    * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
    * </pre>
    *
-   * <code>.iarnet.ir.Row row_delivery = 2;</code>
+   * <code>.iarnet.common.Value row_delivery = 2;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.RowOrBuilder getRowDeliveryOrBuilder() {
+  public com.kekwy.iarnet.proto.common.ValueOrBuilder getRowDeliveryOrBuilder() {
     if (payloadCase_ == 2) {
-       return (com.kekwy.iarnet.proto.ir.Row) payload_;
+       return (com.kekwy.iarnet.proto.common.Value) payload_;
     }
-    return com.kekwy.iarnet.proto.ir.Row.getDefaultInstance();
+    return com.kekwy.iarnet.proto.common.Value.getDefaultInstance();
   }
 
   public static final int ASSIGN_FUNCTION_FIELD_NUMBER = 3;
@@ -172,7 +172,7 @@ private static final long serialVersionUID = 0L;
    * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+   * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
    * @return Whether the assignFunction field is set.
    */
   @java.lang.Override
@@ -184,29 +184,29 @@ private static final long serialVersionUID = 0L;
    * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+   * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
    * @return The assignFunction.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.FunctionDescriptor getAssignFunction() {
+  public com.kekwy.iarnet.proto.common.FunctionDescriptor getAssignFunction() {
     if (payloadCase_ == 3) {
-       return (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_;
+       return (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_;
     }
-    return com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance();
+    return com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance();
   }
   /**
    * <pre>
    * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+   * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder getAssignFunctionOrBuilder() {
+  public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getAssignFunctionOrBuilder() {
     if (payloadCase_ == 3) {
-       return (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_;
+       return (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_;
     }
-    return com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance();
+    return com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance();
   }
 
   public static final int ACTOR_DIRECTIVE_FIELD_NUMBER = 4;
@@ -356,10 +356,10 @@ private static final long serialVersionUID = 0L;
       output.writeMessage(1, (com.kekwy.iarnet.proto.agent.LocalRegisterActor) payload_);
     }
     if (payloadCase_ == 2) {
-      output.writeMessage(2, (com.kekwy.iarnet.proto.ir.Row) payload_);
+      output.writeMessage(2, (com.kekwy.iarnet.proto.common.Value) payload_);
     }
     if (payloadCase_ == 3) {
-      output.writeMessage(3, (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_);
+      output.writeMessage(3, (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_);
     }
     if (payloadCase_ == 4) {
       output.writeMessage(4, (com.kekwy.iarnet.proto.actor.ActorDirective) payload_);
@@ -385,11 +385,11 @@ private static final long serialVersionUID = 0L;
     }
     if (payloadCase_ == 2) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, (com.kekwy.iarnet.proto.ir.Row) payload_);
+        .computeMessageSize(2, (com.kekwy.iarnet.proto.common.Value) payload_);
     }
     if (payloadCase_ == 3) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(3, (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_);
+        .computeMessageSize(3, (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_);
     }
     if (payloadCase_ == 4) {
       size += com.google.protobuf.CodedOutputStream
@@ -1016,13 +1016,13 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder> rowDeliveryBuilder_;
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> rowDeliveryBuilder_;
     /**
      * <pre>
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      * @return Whether the rowDelivery field is set.
      */
     @java.lang.Override
@@ -1034,21 +1034,21 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      * @return The rowDelivery.
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.ir.Row getRowDelivery() {
+    public com.kekwy.iarnet.proto.common.Value getRowDelivery() {
       if (rowDeliveryBuilder_ == null) {
         if (payloadCase_ == 2) {
-          return (com.kekwy.iarnet.proto.ir.Row) payload_;
+          return (com.kekwy.iarnet.proto.common.Value) payload_;
         }
-        return com.kekwy.iarnet.proto.ir.Row.getDefaultInstance();
+        return com.kekwy.iarnet.proto.common.Value.getDefaultInstance();
       } else {
         if (payloadCase_ == 2) {
           return rowDeliveryBuilder_.getMessage();
         }
-        return com.kekwy.iarnet.proto.ir.Row.getDefaultInstance();
+        return com.kekwy.iarnet.proto.common.Value.getDefaultInstance();
       }
     }
     /**
@@ -1056,9 +1056,9 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
-    public Builder setRowDelivery(com.kekwy.iarnet.proto.ir.Row value) {
+    public Builder setRowDelivery(com.kekwy.iarnet.proto.common.Value value) {
       if (rowDeliveryBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1076,10 +1076,10 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
     public Builder setRowDelivery(
-        com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (rowDeliveryBuilder_ == null) {
         payload_ = builderForValue.build();
         onChanged();
@@ -1094,13 +1094,13 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
-    public Builder mergeRowDelivery(com.kekwy.iarnet.proto.ir.Row value) {
+    public Builder mergeRowDelivery(com.kekwy.iarnet.proto.common.Value value) {
       if (rowDeliveryBuilder_ == null) {
         if (payloadCase_ == 2 &&
-            payload_ != com.kekwy.iarnet.proto.ir.Row.getDefaultInstance()) {
-          payload_ = com.kekwy.iarnet.proto.ir.Row.newBuilder((com.kekwy.iarnet.proto.ir.Row) payload_)
+            payload_ != com.kekwy.iarnet.proto.common.Value.getDefaultInstance()) {
+          payload_ = com.kekwy.iarnet.proto.common.Value.newBuilder((com.kekwy.iarnet.proto.common.Value) payload_)
               .mergeFrom(value).buildPartial();
         } else {
           payload_ = value;
@@ -1121,7 +1121,7 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
     public Builder clearRowDelivery() {
       if (rowDeliveryBuilder_ == null) {
@@ -1144,9 +1144,9 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder getRowDeliveryBuilder() {
+    public com.kekwy.iarnet.proto.common.Value.Builder getRowDeliveryBuilder() {
       return getRowDeliveryFieldBuilder().getBuilder();
     }
     /**
@@ -1154,17 +1154,17 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.ir.RowOrBuilder getRowDeliveryOrBuilder() {
+    public com.kekwy.iarnet.proto.common.ValueOrBuilder getRowDeliveryOrBuilder() {
       if ((payloadCase_ == 2) && (rowDeliveryBuilder_ != null)) {
         return rowDeliveryBuilder_.getMessageOrBuilder();
       } else {
         if (payloadCase_ == 2) {
-          return (com.kekwy.iarnet.proto.ir.Row) payload_;
+          return (com.kekwy.iarnet.proto.common.Value) payload_;
         }
-        return com.kekwy.iarnet.proto.ir.Row.getDefaultInstance();
+        return com.kekwy.iarnet.proto.common.Value.getDefaultInstance();
       }
     }
     /**
@@ -1172,18 +1172,18 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：上游 Actor 经 Device Agent 转发的行数据，下游 Actor 可反序列化为 Java 对象
      * </pre>
      *
-     * <code>.iarnet.ir.Row row_delivery = 2;</code>
+     * <code>.iarnet.common.Value row_delivery = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> 
         getRowDeliveryFieldBuilder() {
       if (rowDeliveryBuilder_ == null) {
         if (!(payloadCase_ == 2)) {
-          payload_ = com.kekwy.iarnet.proto.ir.Row.getDefaultInstance();
+          payload_ = com.kekwy.iarnet.proto.common.Value.getDefaultInstance();
         }
         rowDeliveryBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder>(
-                (com.kekwy.iarnet.proto.ir.Row) payload_,
+            com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder>(
+                (com.kekwy.iarnet.proto.common.Value) payload_,
                 getParentForChildren(),
                 isClean());
         payload_ = null;
@@ -1194,13 +1194,13 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.FunctionDescriptor, com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder> assignFunctionBuilder_;
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> assignFunctionBuilder_;
     /**
      * <pre>
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      * @return Whether the assignFunction field is set.
      */
     @java.lang.Override
@@ -1212,21 +1212,21 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      * @return The assignFunction.
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.ir.FunctionDescriptor getAssignFunction() {
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor getAssignFunction() {
       if (assignFunctionBuilder_ == null) {
         if (payloadCase_ == 3) {
-          return (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_;
+          return (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_;
         }
-        return com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance();
+        return com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance();
       } else {
         if (payloadCase_ == 3) {
           return assignFunctionBuilder_.getMessage();
         }
-        return com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance();
+        return com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance();
       }
     }
     /**
@@ -1234,9 +1234,9 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
-    public Builder setAssignFunction(com.kekwy.iarnet.proto.ir.FunctionDescriptor value) {
+    public Builder setAssignFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (assignFunctionBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1254,10 +1254,10 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
     public Builder setAssignFunction(
-        com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder builderForValue) {
       if (assignFunctionBuilder_ == null) {
         payload_ = builderForValue.build();
         onChanged();
@@ -1272,13 +1272,13 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
-    public Builder mergeAssignFunction(com.kekwy.iarnet.proto.ir.FunctionDescriptor value) {
+    public Builder mergeAssignFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (assignFunctionBuilder_ == null) {
         if (payloadCase_ == 3 &&
-            payload_ != com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance()) {
-          payload_ = com.kekwy.iarnet.proto.ir.FunctionDescriptor.newBuilder((com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_)
+            payload_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
+          payload_ = com.kekwy.iarnet.proto.common.FunctionDescriptor.newBuilder((com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_)
               .mergeFrom(value).buildPartial();
         } else {
           payload_ = value;
@@ -1299,7 +1299,7 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
     public Builder clearAssignFunction() {
       if (assignFunctionBuilder_ == null) {
@@ -1322,9 +1322,9 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
-    public com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder getAssignFunctionBuilder() {
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getAssignFunctionBuilder() {
       return getAssignFunctionFieldBuilder().getBuilder();
     }
     /**
@@ -1332,17 +1332,17 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder getAssignFunctionOrBuilder() {
+    public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getAssignFunctionOrBuilder() {
       if ((payloadCase_ == 3) && (assignFunctionBuilder_ != null)) {
         return assignFunctionBuilder_.getMessageOrBuilder();
       } else {
         if (payloadCase_ == 3) {
-          return (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_;
+          return (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_;
         }
-        return com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance();
+        return com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance();
       }
     }
     /**
@@ -1350,18 +1350,18 @@ private static final long serialVersionUID = 0L;
      * 服务端 → 客户端：为当前 Actor 分配要执行的函数（来自 IR FunctionDescriptor）
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor assign_function = 3;</code>
+     * <code>.iarnet.common.FunctionDescriptor assign_function = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.FunctionDescriptor, com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder> 
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> 
         getAssignFunctionFieldBuilder() {
       if (assignFunctionBuilder_ == null) {
         if (!(payloadCase_ == 3)) {
-          payload_ = com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance();
+          payload_ = com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance();
         }
         assignFunctionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.FunctionDescriptor, com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder>(
-                (com.kekwy.iarnet.proto.ir.FunctionDescriptor) payload_,
+            com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder>(
+                (com.kekwy.iarnet.proto.common.FunctionDescriptor) payload_,
                 getParentForChildren(),
                 isClean());
         payload_ = null;

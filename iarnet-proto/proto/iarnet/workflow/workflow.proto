@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package iarnet.workflow;
 
-import "iarnet/workflow/common.proto";
+import "iarnet/common/function.proto";
+import "iarnet/common/resource.proto";
+import "iarnet/common/type.proto";
 
 option java_package = "com.kekwy.iarnet.proto.workflow";
 option java_multiple_files = true;
@@ -16,28 +18,7 @@ message WorkflowGraph {
   repeated Edge edges       = 4;
 }
 
-// ======================== 函数描述（语言无关） ========================
 
-message FunctionDescriptor {
-  Lang lang = 1;
-
-  // 函数定位标识
-  // Java:   完整类名，如 "com.example.MyMapper"
-  // Python: "模块:函数名"，如 "transforms:to_upper"
-  string function_identifier = 2;
-
-  // 序列化的函数体（可选）
-  // Java:   java.io.Serializable 序列化字节
-  // Python: pickle / cloudpickle 序列化字节
-  // 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
-  bytes serialized_function = 3;
-
-  // 函数代码所在的工件路径（可选）
-  // Java:   JAR 文件路径
-  // Python: 源码目录路径（requirements.txt 须位于同目录下）
-  // 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-  string source_path = 4;
-}
 
 // ======================== 边 ========================
 
@@ -58,11 +39,11 @@ enum NodeKind {
 message Node {
   string   id          = 1;
   NodeKind kind        = 2;
-  Type     input_type  = 3;
-  Type     output_type = 4;
-  FunctionDescriptor function      = 5;
+  common.Type     input_type  = 3;
+  common.Type     output_type = 4;
+  common.FunctionDescriptor function      = 5;
   int32              replicas      = 6;
-  Resource           resource      = 7;
+  common.Resource           resource      = 7;
 
   // 根据 kind 使用对应的 detail
   oneof detail {
@@ -89,7 +70,7 @@ message SourceNodeDetail {
 }
 
 message ConstantSourceDetail {
-  repeated Value values = 1;
+  repeated common.Value values = 1;
 }
 
 message FileSourceDetail {

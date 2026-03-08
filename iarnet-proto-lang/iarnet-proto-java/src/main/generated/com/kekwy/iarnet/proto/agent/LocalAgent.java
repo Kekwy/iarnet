@@ -45,30 +45,31 @@ public final class LocalAgent {
     java.lang.String[] descriptorData = {
       "\n\036iarnet/agent/local_agent.proto\022\014iarnet" +
       ".agent\032 iarnet/actor/actor_control.proto" +
-      "\032\026iarnet/ir/common.proto\032\030iarnet/ir/work" +
-      "flow.proto\"\331\002\n\021LocalAgentMessage\022:\n\016regi" +
-      "ster_actor\030\001 \001(\0132 .iarnet.agent.LocalReg" +
-      "isterActorH\000\022&\n\014row_delivery\030\002 \001(\0132\016.iar" +
-      "net.ir.RowH\000\0228\n\017assign_function\030\003 \001(\0132\035." +
-      "iarnet.ir.FunctionDescriptorH\000\0227\n\017actor_" +
-      "directive\030\004 \001(\0132\034.iarnet.actor.ActorDire" +
-      "ctiveH\000\022-\n\nrow_output\030\005 \001(\0132\027.iarnet.age" +
-      "nt.RowOutputH\000\0223\n\rsource_config\030\006 \001(\0132\032." +
-      "iarnet.agent.SourceConfigH\000B\t\n\007payload\"(" +
-      "\n\022LocalRegisterActor\022\022\n\nactor_addr\030\001 \001(\t" +
-      "\"(\n\tRowOutput\022\033\n\003row\030\001 \001(\0132\016.iarnet.ir.R" +
-      "ow\",\n\014SourceConfig\022\034\n\004rows\030\001 \003(\0132\016.iarne" +
-      "t.ir.Row2i\n\021LocalAgentService\022T\n\014LocalCh" +
-      "annel\022\037.iarnet.agent.LocalAgentMessage\032\037" +
-      ".iarnet.agent.LocalAgentMessage(\0010\001B \n\034c" +
-      "om.kekwy.iarnet.proto.agentP\001b\006proto3"
+      "\032\030iarnet/common/type.proto\032\034iarnet/commo" +
+      "n/function.proto\"\343\002\n\021LocalAgentMessage\022:" +
+      "\n\016register_actor\030\001 \001(\0132 .iarnet.agent.Lo" +
+      "calRegisterActorH\000\022,\n\014row_delivery\030\002 \001(\013" +
+      "2\024.iarnet.common.ValueH\000\022<\n\017assign_funct" +
+      "ion\030\003 \001(\0132!.iarnet.common.FunctionDescri" +
+      "ptorH\000\0227\n\017actor_directive\030\004 \001(\0132\034.iarnet" +
+      ".actor.ActorDirectiveH\000\022-\n\nrow_output\030\005 " +
+      "\001(\0132\027.iarnet.agent.RowOutputH\000\0223\n\rsource" +
+      "_config\030\006 \001(\0132\032.iarnet.agent.SourceConfi" +
+      "gH\000B\t\n\007payload\"(\n\022LocalRegisterActor\022\022\n\n" +
+      "actor_addr\030\001 \001(\t\".\n\tRowOutput\022!\n\003row\030\001 \001" +
+      "(\0132\024.iarnet.common.Value\"2\n\014SourceConfig" +
+      "\022\"\n\004rows\030\001 \003(\0132\024.iarnet.common.Value2i\n\021" +
+      "LocalAgentService\022T\n\014LocalChannel\022\037.iarn" +
+      "et.agent.LocalAgentMessage\032\037.iarnet.agen" +
+      "t.LocalAgentMessage(\0010\001B \n\034com.kekwy.iar" +
+      "net.proto.agentP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.kekwy.iarnet.proto.actor.ActorControl.getDescriptor(),
-          com.kekwy.iarnet.proto.ir.Common.getDescriptor(),
-          com.kekwy.iarnet.proto.ir.Workflow.getDescriptor(),
+          com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor(),
+          com.kekwy.iarnet.proto.common.Function.getDescriptor(),
         });
     internal_static_iarnet_agent_LocalAgentMessage_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -95,8 +96,8 @@ public final class LocalAgent {
         internal_static_iarnet_agent_SourceConfig_descriptor,
         new java.lang.String[] { "Rows", });
     com.kekwy.iarnet.proto.actor.ActorControl.getDescriptor();
-    com.kekwy.iarnet.proto.ir.Common.getDescriptor();
-    com.kekwy.iarnet.proto.ir.Workflow.getDescriptor();
+    com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor();
+    com.kekwy.iarnet.proto.common.Function.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

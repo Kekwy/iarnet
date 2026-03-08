@@ -12,7 +12,7 @@ public interface SubmitWorkflowRequestOrBuilder extends
    * 工作流图 IR
    * </pre>
    *
-   * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+   * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
    * @return Whether the graph field is set.
    */
   boolean hasGraph();
@@ -21,18 +21,18 @@ public interface SubmitWorkflowRequestOrBuilder extends
    * 工作流图 IR
    * </pre>
    *
-   * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+   * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
    * @return The graph.
    */
-  com.kekwy.iarnet.proto.ir.WorkflowGraph getGraph();
+  com.kekwy.iarnet.proto.workflow.WorkflowGraph getGraph();
   /**
    * <pre>
    * 工作流图 IR
    * </pre>
    *
-   * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+   * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
    */
-  com.kekwy.iarnet.proto.ir.WorkflowGraphOrBuilder getGraphOrBuilder();
+  com.kekwy.iarnet.proto.workflow.WorkflowGraphOrBuilder getGraphOrBuilder();
 
   /**
    * <pre>

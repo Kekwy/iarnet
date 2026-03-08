@@ -48,9 +48,9 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TOTAL_FIELD_NUMBER = 1;
-  private com.kekwy.iarnet.proto.ir.Resource total_;
+  private com.kekwy.iarnet.proto.common.Resource total_;
   /**
-   * <code>.iarnet.ir.Resource total = 1;</code>
+   * <code>.iarnet.common.Resource total = 1;</code>
    * @return Whether the total field is set.
    */
   @java.lang.Override
@@ -58,25 +58,25 @@ private static final long serialVersionUID = 0L;
     return total_ != null;
   }
   /**
-   * <code>.iarnet.ir.Resource total = 1;</code>
+   * <code>.iarnet.common.Resource total = 1;</code>
    * @return The total.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Resource getTotal() {
-    return total_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : total_;
+  public com.kekwy.iarnet.proto.common.Resource getTotal() {
+    return total_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : total_;
   }
   /**
-   * <code>.iarnet.ir.Resource total = 1;</code>
+   * <code>.iarnet.common.Resource total = 1;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getTotalOrBuilder() {
-    return total_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : total_;
+  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getTotalOrBuilder() {
+    return total_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : total_;
   }
 
   public static final int USED_FIELD_NUMBER = 2;
-  private com.kekwy.iarnet.proto.ir.Resource used_;
+  private com.kekwy.iarnet.proto.common.Resource used_;
   /**
-   * <code>.iarnet.ir.Resource used = 2;</code>
+   * <code>.iarnet.common.Resource used = 2;</code>
    * @return Whether the used field is set.
    */
   @java.lang.Override
@@ -84,25 +84,25 @@ private static final long serialVersionUID = 0L;
     return used_ != null;
   }
   /**
-   * <code>.iarnet.ir.Resource used = 2;</code>
+   * <code>.iarnet.common.Resource used = 2;</code>
    * @return The used.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Resource getUsed() {
-    return used_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : used_;
+  public com.kekwy.iarnet.proto.common.Resource getUsed() {
+    return used_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : used_;
   }
   /**
-   * <code>.iarnet.ir.Resource used = 2;</code>
+   * <code>.iarnet.common.Resource used = 2;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getUsedOrBuilder() {
-    return used_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : used_;
+  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getUsedOrBuilder() {
+    return used_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : used_;
   }
 
   public static final int AVAILABLE_FIELD_NUMBER = 3;
-  private com.kekwy.iarnet.proto.ir.Resource available_;
+  private com.kekwy.iarnet.proto.common.Resource available_;
   /**
-   * <code>.iarnet.ir.Resource available = 3;</code>
+   * <code>.iarnet.common.Resource available = 3;</code>
    * @return Whether the available field is set.
    */
   @java.lang.Override
@@ -110,19 +110,19 @@ private static final long serialVersionUID = 0L;
     return available_ != null;
   }
   /**
-   * <code>.iarnet.ir.Resource available = 3;</code>
+   * <code>.iarnet.common.Resource available = 3;</code>
    * @return The available.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Resource getAvailable() {
-    return available_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : available_;
+  public com.kekwy.iarnet.proto.common.Resource getAvailable() {
+    return available_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : available_;
   }
   /**
-   * <code>.iarnet.ir.Resource available = 3;</code>
+   * <code>.iarnet.common.Resource available = 3;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getAvailableOrBuilder() {
-    return available_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : available_;
+  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getAvailableOrBuilder() {
+    return available_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : available_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -537,31 +537,31 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private com.kekwy.iarnet.proto.ir.Resource total_;
+    private com.kekwy.iarnet.proto.common.Resource total_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> totalBuilder_;
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> totalBuilder_;
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      * @return Whether the total field is set.
      */
     public boolean hasTotal() {
       return ((bitField0_ & 0x00000001) != 0);
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      * @return The total.
      */
-    public com.kekwy.iarnet.proto.ir.Resource getTotal() {
+    public com.kekwy.iarnet.proto.common.Resource getTotal() {
       if (totalBuilder_ == null) {
-        return total_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : total_;
+        return total_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : total_;
       } else {
         return totalBuilder_.getMessage();
       }
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
-    public Builder setTotal(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder setTotal(com.kekwy.iarnet.proto.common.Resource value) {
       if (totalBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -575,10 +575,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
     public Builder setTotal(
-        com.kekwy.iarnet.proto.ir.Resource.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
       if (totalBuilder_ == null) {
         total_ = builderForValue.build();
       } else {
@@ -589,13 +589,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
-    public Builder mergeTotal(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder mergeTotal(com.kekwy.iarnet.proto.common.Resource value) {
       if (totalBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0) &&
           total_ != null &&
-          total_ != com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance()) {
+          total_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
           getTotalBuilder().mergeFrom(value);
         } else {
           total_ = value;
@@ -608,7 +608,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
     public Builder clearTotal() {
       bitField0_ = (bitField0_ & ~0x00000001);
@@ -621,33 +621,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Resource.Builder getTotalBuilder() {
+    public com.kekwy.iarnet.proto.common.Resource.Builder getTotalBuilder() {
       bitField0_ |= 0x00000001;
       onChanged();
       return getTotalFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getTotalOrBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getTotalOrBuilder() {
       if (totalBuilder_ != null) {
         return totalBuilder_.getMessageOrBuilder();
       } else {
         return total_ == null ?
-            com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : total_;
+            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : total_;
       }
     }
     /**
-     * <code>.iarnet.ir.Resource total = 1;</code>
+     * <code>.iarnet.common.Resource total = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> 
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
         getTotalFieldBuilder() {
       if (totalBuilder_ == null) {
         totalBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder>(
+            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
                 getTotal(),
                 getParentForChildren(),
                 isClean());
@@ -656,31 +656,31 @@ private static final long serialVersionUID = 0L;
       return totalBuilder_;
     }
 
-    private com.kekwy.iarnet.proto.ir.Resource used_;
+    private com.kekwy.iarnet.proto.common.Resource used_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> usedBuilder_;
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> usedBuilder_;
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      * @return Whether the used field is set.
      */
     public boolean hasUsed() {
       return ((bitField0_ & 0x00000002) != 0);
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      * @return The used.
      */
-    public com.kekwy.iarnet.proto.ir.Resource getUsed() {
+    public com.kekwy.iarnet.proto.common.Resource getUsed() {
       if (usedBuilder_ == null) {
-        return used_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : used_;
+        return used_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : used_;
       } else {
         return usedBuilder_.getMessage();
       }
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
-    public Builder setUsed(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder setUsed(com.kekwy.iarnet.proto.common.Resource value) {
       if (usedBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -694,10 +694,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
     public Builder setUsed(
-        com.kekwy.iarnet.proto.ir.Resource.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
       if (usedBuilder_ == null) {
         used_ = builderForValue.build();
       } else {
@@ -708,13 +708,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
-    public Builder mergeUsed(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder mergeUsed(com.kekwy.iarnet.proto.common.Resource value) {
       if (usedBuilder_ == null) {
         if (((bitField0_ & 0x00000002) != 0) &&
           used_ != null &&
-          used_ != com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance()) {
+          used_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
           getUsedBuilder().mergeFrom(value);
         } else {
           used_ = value;
@@ -727,7 +727,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
     public Builder clearUsed() {
       bitField0_ = (bitField0_ & ~0x00000002);
@@ -740,33 +740,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Resource.Builder getUsedBuilder() {
+    public com.kekwy.iarnet.proto.common.Resource.Builder getUsedBuilder() {
       bitField0_ |= 0x00000002;
       onChanged();
       return getUsedFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
-    public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getUsedOrBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getUsedOrBuilder() {
       if (usedBuilder_ != null) {
         return usedBuilder_.getMessageOrBuilder();
       } else {
         return used_ == null ?
-            com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : used_;
+            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : used_;
       }
     }
     /**
-     * <code>.iarnet.ir.Resource used = 2;</code>
+     * <code>.iarnet.common.Resource used = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> 
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
         getUsedFieldBuilder() {
       if (usedBuilder_ == null) {
         usedBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder>(
+            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
                 getUsed(),
                 getParentForChildren(),
                 isClean());
@@ -775,31 +775,31 @@ private static final long serialVersionUID = 0L;
       return usedBuilder_;
     }
 
-    private com.kekwy.iarnet.proto.ir.Resource available_;
+    private com.kekwy.iarnet.proto.common.Resource available_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> availableBuilder_;
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> availableBuilder_;
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      * @return Whether the available field is set.
      */
     public boolean hasAvailable() {
       return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      * @return The available.
      */
-    public com.kekwy.iarnet.proto.ir.Resource getAvailable() {
+    public com.kekwy.iarnet.proto.common.Resource getAvailable() {
       if (availableBuilder_ == null) {
-        return available_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : available_;
+        return available_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : available_;
       } else {
         return availableBuilder_.getMessage();
       }
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
-    public Builder setAvailable(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder setAvailable(com.kekwy.iarnet.proto.common.Resource value) {
       if (availableBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -813,10 +813,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
     public Builder setAvailable(
-        com.kekwy.iarnet.proto.ir.Resource.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
       if (availableBuilder_ == null) {
         available_ = builderForValue.build();
       } else {
@@ -827,13 +827,13 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
-    public Builder mergeAvailable(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder mergeAvailable(com.kekwy.iarnet.proto.common.Resource value) {
       if (availableBuilder_ == null) {
         if (((bitField0_ & 0x00000004) != 0) &&
           available_ != null &&
-          available_ != com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance()) {
+          available_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
           getAvailableBuilder().mergeFrom(value);
         } else {
           available_ = value;
@@ -846,7 +846,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
     public Builder clearAvailable() {
       bitField0_ = (bitField0_ & ~0x00000004);
@@ -859,33 +859,33 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Resource.Builder getAvailableBuilder() {
+    public com.kekwy.iarnet.proto.common.Resource.Builder getAvailableBuilder() {
       bitField0_ |= 0x00000004;
       onChanged();
       return getAvailableFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
-    public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getAvailableOrBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getAvailableOrBuilder() {
       if (availableBuilder_ != null) {
         return availableBuilder_.getMessageOrBuilder();
       } else {
         return available_ == null ?
-            com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : available_;
+            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : available_;
       }
     }
     /**
-     * <code>.iarnet.ir.Resource available = 3;</code>
+     * <code>.iarnet.common.Resource available = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> 
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
         getAvailableFieldBuilder() {
       if (availableBuilder_ == null) {
         availableBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder>(
+            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
                 getAvailable(),
                 getParentForChildren(),
                 isClean());

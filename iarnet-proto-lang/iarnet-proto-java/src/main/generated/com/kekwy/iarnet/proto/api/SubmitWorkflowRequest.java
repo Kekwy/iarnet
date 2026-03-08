@@ -46,13 +46,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int GRAPH_FIELD_NUMBER = 1;
-  private com.kekwy.iarnet.proto.ir.WorkflowGraph graph_;
+  private com.kekwy.iarnet.proto.workflow.WorkflowGraph graph_;
   /**
    * <pre>
    * 工作流图 IR
    * </pre>
    *
-   * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+   * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
    * @return Whether the graph field is set.
    */
   @java.lang.Override
@@ -64,23 +64,23 @@ private static final long serialVersionUID = 0L;
    * 工作流图 IR
    * </pre>
    *
-   * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+   * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
    * @return The graph.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.WorkflowGraph getGraph() {
-    return graph_ == null ? com.kekwy.iarnet.proto.ir.WorkflowGraph.getDefaultInstance() : graph_;
+  public com.kekwy.iarnet.proto.workflow.WorkflowGraph getGraph() {
+    return graph_ == null ? com.kekwy.iarnet.proto.workflow.WorkflowGraph.getDefaultInstance() : graph_;
   }
   /**
    * <pre>
    * 工作流图 IR
    * </pre>
    *
-   * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+   * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.WorkflowGraphOrBuilder getGraphOrBuilder() {
-    return graph_ == null ? com.kekwy.iarnet.proto.ir.WorkflowGraph.getDefaultInstance() : graph_;
+  public com.kekwy.iarnet.proto.workflow.WorkflowGraphOrBuilder getGraphOrBuilder() {
+    return graph_ == null ? com.kekwy.iarnet.proto.workflow.WorkflowGraph.getDefaultInstance() : graph_;
   }
 
   public static final int ARTIFACT_FIELD_NUMBER = 2;
@@ -529,15 +529,15 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private com.kekwy.iarnet.proto.ir.WorkflowGraph graph_;
+    private com.kekwy.iarnet.proto.workflow.WorkflowGraph graph_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.WorkflowGraph, com.kekwy.iarnet.proto.ir.WorkflowGraph.Builder, com.kekwy.iarnet.proto.ir.WorkflowGraphOrBuilder> graphBuilder_;
+        com.kekwy.iarnet.proto.workflow.WorkflowGraph, com.kekwy.iarnet.proto.workflow.WorkflowGraph.Builder, com.kekwy.iarnet.proto.workflow.WorkflowGraphOrBuilder> graphBuilder_;
     /**
      * <pre>
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      * @return Whether the graph field is set.
      */
     public boolean hasGraph() {
@@ -548,12 +548,12 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      * @return The graph.
      */
-    public com.kekwy.iarnet.proto.ir.WorkflowGraph getGraph() {
+    public com.kekwy.iarnet.proto.workflow.WorkflowGraph getGraph() {
       if (graphBuilder_ == null) {
-        return graph_ == null ? com.kekwy.iarnet.proto.ir.WorkflowGraph.getDefaultInstance() : graph_;
+        return graph_ == null ? com.kekwy.iarnet.proto.workflow.WorkflowGraph.getDefaultInstance() : graph_;
       } else {
         return graphBuilder_.getMessage();
       }
@@ -563,9 +563,9 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
-    public Builder setGraph(com.kekwy.iarnet.proto.ir.WorkflowGraph value) {
+    public Builder setGraph(com.kekwy.iarnet.proto.workflow.WorkflowGraph value) {
       if (graphBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -583,10 +583,10 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
     public Builder setGraph(
-        com.kekwy.iarnet.proto.ir.WorkflowGraph.Builder builderForValue) {
+        com.kekwy.iarnet.proto.workflow.WorkflowGraph.Builder builderForValue) {
       if (graphBuilder_ == null) {
         graph_ = builderForValue.build();
       } else {
@@ -601,13 +601,13 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
-    public Builder mergeGraph(com.kekwy.iarnet.proto.ir.WorkflowGraph value) {
+    public Builder mergeGraph(com.kekwy.iarnet.proto.workflow.WorkflowGraph value) {
       if (graphBuilder_ == null) {
         if (((bitField0_ & 0x00000001) != 0) &&
           graph_ != null &&
-          graph_ != com.kekwy.iarnet.proto.ir.WorkflowGraph.getDefaultInstance()) {
+          graph_ != com.kekwy.iarnet.proto.workflow.WorkflowGraph.getDefaultInstance()) {
           getGraphBuilder().mergeFrom(value);
         } else {
           graph_ = value;
@@ -624,7 +624,7 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
     public Builder clearGraph() {
       bitField0_ = (bitField0_ & ~0x00000001);
@@ -641,9 +641,9 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.WorkflowGraph.Builder getGraphBuilder() {
+    public com.kekwy.iarnet.proto.workflow.WorkflowGraph.Builder getGraphBuilder() {
       bitField0_ |= 0x00000001;
       onChanged();
       return getGraphFieldBuilder().getBuilder();
@@ -653,14 +653,14 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.WorkflowGraphOrBuilder getGraphOrBuilder() {
+    public com.kekwy.iarnet.proto.workflow.WorkflowGraphOrBuilder getGraphOrBuilder() {
       if (graphBuilder_ != null) {
         return graphBuilder_.getMessageOrBuilder();
       } else {
         return graph_ == null ?
-            com.kekwy.iarnet.proto.ir.WorkflowGraph.getDefaultInstance() : graph_;
+            com.kekwy.iarnet.proto.workflow.WorkflowGraph.getDefaultInstance() : graph_;
       }
     }
     /**
@@ -668,14 +668,14 @@ private static final long serialVersionUID = 0L;
      * 工作流图 IR
      * </pre>
      *
-     * <code>.iarnet.ir.WorkflowGraph graph = 1;</code>
+     * <code>.iarnet.workflow.WorkflowGraph graph = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.WorkflowGraph, com.kekwy.iarnet.proto.ir.WorkflowGraph.Builder, com.kekwy.iarnet.proto.ir.WorkflowGraphOrBuilder> 
+        com.kekwy.iarnet.proto.workflow.WorkflowGraph, com.kekwy.iarnet.proto.workflow.WorkflowGraph.Builder, com.kekwy.iarnet.proto.workflow.WorkflowGraphOrBuilder> 
         getGraphFieldBuilder() {
       if (graphBuilder_ == null) {
         graphBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.WorkflowGraph, com.kekwy.iarnet.proto.ir.WorkflowGraph.Builder, com.kekwy.iarnet.proto.ir.WorkflowGraphOrBuilder>(
+            com.kekwy.iarnet.proto.workflow.WorkflowGraph, com.kekwy.iarnet.proto.workflow.WorkflowGraph.Builder, com.kekwy.iarnet.proto.workflow.WorkflowGraphOrBuilder>(
                 getGraph(),
                 getParentForChildren(),
                 isClean());

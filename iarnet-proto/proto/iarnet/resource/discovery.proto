@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package iarnet.resource;
 
-import "iarnet/ir/common.proto";
+import "iarnet/common/resource.proto";
 
 option java_package = "com.kekwy.iarnet.proto.resource";
 option java_multiple_files = true;
@@ -57,9 +57,9 @@ message PeerNodeInfo {
 
 // 资源容量：复用 iarnet.ir.Resource 结构。
 message ResourceCapacity {
-  iarnet.ir.Resource total     = 1;
-  iarnet.ir.Resource used      = 2;
-  iarnet.ir.Resource available = 3;
+  iarnet.common.Resource total     = 1;
+  iarnet.common.Resource used      = 2;
+  iarnet.common.Resource available = 3;
 }
 
 // ======================== Gossip 消息 ========================

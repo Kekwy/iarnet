@@ -50,41 +50,41 @@ private static final long serialVersionUID = 0L;
 
   public static final int ROWS_FIELD_NUMBER = 1;
   @SuppressWarnings("serial")
-  private java.util.List<com.kekwy.iarnet.proto.ir.Row> rows_;
+  private java.util.List<com.kekwy.iarnet.proto.common.Value> rows_;
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
   @java.lang.Override
-  public java.util.List<com.kekwy.iarnet.proto.ir.Row> getRowsList() {
+  public java.util.List<com.kekwy.iarnet.proto.common.Value> getRowsList() {
     return rows_;
   }
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+  public java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
       getRowsOrBuilderList() {
     return rows_;
   }
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
   @java.lang.Override
   public int getRowsCount() {
     return rows_.size();
   }
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Row getRows(int index) {
+  public com.kekwy.iarnet.proto.common.Value getRows(int index) {
     return rows_.get(index);
   }
   /**
-   * <code>repeated .iarnet.ir.Row rows = 1;</code>
+   * <code>repeated .iarnet.common.Value rows = 1;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.RowOrBuilder getRowsOrBuilder(
+  public com.kekwy.iarnet.proto.common.ValueOrBuilder getRowsOrBuilder(
       int index) {
     return rows_.get(index);
   }
@@ -436,9 +436,9 @@ private static final long serialVersionUID = 0L;
               done = true;
               break;
             case 10: {
-              com.kekwy.iarnet.proto.ir.Row m =
+              com.kekwy.iarnet.proto.common.Value m =
                   input.readMessage(
-                      com.kekwy.iarnet.proto.ir.Row.parser(),
+                      com.kekwy.iarnet.proto.common.Value.parser(),
                       extensionRegistry);
               if (rowsBuilder_ == null) {
                 ensureRowsIsMutable();
@@ -465,22 +465,22 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private java.util.List<com.kekwy.iarnet.proto.ir.Row> rows_ =
+    private java.util.List<com.kekwy.iarnet.proto.common.Value> rows_ =
       java.util.Collections.emptyList();
     private void ensureRowsIsMutable() {
       if (!((bitField0_ & 0x00000001) != 0)) {
-        rows_ = new java.util.ArrayList<com.kekwy.iarnet.proto.ir.Row>(rows_);
+        rows_ = new java.util.ArrayList<com.kekwy.iarnet.proto.common.Value>(rows_);
         bitField0_ |= 0x00000001;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder> rowsBuilder_;
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> rowsBuilder_;
 
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public java.util.List<com.kekwy.iarnet.proto.ir.Row> getRowsList() {
+    public java.util.List<com.kekwy.iarnet.proto.common.Value> getRowsList() {
       if (rowsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(rows_);
       } else {
@@ -488,7 +488,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public int getRowsCount() {
       if (rowsBuilder_ == null) {
@@ -498,9 +498,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row getRows(int index) {
+    public com.kekwy.iarnet.proto.common.Value getRows(int index) {
       if (rowsBuilder_ == null) {
         return rows_.get(index);
       } else {
@@ -508,10 +508,10 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder setRows(
-        int index, com.kekwy.iarnet.proto.ir.Row value) {
+        int index, com.kekwy.iarnet.proto.common.Value value) {
       if (rowsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -525,10 +525,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder setRows(
-        int index, com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        int index, com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (rowsBuilder_ == null) {
         ensureRowsIsMutable();
         rows_.set(index, builderForValue.build());
@@ -539,9 +539,9 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public Builder addRows(com.kekwy.iarnet.proto.ir.Row value) {
+    public Builder addRows(com.kekwy.iarnet.proto.common.Value value) {
       if (rowsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -555,10 +555,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder addRows(
-        int index, com.kekwy.iarnet.proto.ir.Row value) {
+        int index, com.kekwy.iarnet.proto.common.Value value) {
       if (rowsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -572,10 +572,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder addRows(
-        com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (rowsBuilder_ == null) {
         ensureRowsIsMutable();
         rows_.add(builderForValue.build());
@@ -586,10 +586,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder addRows(
-        int index, com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        int index, com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (rowsBuilder_ == null) {
         ensureRowsIsMutable();
         rows_.add(index, builderForValue.build());
@@ -600,10 +600,10 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder addAllRows(
-        java.lang.Iterable<? extends com.kekwy.iarnet.proto.ir.Row> values) {
+        java.lang.Iterable<? extends com.kekwy.iarnet.proto.common.Value> values) {
       if (rowsBuilder_ == null) {
         ensureRowsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -615,7 +615,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder clearRows() {
       if (rowsBuilder_ == null) {
@@ -628,7 +628,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
     public Builder removeRows(int index) {
       if (rowsBuilder_ == null) {
@@ -641,16 +641,16 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder getRowsBuilder(
+    public com.kekwy.iarnet.proto.common.Value.Builder getRowsBuilder(
         int index) {
       return getRowsFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.RowOrBuilder getRowsOrBuilder(
+    public com.kekwy.iarnet.proto.common.ValueOrBuilder getRowsOrBuilder(
         int index) {
       if (rowsBuilder_ == null) {
         return rows_.get(index);  } else {
@@ -658,9 +658,9 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public java.util.List<? extends com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+    public java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
          getRowsOrBuilderList() {
       if (rowsBuilder_ != null) {
         return rowsBuilder_.getMessageOrBuilderList();
@@ -669,33 +669,33 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder addRowsBuilder() {
+    public com.kekwy.iarnet.proto.common.Value.Builder addRowsBuilder() {
       return getRowsFieldBuilder().addBuilder(
-          com.kekwy.iarnet.proto.ir.Row.getDefaultInstance());
+          com.kekwy.iarnet.proto.common.Value.getDefaultInstance());
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder addRowsBuilder(
+    public com.kekwy.iarnet.proto.common.Value.Builder addRowsBuilder(
         int index) {
       return getRowsFieldBuilder().addBuilder(
-          index, com.kekwy.iarnet.proto.ir.Row.getDefaultInstance());
+          index, com.kekwy.iarnet.proto.common.Value.getDefaultInstance());
     }
     /**
-     * <code>repeated .iarnet.ir.Row rows = 1;</code>
+     * <code>repeated .iarnet.common.Value rows = 1;</code>
      */
-    public java.util.List<com.kekwy.iarnet.proto.ir.Row.Builder> 
+    public java.util.List<com.kekwy.iarnet.proto.common.Value.Builder> 
          getRowsBuilderList() {
       return getRowsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> 
         getRowsFieldBuilder() {
       if (rowsBuilder_ == null) {
         rowsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder>(
+            com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder>(
                 rows_,
                 ((bitField0_ & 0x00000001) != 0),
                 getParentForChildren(),

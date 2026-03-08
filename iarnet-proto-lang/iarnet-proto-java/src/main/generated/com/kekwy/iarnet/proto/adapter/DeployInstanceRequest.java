@@ -206,13 +206,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int RESOURCE_REQUEST_FIELD_NUMBER = 4;
-  private com.kekwy.iarnet.proto.ir.Resource resourceRequest_;
+  private com.kekwy.iarnet.proto.common.Resource resourceRequest_;
   /**
    * <pre>
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.ir.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.Resource resource_request = 4;</code>
    * @return Whether the resourceRequest field is set.
    */
   @java.lang.Override
@@ -224,23 +224,23 @@ private static final long serialVersionUID = 0L;
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.ir.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.Resource resource_request = 4;</code>
    * @return The resourceRequest.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Resource getResourceRequest() {
-    return resourceRequest_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : resourceRequest_;
+  public com.kekwy.iarnet.proto.common.Resource getResourceRequest() {
+    return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
   }
   /**
    * <pre>
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.ir.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.Resource resource_request = 4;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getResourceRequestOrBuilder() {
-    return resourceRequest_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : resourceRequest_;
+  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceRequestOrBuilder() {
+    return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
   }
 
   public static final int ENV_VARS_FIELD_NUMBER = 5;
@@ -440,7 +440,7 @@ java.lang.String defaultValue) {
    * 算子使用的编程语言 / 运行时
    * </pre>
    *
-   * <code>.iarnet.ir.Lang lang = 7;</code>
+   * <code>.iarnet.common.Lang lang = 7;</code>
    * @return The enum numeric value on the wire for lang.
    */
   @java.lang.Override public int getLangValue() {
@@ -451,12 +451,12 @@ java.lang.String defaultValue) {
    * 算子使用的编程语言 / 运行时
    * </pre>
    *
-   * <code>.iarnet.ir.Lang lang = 7;</code>
+   * <code>.iarnet.common.Lang lang = 7;</code>
    * @return The lang.
    */
-  @java.lang.Override public com.kekwy.iarnet.proto.ir.Lang getLang() {
-    com.kekwy.iarnet.proto.ir.Lang result = com.kekwy.iarnet.proto.ir.Lang.forNumber(lang_);
-    return result == null ? com.kekwy.iarnet.proto.ir.Lang.UNRECOGNIZED : result;
+  @java.lang.Override public com.kekwy.iarnet.proto.common.Lang getLang() {
+    com.kekwy.iarnet.proto.common.Lang result = com.kekwy.iarnet.proto.common.Lang.forNumber(lang_);
+    return result == null ? com.kekwy.iarnet.proto.common.Lang.UNRECOGNIZED : result;
   }
 
   public static final int UPSTREAM_ACTOR_ADDRS_FIELD_NUMBER = 8;
@@ -564,13 +564,13 @@ java.lang.String defaultValue) {
   }
 
   public static final int FUNCTION_DESCRIPTOR_FIELD_NUMBER = 10;
-  private com.kekwy.iarnet.proto.ir.FunctionDescriptor functionDescriptor_;
+  private com.kekwy.iarnet.proto.common.FunctionDescriptor functionDescriptor_;
   /**
    * <pre>
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+   * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
    * @return Whether the functionDescriptor field is set.
    */
   @java.lang.Override
@@ -582,37 +582,37 @@ java.lang.String defaultValue) {
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+   * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
    * @return The functionDescriptor.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.FunctionDescriptor getFunctionDescriptor() {
-    return functionDescriptor_ == null ? com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
+  public com.kekwy.iarnet.proto.common.FunctionDescriptor getFunctionDescriptor() {
+    return functionDescriptor_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
   }
   /**
    * <pre>
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
-   * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+   * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder() {
-    return functionDescriptor_ == null ? com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
+  public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder() {
+    return functionDescriptor_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
   }
 
   public static final int SOURCE_ROWS_FIELD_NUMBER = 11;
   @SuppressWarnings("serial")
-  private java.util.List<com.kekwy.iarnet.proto.ir.Row> sourceRows_;
+  private java.util.List<com.kekwy.iarnet.proto.common.Value> sourceRows_;
   /**
    * <pre>
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
   @java.lang.Override
-  public java.util.List<com.kekwy.iarnet.proto.ir.Row> getSourceRowsList() {
+  public java.util.List<com.kekwy.iarnet.proto.common.Value> getSourceRowsList() {
     return sourceRows_;
   }
   /**
@@ -620,10 +620,10 @@ java.lang.String defaultValue) {
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
   @java.lang.Override
-  public java.util.List<? extends com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+  public java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
       getSourceRowsOrBuilderList() {
     return sourceRows_;
   }
@@ -632,7 +632,7 @@ java.lang.String defaultValue) {
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
   @java.lang.Override
   public int getSourceRowsCount() {
@@ -643,10 +643,10 @@ java.lang.String defaultValue) {
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.Row getSourceRows(int index) {
+  public com.kekwy.iarnet.proto.common.Value getSourceRows(int index) {
     return sourceRows_.get(index);
   }
   /**
@@ -654,10 +654,10 @@ java.lang.String defaultValue) {
    * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
    * </pre>
    *
-   * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+   * <code>repeated .iarnet.common.Value source_rows = 11;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.ir.RowOrBuilder getSourceRowsOrBuilder(
+  public com.kekwy.iarnet.proto.common.ValueOrBuilder getSourceRowsOrBuilder(
       int index) {
     return sourceRows_.get(index);
   }
@@ -700,7 +700,7 @@ java.lang.String defaultValue) {
         internalGetLabels(),
         LabelsDefaultEntryHolder.defaultEntry,
         6);
-    if (lang_ != com.kekwy.iarnet.proto.ir.Lang.LANG_UNSPECIFIED.getNumber()) {
+    if (lang_ != com.kekwy.iarnet.proto.common.Lang.LANG_UNSPECIFIED.getNumber()) {
       output.writeEnum(7, lang_);
     }
     for (int i = 0; i < upstreamActorAddrs_.size(); i++) {
@@ -757,7 +757,7 @@ java.lang.String defaultValue) {
       size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, labels__);
     }
-    if (lang_ != com.kekwy.iarnet.proto.ir.Lang.LANG_UNSPECIFIED.getNumber()) {
+    if (lang_ != com.kekwy.iarnet.proto.common.Lang.LANG_UNSPECIFIED.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(7, lang_);
     }
@@ -1355,9 +1355,9 @@ java.lang.String defaultValue) {
               break;
             } // case 82
             case 90: {
-              com.kekwy.iarnet.proto.ir.Row m =
+              com.kekwy.iarnet.proto.common.Value m =
                   input.readMessage(
-                      com.kekwy.iarnet.proto.ir.Row.parser(),
+                      com.kekwy.iarnet.proto.common.Value.parser(),
                       extensionRegistry);
               if (sourceRowsBuilder_ == null) {
                 ensureSourceRowsIsMutable();
@@ -1660,15 +1660,15 @@ java.lang.String defaultValue) {
       return this;
     }
 
-    private com.kekwy.iarnet.proto.ir.Resource resourceRequest_;
+    private com.kekwy.iarnet.proto.common.Resource resourceRequest_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> resourceRequestBuilder_;
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> resourceRequestBuilder_;
     /**
      * <pre>
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      * @return Whether the resourceRequest field is set.
      */
     public boolean hasResourceRequest() {
@@ -1679,12 +1679,12 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      * @return The resourceRequest.
      */
-    public com.kekwy.iarnet.proto.ir.Resource getResourceRequest() {
+    public com.kekwy.iarnet.proto.common.Resource getResourceRequest() {
       if (resourceRequestBuilder_ == null) {
-        return resourceRequest_ == null ? com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : resourceRequest_;
+        return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
       } else {
         return resourceRequestBuilder_.getMessage();
       }
@@ -1694,9 +1694,9 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
-    public Builder setResourceRequest(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder setResourceRequest(com.kekwy.iarnet.proto.common.Resource value) {
       if (resourceRequestBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1714,10 +1714,10 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
     public Builder setResourceRequest(
-        com.kekwy.iarnet.proto.ir.Resource.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
       if (resourceRequestBuilder_ == null) {
         resourceRequest_ = builderForValue.build();
       } else {
@@ -1732,13 +1732,13 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
-    public Builder mergeResourceRequest(com.kekwy.iarnet.proto.ir.Resource value) {
+    public Builder mergeResourceRequest(com.kekwy.iarnet.proto.common.Resource value) {
       if (resourceRequestBuilder_ == null) {
         if (((bitField0_ & 0x00000008) != 0) &&
           resourceRequest_ != null &&
-          resourceRequest_ != com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance()) {
+          resourceRequest_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
           getResourceRequestBuilder().mergeFrom(value);
         } else {
           resourceRequest_ = value;
@@ -1755,7 +1755,7 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
     public Builder clearResourceRequest() {
       bitField0_ = (bitField0_ & ~0x00000008);
@@ -1772,9 +1772,9 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Resource.Builder getResourceRequestBuilder() {
+    public com.kekwy.iarnet.proto.common.Resource.Builder getResourceRequestBuilder() {
       bitField0_ |= 0x00000008;
       onChanged();
       return getResourceRequestFieldBuilder().getBuilder();
@@ -1784,14 +1784,14 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
-    public com.kekwy.iarnet.proto.ir.ResourceOrBuilder getResourceRequestOrBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceRequestOrBuilder() {
       if (resourceRequestBuilder_ != null) {
         return resourceRequestBuilder_.getMessageOrBuilder();
       } else {
         return resourceRequest_ == null ?
-            com.kekwy.iarnet.proto.ir.Resource.getDefaultInstance() : resourceRequest_;
+            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
       }
     }
     /**
@@ -1799,14 +1799,14 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.ir.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.Resource resource_request = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder> 
+        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
         getResourceRequestFieldBuilder() {
       if (resourceRequestBuilder_ == null) {
         resourceRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Resource, com.kekwy.iarnet.proto.ir.Resource.Builder, com.kekwy.iarnet.proto.ir.ResourceOrBuilder>(
+            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
                 getResourceRequest(),
                 getParentForChildren(),
                 isClean());
@@ -2131,7 +2131,7 @@ java.lang.String defaultValue) {
      * 算子使用的编程语言 / 运行时
      * </pre>
      *
-     * <code>.iarnet.ir.Lang lang = 7;</code>
+     * <code>.iarnet.common.Lang lang = 7;</code>
      * @return The enum numeric value on the wire for lang.
      */
     @java.lang.Override public int getLangValue() {
@@ -2142,7 +2142,7 @@ java.lang.String defaultValue) {
      * 算子使用的编程语言 / 运行时
      * </pre>
      *
-     * <code>.iarnet.ir.Lang lang = 7;</code>
+     * <code>.iarnet.common.Lang lang = 7;</code>
      * @param value The enum numeric value on the wire for lang to set.
      * @return This builder for chaining.
      */
@@ -2157,24 +2157,24 @@ java.lang.String defaultValue) {
      * 算子使用的编程语言 / 运行时
      * </pre>
      *
-     * <code>.iarnet.ir.Lang lang = 7;</code>
+     * <code>.iarnet.common.Lang lang = 7;</code>
      * @return The lang.
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.ir.Lang getLang() {
-      com.kekwy.iarnet.proto.ir.Lang result = com.kekwy.iarnet.proto.ir.Lang.forNumber(lang_);
-      return result == null ? com.kekwy.iarnet.proto.ir.Lang.UNRECOGNIZED : result;
+    public com.kekwy.iarnet.proto.common.Lang getLang() {
+      com.kekwy.iarnet.proto.common.Lang result = com.kekwy.iarnet.proto.common.Lang.forNumber(lang_);
+      return result == null ? com.kekwy.iarnet.proto.common.Lang.UNRECOGNIZED : result;
     }
     /**
      * <pre>
      * 算子使用的编程语言 / 运行时
      * </pre>
      *
-     * <code>.iarnet.ir.Lang lang = 7;</code>
+     * <code>.iarnet.common.Lang lang = 7;</code>
      * @param value The lang to set.
      * @return This builder for chaining.
      */
-    public Builder setLang(com.kekwy.iarnet.proto.ir.Lang value) {
+    public Builder setLang(com.kekwy.iarnet.proto.common.Lang value) {
       if (value == null) {
         throw new NullPointerException();
       }
@@ -2188,7 +2188,7 @@ java.lang.String defaultValue) {
      * 算子使用的编程语言 / 运行时
      * </pre>
      *
-     * <code>.iarnet.ir.Lang lang = 7;</code>
+     * <code>.iarnet.common.Lang lang = 7;</code>
      * @return This builder for chaining.
      */
     public Builder clearLang() {
@@ -2478,15 +2478,15 @@ java.lang.String defaultValue) {
       return this;
     }
 
-    private com.kekwy.iarnet.proto.ir.FunctionDescriptor functionDescriptor_;
+    private com.kekwy.iarnet.proto.common.FunctionDescriptor functionDescriptor_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.FunctionDescriptor, com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder> functionDescriptorBuilder_;
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> functionDescriptorBuilder_;
     /**
      * <pre>
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      * @return Whether the functionDescriptor field is set.
      */
     public boolean hasFunctionDescriptor() {
@@ -2497,12 +2497,12 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      * @return The functionDescriptor.
      */
-    public com.kekwy.iarnet.proto.ir.FunctionDescriptor getFunctionDescriptor() {
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor getFunctionDescriptor() {
       if (functionDescriptorBuilder_ == null) {
-        return functionDescriptor_ == null ? com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
+        return functionDescriptor_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
       } else {
         return functionDescriptorBuilder_.getMessage();
       }
@@ -2512,9 +2512,9 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
-    public Builder setFunctionDescriptor(com.kekwy.iarnet.proto.ir.FunctionDescriptor value) {
+    public Builder setFunctionDescriptor(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionDescriptorBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -2532,10 +2532,10 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
     public Builder setFunctionDescriptor(
-        com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder builderForValue) {
       if (functionDescriptorBuilder_ == null) {
         functionDescriptor_ = builderForValue.build();
       } else {
@@ -2550,13 +2550,13 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
-    public Builder mergeFunctionDescriptor(com.kekwy.iarnet.proto.ir.FunctionDescriptor value) {
+    public Builder mergeFunctionDescriptor(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionDescriptorBuilder_ == null) {
         if (((bitField0_ & 0x00000200) != 0) &&
           functionDescriptor_ != null &&
-          functionDescriptor_ != com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance()) {
+          functionDescriptor_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
           getFunctionDescriptorBuilder().mergeFrom(value);
         } else {
           functionDescriptor_ = value;
@@ -2573,7 +2573,7 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
     public Builder clearFunctionDescriptor() {
       bitField0_ = (bitField0_ & ~0x00000200);
@@ -2590,9 +2590,9 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
-    public com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder getFunctionDescriptorBuilder() {
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getFunctionDescriptorBuilder() {
       bitField0_ |= 0x00000200;
       onChanged();
       return getFunctionDescriptorFieldBuilder().getBuilder();
@@ -2602,14 +2602,14 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
-    public com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder() {
+    public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder() {
       if (functionDescriptorBuilder_ != null) {
         return functionDescriptorBuilder_.getMessageOrBuilder();
       } else {
         return functionDescriptor_ == null ?
-            com.kekwy.iarnet.proto.ir.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
+            com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
       }
     }
     /**
@@ -2617,14 +2617,14 @@ java.lang.String defaultValue) {
      * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
      * </pre>
      *
-     * <code>.iarnet.ir.FunctionDescriptor function_descriptor = 10;</code>
+     * <code>.iarnet.common.FunctionDescriptor function_descriptor = 10;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.FunctionDescriptor, com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder> 
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> 
         getFunctionDescriptorFieldBuilder() {
       if (functionDescriptorBuilder_ == null) {
         functionDescriptorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.FunctionDescriptor, com.kekwy.iarnet.proto.ir.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.ir.FunctionDescriptorOrBuilder>(
+            com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder>(
                 getFunctionDescriptor(),
                 getParentForChildren(),
                 isClean());
@@ -2633,26 +2633,26 @@ java.lang.String defaultValue) {
       return functionDescriptorBuilder_;
     }
 
-    private java.util.List<com.kekwy.iarnet.proto.ir.Row> sourceRows_ =
+    private java.util.List<com.kekwy.iarnet.proto.common.Value> sourceRows_ =
       java.util.Collections.emptyList();
     private void ensureSourceRowsIsMutable() {
       if (!((bitField0_ & 0x00000400) != 0)) {
-        sourceRows_ = new java.util.ArrayList<com.kekwy.iarnet.proto.ir.Row>(sourceRows_);
+        sourceRows_ = new java.util.ArrayList<com.kekwy.iarnet.proto.common.Value>(sourceRows_);
         bitField0_ |= 0x00000400;
        }
     }
 
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder> sourceRowsBuilder_;
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> sourceRowsBuilder_;
 
     /**
      * <pre>
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public java.util.List<com.kekwy.iarnet.proto.ir.Row> getSourceRowsList() {
+    public java.util.List<com.kekwy.iarnet.proto.common.Value> getSourceRowsList() {
       if (sourceRowsBuilder_ == null) {
         return java.util.Collections.unmodifiableList(sourceRows_);
       } else {
@@ -2664,7 +2664,7 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public int getSourceRowsCount() {
       if (sourceRowsBuilder_ == null) {
@@ -2678,9 +2678,9 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row getSourceRows(int index) {
+    public com.kekwy.iarnet.proto.common.Value getSourceRows(int index) {
       if (sourceRowsBuilder_ == null) {
         return sourceRows_.get(index);
       } else {
@@ -2692,10 +2692,10 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder setSourceRows(
-        int index, com.kekwy.iarnet.proto.ir.Row value) {
+        int index, com.kekwy.iarnet.proto.common.Value value) {
       if (sourceRowsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -2713,10 +2713,10 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder setSourceRows(
-        int index, com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        int index, com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (sourceRowsBuilder_ == null) {
         ensureSourceRowsIsMutable();
         sourceRows_.set(index, builderForValue.build());
@@ -2731,9 +2731,9 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public Builder addSourceRows(com.kekwy.iarnet.proto.ir.Row value) {
+    public Builder addSourceRows(com.kekwy.iarnet.proto.common.Value value) {
       if (sourceRowsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -2751,10 +2751,10 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder addSourceRows(
-        int index, com.kekwy.iarnet.proto.ir.Row value) {
+        int index, com.kekwy.iarnet.proto.common.Value value) {
       if (sourceRowsBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -2772,10 +2772,10 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder addSourceRows(
-        com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (sourceRowsBuilder_ == null) {
         ensureSourceRowsIsMutable();
         sourceRows_.add(builderForValue.build());
@@ -2790,10 +2790,10 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder addSourceRows(
-        int index, com.kekwy.iarnet.proto.ir.Row.Builder builderForValue) {
+        int index, com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
       if (sourceRowsBuilder_ == null) {
         ensureSourceRowsIsMutable();
         sourceRows_.add(index, builderForValue.build());
@@ -2808,10 +2808,10 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder addAllSourceRows(
-        java.lang.Iterable<? extends com.kekwy.iarnet.proto.ir.Row> values) {
+        java.lang.Iterable<? extends com.kekwy.iarnet.proto.common.Value> values) {
       if (sourceRowsBuilder_ == null) {
         ensureSourceRowsIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -2827,7 +2827,7 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder clearSourceRows() {
       if (sourceRowsBuilder_ == null) {
@@ -2844,7 +2844,7 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
     public Builder removeSourceRows(int index) {
       if (sourceRowsBuilder_ == null) {
@@ -2861,9 +2861,9 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder getSourceRowsBuilder(
+    public com.kekwy.iarnet.proto.common.Value.Builder getSourceRowsBuilder(
         int index) {
       return getSourceRowsFieldBuilder().getBuilder(index);
     }
@@ -2872,9 +2872,9 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public com.kekwy.iarnet.proto.ir.RowOrBuilder getSourceRowsOrBuilder(
+    public com.kekwy.iarnet.proto.common.ValueOrBuilder getSourceRowsOrBuilder(
         int index) {
       if (sourceRowsBuilder_ == null) {
         return sourceRows_.get(index);  } else {
@@ -2886,9 +2886,9 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public java.util.List<? extends com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+    public java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
          getSourceRowsOrBuilderList() {
       if (sourceRowsBuilder_ != null) {
         return sourceRowsBuilder_.getMessageOrBuilderList();
@@ -2901,41 +2901,41 @@ java.lang.String defaultValue) {
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder addSourceRowsBuilder() {
+    public com.kekwy.iarnet.proto.common.Value.Builder addSourceRowsBuilder() {
       return getSourceRowsFieldBuilder().addBuilder(
-          com.kekwy.iarnet.proto.ir.Row.getDefaultInstance());
+          com.kekwy.iarnet.proto.common.Value.getDefaultInstance());
     }
     /**
      * <pre>
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public com.kekwy.iarnet.proto.ir.Row.Builder addSourceRowsBuilder(
+    public com.kekwy.iarnet.proto.common.Value.Builder addSourceRowsBuilder(
         int index) {
       return getSourceRowsFieldBuilder().addBuilder(
-          index, com.kekwy.iarnet.proto.ir.Row.getDefaultInstance());
+          index, com.kekwy.iarnet.proto.common.Value.getDefaultInstance());
     }
     /**
      * <pre>
      * Source 节点的 constant rows，由调度器传入，Adapter 注册时下发给 Actor
      * </pre>
      *
-     * <code>repeated .iarnet.ir.Row source_rows = 11;</code>
+     * <code>repeated .iarnet.common.Value source_rows = 11;</code>
      */
-    public java.util.List<com.kekwy.iarnet.proto.ir.Row.Builder> 
+    public java.util.List<com.kekwy.iarnet.proto.common.Value.Builder> 
          getSourceRowsBuilderList() {
       return getSourceRowsFieldBuilder().getBuilderList();
     }
     private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder> 
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> 
         getSourceRowsFieldBuilder() {
       if (sourceRowsBuilder_ == null) {
         sourceRowsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-            com.kekwy.iarnet.proto.ir.Row, com.kekwy.iarnet.proto.ir.Row.Builder, com.kekwy.iarnet.proto.ir.RowOrBuilder>(
+            com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder>(
                 sourceRows_,
                 ((bitField0_ & 0x00000400) != 0),
                 getParentForChildren(),
