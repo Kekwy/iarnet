@@ -94,9 +94,12 @@ public class AdapterApplication {
             signalingChannel = ManagedChannelBuilder
                     .forAddress(cp.getHost(), cp.getPort())
                     .usePlaintext()
+                    .maxInboundMessageSize(16 * 1024 * 1024)
                     .build();
             com.kekwy.iarnet.proto.agent.DeviceAgentRegistryServiceGrpc.DeviceAgentRegistryServiceStub stub =
-                    com.kekwy.iarnet.proto.agent.DeviceAgentRegistryServiceGrpc.newStub(signalingChannel);
+                    com.kekwy.iarnet.proto.agent.DeviceAgentRegistryServiceGrpc.newStub(signalingChannel)
+                            .withMaxInboundMessageSize(16 * 1024 * 1024)
+                            .withMaxOutboundMessageSize(16 * 1024 * 1024);
 
             StreamObserver<com.kekwy.iarnet.proto.agent.SignalingMessage> sender =
                     stub.signalingChannel(new StreamObserver<>() {
