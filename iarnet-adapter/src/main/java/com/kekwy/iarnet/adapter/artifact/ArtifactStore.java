@@ -22,6 +22,10 @@ public class ArtifactStore {
         this.baseDir = baseDir;
         try {
             Files.createDirectories(baseDir);
+        } catch (java.nio.file.AccessDeniedException e) {
+            throw new RuntimeException(
+                "无法创建 artifact 存储目录（无写权限）: " + baseDir
+                    + "。请配置 iarnet.adapter.artifact-dir 为有写权限的目录，如 ~/.iarnet-adapter/artifacts", e);
         } catch (IOException e) {
             throw new RuntimeException("无法创建 artifact 存储目录: " + baseDir, e);
         }

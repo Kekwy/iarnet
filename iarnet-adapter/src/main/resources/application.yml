@@ -21,8 +21,8 @@ iarnet:
       cpu: 4.0
       memory: 8Gi
       gpu: 0
-    # artifact 存储目录
-    artifact-dir: /tmp/iarnet-adapter/artifacts
+    # artifact 存储目录（默认 ~/.iarnet-adapter/artifacts，可避免 /tmp 无写权限）
+    # artifact-dir: ~/.iarnet-adapter/artifacts
 
     # ===== Docker 引擎配置 =====
     docker:

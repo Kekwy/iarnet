@@ -13,7 +13,8 @@ public class AdapterProperties {
     private ControlPlane controlPlane = new ControlPlane();
     private List<String> tags = List.of();
     private ResourceConfig resource = new ResourceConfig();
-    private String artifactDir = "/tmp/iarnet-adapter/artifacts";
+    /** 默认使用用户目录，避免 /tmp 在 WSL 等环境下无写权限 */
+    private String artifactDir = System.getProperty("user.home") + "/.iarnet-adapter/artifacts";
     private DockerConfig docker = new DockerConfig();
     private K8sConfig k8s = new K8sConfig();
     private DeviceAgent deviceAgent = new DeviceAgent();
