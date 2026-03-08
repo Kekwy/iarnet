@@ -4,16 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.kekwy.iarnet</groupId>
-        <artifactId>iarnet</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
+    <groupId>com.kekwy.iarnet</groupId>
+    <artifactId>iarnet-sdk-java</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-    <artifactId>iarnet-api-java</artifactId>
+    <name>iarnet-sdk-java</name>
+    <description>iarnet-sdk-java</description>
     <packaging>jar</packaging>
-    <name>iarnet-api-java</name>
 
     <properties>
         <!-- 1. 源码编码 -->
@@ -24,6 +21,9 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <!-- 4. 报告编码 -->
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <protobuf.version>3.25.3</protobuf.version>
+        <grpc.version>1.63.0</grpc.version>
     </properties>
 
     <dependencies>
