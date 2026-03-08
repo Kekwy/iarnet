@@ -27,6 +27,9 @@ public class LocalAgentStreamObserver implements StreamObserver<LocalAgentMessag
     /** 当前 handler 的返回值类型（用于下行 Row 携带 data_type），仅 SerializedFunctionInvokeHandler 时设置 */
     private volatile Class<?> rowOutputType;
 
+    /** 当前算子的语义类型（MAP / FILTER / FLAT_MAP），决定 UDF 返回值如何路由到下游 */
+    private volatile OperatorSemantics operatorSemantics;
+
     /** Source Actor 收到的 constant rows（由 Device Agent 下发的 source_config） */
     private final List<Row> sourceRows = new CopyOnWriteArrayList<>();
 
@@ -82,6 +85,14 @@ public class LocalAgentStreamObserver implements StreamObserver<LocalAgentMessag
         return rowOutputType;
     }
 
+    public void setOperatorSemantics(OperatorSemantics operatorSemantics) {
+        this.operatorSemantics = operatorSemantics;
+    }
+
+    public OperatorSemantics getOperatorSemantics() {
+        return operatorSemantics;
+    }
+
     @Override
     public void onNext(LocalAgentMessage value) {
         log.info("LocalChannel 收到消息: payloadCase={}", value.getPayloadCase());
@@ -102,7 +113,9 @@ public class LocalAgentStreamObserver implements StreamObserver<LocalAgentMessag
                         if (loaded instanceof SerializedFunctionInvokeHandler sfh) {
                             this.rowTargetType = sfh.getInputType();
                             this.rowOutputType = sfh.getReturnType();
-                            log.info("已从用户函数提取入参类型: {}, 返回值类型: {}", rowTargetType.getName(), rowOutputType.getName());
+                            this.operatorSemantics = OperatorSemantics.inferFromReturnType(sfh.getReturnType());
+                            log.info("已从用户函数提取入参类型: {}, 返回值类型: {}, 算子语义: {}",
+                                    rowTargetType.getName(), rowOutputType.getName(), operatorSemantics);
                         }
                         log.info("已根据 assign_function 切换执行函数");
                     } else {

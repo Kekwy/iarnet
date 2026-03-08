@@ -47,6 +47,7 @@ public class Main {
     private static final String ENV_FUNCTION_FILE = "IARNET_ACTOR_FUNCTION_FILE";
     private static final String ENV_NODE_KIND = "IARNET_NODE_KIND";
     private static final String ENV_SINK_KIND = "IARNET_SINK_KIND";
+    private static final String ENV_OPERATOR_KIND = "IARNET_OPERATOR_KIND";
 
     private static volatile LocalAgentStreamObserver streamObserver;
 
@@ -65,6 +66,16 @@ public class Main {
             streamObserver.setRowTargetType(sfh.getInputType());
             streamObserver.setRowOutputType(sfh.getReturnType());
             log.info("启动时提取函数类型: inputType={}, returnType={}", sfh.getInputType().getName(), sfh.getReturnType().getName());
+        }
+
+        // 初始化算子语义：优先从环境变量读取，否则从 handler 返回值类型推断
+        OperatorSemantics semantics = OperatorSemantics.fromEnvString(System.getenv(ENV_OPERATOR_KIND));
+        if (semantics == null && initialHandler instanceof SerializedFunctionInvokeHandler sfh2) {
+            semantics = OperatorSemantics.inferFromReturnType(sfh2.getReturnType());
+        }
+        if (semantics != null) {
+            streamObserver.setOperatorSemantics(semantics);
+            log.info("启动时算子语义: {}", semantics);
         }
 
         ManagedChannel agentChannel = connectToDeviceAgent(agentAddr, actorAddr, streamObserver);
@@ -201,7 +212,7 @@ public class Main {
 
     /**
      * 收到上游 ROW_DELIVERY 时调用：将反序列化后的行对象封装为 ActorInvokeRequest，
-     * 交给当前 handler（算子/Sink）处理。payload 使用 Java 序列化，与 SerializedFunctionInvokeHandler 约定一致。
+     * 交给当前 handler（算子/Sink）处理，并根据算子语义（MAP / FILTER / FLAT_MAP）决定如何将结果路由到下游。
      */
     private static void handleUpstreamRow(Object rowObj, DelegatingInvokeHandler delegatingHandler) {
         if (rowObj == null || delegatingHandler == null) return;
@@ -212,11 +223,42 @@ public class Main {
                     .setPayload(ByteString.copyFrom(payload))
                     .build();
             ActorInvokeResponse resp = delegatingHandler.handle(req);
-            log.info("算子函数已执行: invocationId={}, hasOutputPayload={}", req.getInvocationId(),
-                    resp != null && resp.getPayload() != null && !resp.getPayload().isEmpty());
-            if (resp != null && resp.getPayload() != null && !resp.getPayload().isEmpty()
-                    && streamObserver != null && streamObserver.getSendStream() != null) {
-                sendRowOutputToDownstream(resp.getPayload());
+
+            if (resp == null || resp.getPayload() == null || resp.getPayload().isEmpty()) return;
+            LocalAgentStreamObserver obs = streamObserver;
+            if (obs == null || obs.getSendStream() == null) return;
+
+            OperatorSemantics semantics = obs.getOperatorSemantics();
+            if (semantics == null) semantics = OperatorSemantics.MAP;
+
+            switch (semantics) {
+                case FILTER -> {
+                    Object result = javaDeserialize(resp.getPayload().toByteArray());
+                    if (Boolean.TRUE.equals(result)) {
+                        log.debug("FILTER 通过，转发原始输入: invocationId={}", req.getInvocationId());
+                        trySendSingleOutput(obs.getSendStream(), rowObj);
+                    } else {
+                        log.debug("FILTER 未通过，丢弃: invocationId={}", req.getInvocationId());
+                    }
+                }
+                case FLAT_MAP -> {
+                    Object result = javaDeserialize(resp.getPayload().toByteArray());
+                    if (result instanceof Iterable<?> iterable) {
+                        int sentCount = 0;
+                        for (Object element : iterable) {
+                            if (trySendSingleOutput(obs.getSendStream(), element)) {
+                                sentCount++;
+                            }
+                        }
+                        log.debug("FLAT_MAP 展开发送 {} 个元素: invocationId={}", sentCount, req.getInvocationId());
+                    } else if (result != null) {
+                        log.warn("FLAT_MAP 算子返回了非 Iterable 类型: {}，尝试作为单元素发送", result.getClass().getName());
+                        trySendSingleOutput(obs.getSendStream(), result);
+                    }
+                }
+                default -> {
+                    sendMapOutputToDownstream(resp.getPayload());
+                }
             }
         } catch (Exception e) {
             log.error("处理上游 Row 失败", e);
@@ -224,9 +266,9 @@ public class Main {
     }
 
     /**
-     * 将算子返回的 Java 序列化 payload 反序列化为对象，再按 DataOutput 格式重新编码（携带 data_type）发给下游。
+     * MAP 语义：将算子返回的 Java 序列化 payload 反序列化为对象，再按 Row 格式重新编码发给下游。
      */
-    private static void sendRowOutputToDownstream(ByteString responsePayload) {
+    private static void sendMapOutputToDownstream(ByteString responsePayload) {
         if (responsePayload == null || responsePayload.isEmpty()) return;
         LocalAgentStreamObserver obs = streamObserver;
         if (obs == null) return;
@@ -235,26 +277,12 @@ public class Main {
         try {
             Object outputObj = javaDeserialize(responsePayload.toByteArray());
             if (outputObj == null) {
-                log.warn("算子返回值 Java 反序列化结果为 null，跳过发送");
+                log.warn("MAP 算子返回值反序列化结果为 null，跳过发送");
                 return;
             }
-
-            if (outputObj instanceof Iterable<?> iterable) {
-                int sentCount = 0;
-                for (Object element : iterable) {
-                    if (trySendSingleOutput(send, element)) {
-                        sentCount++;
-                    }
-                }
-                if (sentCount == 0) {
-                    log.warn("算子返回 Iterable 但无可发送元素（空迭代或元素类型均无法推断 data_type）");
-                }
-                return;
-            }
-
             if (!trySendSingleOutput(send, outputObj)) {
                 Class<?> outputType = obs.getRowOutputType();
-                log.warn("无法为返回值类型 {} 推断 data_type，跳过向下游发送（Row 必须携带 data_type）",
+                log.warn("无法为返回值类型 {} 推断 data_type，跳过向下游发送",
                         outputType != null ? outputType : outputObj.getClass());
             }
         } catch (Exception e) {

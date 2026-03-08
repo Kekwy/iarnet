@@ -231,6 +231,8 @@ public class DefaultSchedulerService implements SchedulerService {
             env.put("IARNET_SOURCE_KIND", node.getSourceDetail().getSourceKind().name());
         } else if (node.getKind() == NodeKind.SINK && node.hasSinkDetail()) {
             env.put("IARNET_SINK_KIND", node.getSinkDetail().getSinkKind().name());
+        } else if (node.getKind() == NodeKind.OPERATOR && node.hasOperatorDetail()) {
+            env.put("IARNET_OPERATOR_KIND", node.getOperatorDetail().getOperatorKind().name());
         }
         if (!upstreamAddrs.isEmpty()) {
             env.put("IARNET_UPSTREAMS", String.join(",", upstreamAddrs));
