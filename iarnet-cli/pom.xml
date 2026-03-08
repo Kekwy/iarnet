@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>iarnet-api-cli</artifactId>
+    <artifactId>iarnet-cli</artifactId>
     <packaging>jar</packaging>
     <name>iarnet-api-cli</name>
     <description>iarnet api 命令行客户端</description>
