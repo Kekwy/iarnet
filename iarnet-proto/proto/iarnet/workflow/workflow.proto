@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package iarnet.workflow;
+
+import "iarnet/workflow/common.proto";
+
+option java_package = "com.kekwy.iarnet.proto.workflow";
+option java_multiple_files = true;
+
+// ======================== 工作流图（顶层） ========================
+
+message WorkflowGraph {
+  string   workflow_id      = 1;
+  string   application_id   = 2;
+  repeated Node nodes       = 3;
+  repeated Edge edges       = 4;
+}
+
+// ======================== 函数描述（语言无关） ========================
+
+message FunctionDescriptor {
+  Lang lang = 1;
+
+  // 函数定位标识
+  // Java:   完整类名，如 "com.example.MyMapper"
+  // Python: "模块:函数名"，如 "transforms:to_upper"
+  string function_identifier = 2;
+
+  // 序列化的函数体（可选）
+  // Java:   java.io.Serializable 序列化字节
+  // Python: pickle / cloudpickle 序列化字节
+  // 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
+  bytes serialized_function = 3;
+
+  // 函数代码所在的工件路径（可选）
+  // Java:   JAR 文件路径
+  // Python: 源码目录路径（requirements.txt 须位于同目录下）
+  // 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
+  string source_path = 4;
+}
+
+// ======================== 边 ========================
+
+message Edge {
+  string from_node_id = 1;
+  string to_node_id   = 2;
+}
+
+// ======================== 节点 ========================
+
+enum NodeKind {
+  NODE_KIND_UNSPECIFIED = 0;
+  SOURCE                = 1;
+  OPERATOR              = 2;
+  SINK                  = 3;
+}
+
+message Node {
+  string   id          = 1;
+  NodeKind kind        = 2;
+  Type     input_type  = 3;
+  Type     output_type = 4;
+  FunctionDescriptor function      = 5;
+  int32              replicas      = 6;
+  Resource           resource      = 7;
+
+  // 根据 kind 使用对应的 detail
+  oneof detail {
+    SourceNodeDetail   source_detail   = 8;
+    OperatorNodeDetail operator_detail = 9;
+    SinkNodeDetail     sink_detail     = 10;
+  }
+}
+
+// ======================== Source 节点 ========================
+
+enum SourceKind {
+  SOURCE_KIND_UNSPECIFIED = 0;
+  CONSTANT                = 1;
+  FILE                    = 2;
+}
+
+message SourceNodeDetail {
+  SourceKind source_kind = 1;
+  oneof detail {
+    ConstantSourceDetail constant_source_detail = 2;
+    FileSourceDetail file_source_detail = 3;
+  }
+}
+
+message ConstantSourceDetail {
+  repeated Value values = 1;
+}
+
+message FileSourceDetail {
+  string file_path = 1;
+}
+
+// ======================== Operator 节点 ========================
+
+enum OperatorKind {
+  OPERATOR_KIND_UNSPECIFIED = 0;
+  OPERATOR_MAP              = 1;
+  OPERATOR_FLAT_MAP         = 2;
+  OPERATOR_FILTER           = 3;
+}
+
+message OperatorNodeDetail {
+  OperatorKind       operator_kind = 1;
+}
+
+// ======================== Sink 节点 ========================
+
+enum SinkKind {
+  SINK_KIND_UNSPECIFIED = 0;
+  PRINT                 = 1;
+}
+
+message SinkNodeDetail {
+  SinkKind sink_kind = 1;
+}
