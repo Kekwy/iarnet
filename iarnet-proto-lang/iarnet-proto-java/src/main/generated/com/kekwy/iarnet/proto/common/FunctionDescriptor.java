@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private FunctionDescriptor() {
     lang_ = 0;
+    inputsType_ = java.util.Collections.emptyList();
     functionIdentifier_ = "";
     serializedFunction_ = com.google.protobuf.ByteString.EMPTY;
     sourcePath_ = "";
@@ -65,7 +66,74 @@ private static final long serialVersionUID = 0L;
     return result == null ? com.kekwy.iarnet.proto.common.Lang.UNRECOGNIZED : result;
   }
 
-  public static final int FUNCTION_IDENTIFIER_FIELD_NUMBER = 2;
+  public static final int INPUTS_TYPE_FIELD_NUMBER = 2;
+  @SuppressWarnings("serial")
+  private java.util.List<com.kekwy.iarnet.proto.common.Type> inputsType_;
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  @java.lang.Override
+  public java.util.List<com.kekwy.iarnet.proto.common.Type> getInputsTypeList() {
+    return inputsType_;
+  }
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends com.kekwy.iarnet.proto.common.TypeOrBuilder> 
+      getInputsTypeOrBuilderList() {
+    return inputsType_;
+  }
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  @java.lang.Override
+  public int getInputsTypeCount() {
+    return inputsType_.size();
+  }
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.Type getInputsType(int index) {
+    return inputsType_.get(index);
+  }
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.TypeOrBuilder getInputsTypeOrBuilder(
+      int index) {
+    return inputsType_.get(index);
+  }
+
+  public static final int OUTPUT_TYPE_FIELD_NUMBER = 3;
+  private com.kekwy.iarnet.proto.common.Type outputType_;
+  /**
+   * <code>.iarnet.common.Type output_type = 3;</code>
+   * @return Whether the outputType field is set.
+   */
+  @java.lang.Override
+  public boolean hasOutputType() {
+    return outputType_ != null;
+  }
+  /**
+   * <code>.iarnet.common.Type output_type = 3;</code>
+   * @return The outputType.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.Type getOutputType() {
+    return outputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
+  }
+  /**
+   * <code>.iarnet.common.Type output_type = 3;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.TypeOrBuilder getOutputTypeOrBuilder() {
+    return outputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
+  }
+
+  public static final int FUNCTION_IDENTIFIER_FIELD_NUMBER = 4;
   @SuppressWarnings("serial")
   private volatile java.lang.Object functionIdentifier_ = "";
   /**
@@ -75,7 +143,7 @@ private static final long serialVersionUID = 0L;
    * Python: "模块:函数名"，如 "transforms:to_upper"
    * </pre>
    *
-   * <code>string function_identifier = 2;</code>
+   * <code>string function_identifier = 4;</code>
    * @return The functionIdentifier.
    */
   @java.lang.Override
@@ -98,7 +166,7 @@ private static final long serialVersionUID = 0L;
    * Python: "模块:函数名"，如 "transforms:to_upper"
    * </pre>
    *
-   * <code>string function_identifier = 2;</code>
+   * <code>string function_identifier = 4;</code>
    * @return The bytes for functionIdentifier.
    */
   @java.lang.Override
@@ -116,7 +184,7 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int SERIALIZED_FUNCTION_FIELD_NUMBER = 3;
+  public static final int SERIALIZED_FUNCTION_FIELD_NUMBER = 5;
   private com.google.protobuf.ByteString serializedFunction_ = com.google.protobuf.ByteString.EMPTY;
   /**
    * <pre>
@@ -126,7 +194,7 @@ private static final long serialVersionUID = 0L;
    * 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
    * </pre>
    *
-   * <code>bytes serialized_function = 3;</code>
+   * <code>bytes serialized_function = 5;</code>
    * @return The serializedFunction.
    */
   @java.lang.Override
@@ -134,18 +202,18 @@ private static final long serialVersionUID = 0L;
     return serializedFunction_;
   }
 
-  public static final int SOURCE_PATH_FIELD_NUMBER = 4;
+  public static final int SOURCE_PATH_FIELD_NUMBER = 6;
   @SuppressWarnings("serial")
   private volatile java.lang.Object sourcePath_ = "";
   /**
    * <pre>
    * 函数代码所在的工件路径（可选）
-   * Java:   JAR 文件路径
+   * Java:   java maven 项目根目录
    * Python: 源码目录路径（requirements.txt 须位于同目录下）
    * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
    * </pre>
    *
-   * <code>string source_path = 4;</code>
+   * <code>string source_path = 6;</code>
    * @return The sourcePath.
    */
   @java.lang.Override
@@ -164,12 +232,12 @@ private static final long serialVersionUID = 0L;
   /**
    * <pre>
    * 函数代码所在的工件路径（可选）
-   * Java:   JAR 文件路径
+   * Java:   java maven 项目根目录
    * Python: 源码目录路径（requirements.txt 须位于同目录下）
    * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
    * </pre>
    *
-   * <code>string source_path = 4;</code>
+   * <code>string source_path = 6;</code>
    * @return The bytes for sourcePath.
    */
   @java.lang.Override
@@ -204,14 +272,20 @@ private static final long serialVersionUID = 0L;
     if (lang_ != com.kekwy.iarnet.proto.common.Lang.LANG_UNSPECIFIED.getNumber()) {
       output.writeEnum(1, lang_);
     }
+    for (int i = 0; i < inputsType_.size(); i++) {
+      output.writeMessage(2, inputsType_.get(i));
+    }
+    if (outputType_ != null) {
+      output.writeMessage(3, getOutputType());
+    }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(functionIdentifier_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, functionIdentifier_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, functionIdentifier_);
     }
     if (!serializedFunction_.isEmpty()) {
-      output.writeBytes(3, serializedFunction_);
+      output.writeBytes(5, serializedFunction_);
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sourcePath_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 4, sourcePath_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, sourcePath_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -226,15 +300,23 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(1, lang_);
     }
+    for (int i = 0; i < inputsType_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(2, inputsType_.get(i));
+    }
+    if (outputType_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(3, getOutputType());
+    }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(functionIdentifier_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, functionIdentifier_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, functionIdentifier_);
     }
     if (!serializedFunction_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeBytesSize(3, serializedFunction_);
+        .computeBytesSize(5, serializedFunction_);
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sourcePath_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, sourcePath_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, sourcePath_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -252,6 +334,13 @@ private static final long serialVersionUID = 0L;
     com.kekwy.iarnet.proto.common.FunctionDescriptor other = (com.kekwy.iarnet.proto.common.FunctionDescriptor) obj;
 
     if (lang_ != other.lang_) return false;
+    if (!getInputsTypeList()
+        .equals(other.getInputsTypeList())) return false;
+    if (hasOutputType() != other.hasOutputType()) return false;
+    if (hasOutputType()) {
+      if (!getOutputType()
+          .equals(other.getOutputType())) return false;
+    }
     if (!getFunctionIdentifier()
         .equals(other.getFunctionIdentifier())) return false;
     if (!getSerializedFunction()
@@ -271,6 +360,14 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + LANG_FIELD_NUMBER;
     hash = (53 * hash) + lang_;
+    if (getInputsTypeCount() > 0) {
+      hash = (37 * hash) + INPUTS_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getInputsTypeList().hashCode();
+    }
+    if (hasOutputType()) {
+      hash = (37 * hash) + OUTPUT_TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getOutputType().hashCode();
+    }
     hash = (37 * hash) + FUNCTION_IDENTIFIER_FIELD_NUMBER;
     hash = (53 * hash) + getFunctionIdentifier().hashCode();
     hash = (37 * hash) + SERIALIZED_FUNCTION_FIELD_NUMBER;
@@ -407,6 +504,18 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       lang_ = 0;
+      if (inputsTypeBuilder_ == null) {
+        inputsType_ = java.util.Collections.emptyList();
+      } else {
+        inputsType_ = null;
+        inputsTypeBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00000002);
+      outputType_ = null;
+      if (outputTypeBuilder_ != null) {
+        outputTypeBuilder_.dispose();
+        outputTypeBuilder_ = null;
+      }
       functionIdentifier_ = "";
       serializedFunction_ = com.google.protobuf.ByteString.EMPTY;
       sourcePath_ = "";
@@ -436,9 +545,22 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.kekwy.iarnet.proto.common.FunctionDescriptor buildPartial() {
       com.kekwy.iarnet.proto.common.FunctionDescriptor result = new com.kekwy.iarnet.proto.common.FunctionDescriptor(this);
+      buildPartialRepeatedFields(result);
       if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
+    }
+
+    private void buildPartialRepeatedFields(com.kekwy.iarnet.proto.common.FunctionDescriptor result) {
+      if (inputsTypeBuilder_ == null) {
+        if (((bitField0_ & 0x00000002) != 0)) {
+          inputsType_ = java.util.Collections.unmodifiableList(inputsType_);
+          bitField0_ = (bitField0_ & ~0x00000002);
+        }
+        result.inputsType_ = inputsType_;
+      } else {
+        result.inputsType_ = inputsTypeBuilder_.build();
+      }
     }
 
     private void buildPartial0(com.kekwy.iarnet.proto.common.FunctionDescriptor result) {
@@ -446,13 +568,18 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000001) != 0)) {
         result.lang_ = lang_;
       }
-      if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.functionIdentifier_ = functionIdentifier_;
-      }
       if (((from_bitField0_ & 0x00000004) != 0)) {
-        result.serializedFunction_ = serializedFunction_;
+        result.outputType_ = outputTypeBuilder_ == null
+            ? outputType_
+            : outputTypeBuilder_.build();
       }
       if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.functionIdentifier_ = functionIdentifier_;
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.serializedFunction_ = serializedFunction_;
+      }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
         result.sourcePath_ = sourcePath_;
       }
     }
@@ -504,9 +631,38 @@ private static final long serialVersionUID = 0L;
       if (other.lang_ != 0) {
         setLangValue(other.getLangValue());
       }
+      if (inputsTypeBuilder_ == null) {
+        if (!other.inputsType_.isEmpty()) {
+          if (inputsType_.isEmpty()) {
+            inputsType_ = other.inputsType_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+          } else {
+            ensureInputsTypeIsMutable();
+            inputsType_.addAll(other.inputsType_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.inputsType_.isEmpty()) {
+          if (inputsTypeBuilder_.isEmpty()) {
+            inputsTypeBuilder_.dispose();
+            inputsTypeBuilder_ = null;
+            inputsType_ = other.inputsType_;
+            bitField0_ = (bitField0_ & ~0x00000002);
+            inputsTypeBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getInputsTypeFieldBuilder() : null;
+          } else {
+            inputsTypeBuilder_.addAllMessages(other.inputsType_);
+          }
+        }
+      }
+      if (other.hasOutputType()) {
+        mergeOutputType(other.getOutputType());
+      }
       if (!other.getFunctionIdentifier().isEmpty()) {
         functionIdentifier_ = other.functionIdentifier_;
-        bitField0_ |= 0x00000002;
+        bitField0_ |= 0x00000008;
         onChanged();
       }
       if (other.getSerializedFunction() != com.google.protobuf.ByteString.EMPTY) {
@@ -514,7 +670,7 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getSourcePath().isEmpty()) {
         sourcePath_ = other.sourcePath_;
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000020;
         onChanged();
       }
       this.mergeUnknownFields(other.getUnknownFields());
@@ -549,20 +705,40 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 8
             case 18: {
-              functionIdentifier_ = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000002;
+              com.kekwy.iarnet.proto.common.Type m =
+                  input.readMessage(
+                      com.kekwy.iarnet.proto.common.Type.parser(),
+                      extensionRegistry);
+              if (inputsTypeBuilder_ == null) {
+                ensureInputsTypeIsMutable();
+                inputsType_.add(m);
+              } else {
+                inputsTypeBuilder_.addMessage(m);
+              }
               break;
             } // case 18
             case 26: {
-              serializedFunction_ = input.readBytes();
+              input.readMessage(
+                  getOutputTypeFieldBuilder().getBuilder(),
+                  extensionRegistry);
               bitField0_ |= 0x00000004;
               break;
             } // case 26
             case 34: {
-              sourcePath_ = input.readStringRequireUtf8();
+              functionIdentifier_ = input.readStringRequireUtf8();
               bitField0_ |= 0x00000008;
               break;
             } // case 34
+            case 42: {
+              serializedFunction_ = input.readBytes();
+              bitField0_ |= 0x00000010;
+              break;
+            } // case 42
+            case 50: {
+              sourcePath_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000020;
+              break;
+            } // case 50
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -633,6 +809,365 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private java.util.List<com.kekwy.iarnet.proto.common.Type> inputsType_ =
+      java.util.Collections.emptyList();
+    private void ensureInputsTypeIsMutable() {
+      if (!((bitField0_ & 0x00000002) != 0)) {
+        inputsType_ = new java.util.ArrayList<com.kekwy.iarnet.proto.common.Type>(inputsType_);
+        bitField0_ |= 0x00000002;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> inputsTypeBuilder_;
+
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public java.util.List<com.kekwy.iarnet.proto.common.Type> getInputsTypeList() {
+      if (inputsTypeBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(inputsType_);
+      } else {
+        return inputsTypeBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public int getInputsTypeCount() {
+      if (inputsTypeBuilder_ == null) {
+        return inputsType_.size();
+      } else {
+        return inputsTypeBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.Type getInputsType(int index) {
+      if (inputsTypeBuilder_ == null) {
+        return inputsType_.get(index);
+      } else {
+        return inputsTypeBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder setInputsType(
+        int index, com.kekwy.iarnet.proto.common.Type value) {
+      if (inputsTypeBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureInputsTypeIsMutable();
+        inputsType_.set(index, value);
+        onChanged();
+      } else {
+        inputsTypeBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder setInputsType(
+        int index, com.kekwy.iarnet.proto.common.Type.Builder builderForValue) {
+      if (inputsTypeBuilder_ == null) {
+        ensureInputsTypeIsMutable();
+        inputsType_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        inputsTypeBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder addInputsType(com.kekwy.iarnet.proto.common.Type value) {
+      if (inputsTypeBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureInputsTypeIsMutable();
+        inputsType_.add(value);
+        onChanged();
+      } else {
+        inputsTypeBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder addInputsType(
+        int index, com.kekwy.iarnet.proto.common.Type value) {
+      if (inputsTypeBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureInputsTypeIsMutable();
+        inputsType_.add(index, value);
+        onChanged();
+      } else {
+        inputsTypeBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder addInputsType(
+        com.kekwy.iarnet.proto.common.Type.Builder builderForValue) {
+      if (inputsTypeBuilder_ == null) {
+        ensureInputsTypeIsMutable();
+        inputsType_.add(builderForValue.build());
+        onChanged();
+      } else {
+        inputsTypeBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder addInputsType(
+        int index, com.kekwy.iarnet.proto.common.Type.Builder builderForValue) {
+      if (inputsTypeBuilder_ == null) {
+        ensureInputsTypeIsMutable();
+        inputsType_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        inputsTypeBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder addAllInputsType(
+        java.lang.Iterable<? extends com.kekwy.iarnet.proto.common.Type> values) {
+      if (inputsTypeBuilder_ == null) {
+        ensureInputsTypeIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, inputsType_);
+        onChanged();
+      } else {
+        inputsTypeBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder clearInputsType() {
+      if (inputsTypeBuilder_ == null) {
+        inputsType_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000002);
+        onChanged();
+      } else {
+        inputsTypeBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public Builder removeInputsType(int index) {
+      if (inputsTypeBuilder_ == null) {
+        ensureInputsTypeIsMutable();
+        inputsType_.remove(index);
+        onChanged();
+      } else {
+        inputsTypeBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.Type.Builder getInputsTypeBuilder(
+        int index) {
+      return getInputsTypeFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.TypeOrBuilder getInputsTypeOrBuilder(
+        int index) {
+      if (inputsTypeBuilder_ == null) {
+        return inputsType_.get(index);  } else {
+        return inputsTypeBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public java.util.List<? extends com.kekwy.iarnet.proto.common.TypeOrBuilder> 
+         getInputsTypeOrBuilderList() {
+      if (inputsTypeBuilder_ != null) {
+        return inputsTypeBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(inputsType_);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.Type.Builder addInputsTypeBuilder() {
+      return getInputsTypeFieldBuilder().addBuilder(
+          com.kekwy.iarnet.proto.common.Type.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.Type.Builder addInputsTypeBuilder(
+        int index) {
+      return getInputsTypeFieldBuilder().addBuilder(
+          index, com.kekwy.iarnet.proto.common.Type.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+     */
+    public java.util.List<com.kekwy.iarnet.proto.common.Type.Builder> 
+         getInputsTypeBuilderList() {
+      return getInputsTypeFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> 
+        getInputsTypeFieldBuilder() {
+      if (inputsTypeBuilder_ == null) {
+        inputsTypeBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder>(
+                inputsType_,
+                ((bitField0_ & 0x00000002) != 0),
+                getParentForChildren(),
+                isClean());
+        inputsType_ = null;
+      }
+      return inputsTypeBuilder_;
+    }
+
+    private com.kekwy.iarnet.proto.common.Type outputType_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> outputTypeBuilder_;
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     * @return Whether the outputType field is set.
+     */
+    public boolean hasOutputType() {
+      return ((bitField0_ & 0x00000004) != 0);
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     * @return The outputType.
+     */
+    public com.kekwy.iarnet.proto.common.Type getOutputType() {
+      if (outputTypeBuilder_ == null) {
+        return outputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
+      } else {
+        return outputTypeBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    public Builder setOutputType(com.kekwy.iarnet.proto.common.Type value) {
+      if (outputTypeBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        outputType_ = value;
+      } else {
+        outputTypeBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    public Builder setOutputType(
+        com.kekwy.iarnet.proto.common.Type.Builder builderForValue) {
+      if (outputTypeBuilder_ == null) {
+        outputType_ = builderForValue.build();
+      } else {
+        outputTypeBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    public Builder mergeOutputType(com.kekwy.iarnet.proto.common.Type value) {
+      if (outputTypeBuilder_ == null) {
+        if (((bitField0_ & 0x00000004) != 0) &&
+          outputType_ != null &&
+          outputType_ != com.kekwy.iarnet.proto.common.Type.getDefaultInstance()) {
+          getOutputTypeBuilder().mergeFrom(value);
+        } else {
+          outputType_ = value;
+        }
+      } else {
+        outputTypeBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    public Builder clearOutputType() {
+      bitField0_ = (bitField0_ & ~0x00000004);
+      outputType_ = null;
+      if (outputTypeBuilder_ != null) {
+        outputTypeBuilder_.dispose();
+        outputTypeBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    public com.kekwy.iarnet.proto.common.Type.Builder getOutputTypeBuilder() {
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return getOutputTypeFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    public com.kekwy.iarnet.proto.common.TypeOrBuilder getOutputTypeOrBuilder() {
+      if (outputTypeBuilder_ != null) {
+        return outputTypeBuilder_.getMessageOrBuilder();
+      } else {
+        return outputType_ == null ?
+            com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
+      }
+    }
+    /**
+     * <code>.iarnet.common.Type output_type = 3;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> 
+        getOutputTypeFieldBuilder() {
+      if (outputTypeBuilder_ == null) {
+        outputTypeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder>(
+                getOutputType(),
+                getParentForChildren(),
+                isClean());
+        outputType_ = null;
+      }
+      return outputTypeBuilder_;
+    }
+
     private java.lang.Object functionIdentifier_ = "";
     /**
      * <pre>
@@ -641,7 +1176,7 @@ private static final long serialVersionUID = 0L;
      * Python: "模块:函数名"，如 "transforms:to_upper"
      * </pre>
      *
-     * <code>string function_identifier = 2;</code>
+     * <code>string function_identifier = 4;</code>
      * @return The functionIdentifier.
      */
     public java.lang.String getFunctionIdentifier() {
@@ -663,7 +1198,7 @@ private static final long serialVersionUID = 0L;
      * Python: "模块:函数名"，如 "transforms:to_upper"
      * </pre>
      *
-     * <code>string function_identifier = 2;</code>
+     * <code>string function_identifier = 4;</code>
      * @return The bytes for functionIdentifier.
      */
     public com.google.protobuf.ByteString
@@ -686,7 +1221,7 @@ private static final long serialVersionUID = 0L;
      * Python: "模块:函数名"，如 "transforms:to_upper"
      * </pre>
      *
-     * <code>string function_identifier = 2;</code>
+     * <code>string function_identifier = 4;</code>
      * @param value The functionIdentifier to set.
      * @return This builder for chaining.
      */
@@ -694,7 +1229,7 @@ private static final long serialVersionUID = 0L;
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       functionIdentifier_ = value;
-      bitField0_ |= 0x00000002;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -705,12 +1240,12 @@ private static final long serialVersionUID = 0L;
      * Python: "模块:函数名"，如 "transforms:to_upper"
      * </pre>
      *
-     * <code>string function_identifier = 2;</code>
+     * <code>string function_identifier = 4;</code>
      * @return This builder for chaining.
      */
     public Builder clearFunctionIdentifier() {
       functionIdentifier_ = getDefaultInstance().getFunctionIdentifier();
-      bitField0_ = (bitField0_ & ~0x00000002);
+      bitField0_ = (bitField0_ & ~0x00000008);
       onChanged();
       return this;
     }
@@ -721,7 +1256,7 @@ private static final long serialVersionUID = 0L;
      * Python: "模块:函数名"，如 "transforms:to_upper"
      * </pre>
      *
-     * <code>string function_identifier = 2;</code>
+     * <code>string function_identifier = 4;</code>
      * @param value The bytes for functionIdentifier to set.
      * @return This builder for chaining.
      */
@@ -730,7 +1265,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
       functionIdentifier_ = value;
-      bitField0_ |= 0x00000002;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -744,7 +1279,7 @@ private static final long serialVersionUID = 0L;
      * 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
      * </pre>
      *
-     * <code>bytes serialized_function = 3;</code>
+     * <code>bytes serialized_function = 5;</code>
      * @return The serializedFunction.
      */
     @java.lang.Override
@@ -759,14 +1294,14 @@ private static final long serialVersionUID = 0L;
      * 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
      * </pre>
      *
-     * <code>bytes serialized_function = 3;</code>
+     * <code>bytes serialized_function = 5;</code>
      * @param value The serializedFunction to set.
      * @return This builder for chaining.
      */
     public Builder setSerializedFunction(com.google.protobuf.ByteString value) {
       if (value == null) { throw new NullPointerException(); }
       serializedFunction_ = value;
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -778,11 +1313,11 @@ private static final long serialVersionUID = 0L;
      * 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
      * </pre>
      *
-     * <code>bytes serialized_function = 3;</code>
+     * <code>bytes serialized_function = 5;</code>
      * @return This builder for chaining.
      */
     public Builder clearSerializedFunction() {
-      bitField0_ = (bitField0_ & ~0x00000004);
+      bitField0_ = (bitField0_ & ~0x00000010);
       serializedFunction_ = getDefaultInstance().getSerializedFunction();
       onChanged();
       return this;
@@ -792,12 +1327,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <pre>
      * 函数代码所在的工件路径（可选）
-     * Java:   JAR 文件路径
+     * Java:   java maven 项目根目录
      * Python: 源码目录路径（requirements.txt 须位于同目录下）
      * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
      * </pre>
      *
-     * <code>string source_path = 4;</code>
+     * <code>string source_path = 6;</code>
      * @return The sourcePath.
      */
     public java.lang.String getSourcePath() {
@@ -815,12 +1350,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <pre>
      * 函数代码所在的工件路径（可选）
-     * Java:   JAR 文件路径
+     * Java:   java maven 项目根目录
      * Python: 源码目录路径（requirements.txt 须位于同目录下）
      * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
      * </pre>
      *
-     * <code>string source_path = 4;</code>
+     * <code>string source_path = 6;</code>
      * @return The bytes for sourcePath.
      */
     public com.google.protobuf.ByteString
@@ -839,12 +1374,12 @@ private static final long serialVersionUID = 0L;
     /**
      * <pre>
      * 函数代码所在的工件路径（可选）
-     * Java:   JAR 文件路径
+     * Java:   java maven 项目根目录
      * Python: 源码目录路径（requirements.txt 须位于同目录下）
      * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
      * </pre>
      *
-     * <code>string source_path = 4;</code>
+     * <code>string source_path = 6;</code>
      * @param value The sourcePath to set.
      * @return This builder for chaining.
      */
@@ -852,36 +1387,36 @@ private static final long serialVersionUID = 0L;
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       sourcePath_ = value;
-      bitField0_ |= 0x00000008;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
     /**
      * <pre>
      * 函数代码所在的工件路径（可选）
-     * Java:   JAR 文件路径
+     * Java:   java maven 项目根目录
      * Python: 源码目录路径（requirements.txt 须位于同目录下）
      * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
      * </pre>
      *
-     * <code>string source_path = 4;</code>
+     * <code>string source_path = 6;</code>
      * @return This builder for chaining.
      */
     public Builder clearSourcePath() {
       sourcePath_ = getDefaultInstance().getSourcePath();
-      bitField0_ = (bitField0_ & ~0x00000008);
+      bitField0_ = (bitField0_ & ~0x00000020);
       onChanged();
       return this;
     }
     /**
      * <pre>
      * 函数代码所在的工件路径（可选）
-     * Java:   JAR 文件路径
+     * Java:   java maven 项目根目录
      * Python: 源码目录路径（requirements.txt 须位于同目录下）
      * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
      * </pre>
      *
-     * <code>string source_path = 4;</code>
+     * <code>string source_path = 6;</code>
      * @param value The bytes for sourcePath to set.
      * @return This builder for chaining.
      */
@@ -890,7 +1425,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
       sourcePath_ = value;
-      bitField0_ |= 0x00000008;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }

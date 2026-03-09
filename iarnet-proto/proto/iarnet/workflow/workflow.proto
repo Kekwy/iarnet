@@ -4,7 +4,6 @@ package iarnet.workflow;
 
 import "iarnet/common/function.proto";
 import "iarnet/common/resource.proto";
-import "iarnet/common/type.proto";
 
 option java_package = "com.kekwy.iarnet.proto.workflow";
 option java_multiple_files = true;
@@ -18,8 +17,6 @@ message WorkflowGraph {
   repeated Edge edges       = 4;
 }
 
-
-
 // ======================== 边 ========================
 
 message Edge {
@@ -30,89 +27,13 @@ message Edge {
 
 // ======================== 节点 ========================
 
-enum NodeKind {
-  NODE_KIND_UNSPECIFIED = 0;
-  SOURCE                = 1;
-  TASK              = 2;
-  SINK                  = 3;
-}
-
 message Node {
   string   id          = 1;
-  NodeKind kind        = 2;
-  repeated common.Type inputs_type  = 3;
-  common.Type     output_type = 4;
-  common.FunctionDescriptor function      = 5;
-  TaskConfig taskConfig = 6;
-
-  // 根据 kind 使用对应的 detail
-  oneof detail {
-    SourceNodeDetail   source_detail   = 8;
-    OperatorNodeDetail operator_detail = 9;
-    SinkNodeDetail     sink_detail     = 10;
-  }
+  common.FunctionDescriptor function      = 2;
+  NodeConfig nodeConfig = 3;
 }
 
-message TaskConfig {
-  int32              replicas      = 6;
-  common.Resource           resource      = 7;
-}
-
-// ======================== Source 节点 ========================
-
-enum SourceKind {
-  SOURCE_KIND_UNSPECIFIED = 0;
-  CONSTANT                = 1;
-  FILE                    = 2;
-}
-
-message SourceNodeDetail {
-  SourceKind source_kind = 1;
-  oneof detail {
-    ConstantSourceDetail constant_source_detail = 2;
-    FileSourceDetail file_source_detail = 3;
-  }
-}
-
-message ConstantSourceDetail {
-  repeated common.Value values = 1;
-}
-
-message FileSourceDetail {
-  string file_path = 1;
-}
-
-// ======================== Operator 节点 ========================
-
-enum OperatorKind {
-  OPERATOR_KIND_UNSPECIFIED = 0;
-  OPERATOR_MAP              = 1;
-  OPERATOR_FLAT_MAP         = 2;
-  OPERATOR_FILTER           = 3;
-  OPERATOR_UNION            = 4;
-  OPERATOR_KEY_BY           = 5;
-  OPERATOR_CORRELATE        = 6;
-  OPERATOR_FOLD             = 7;
-  OPERATOR_BRANCH           = 9;
-}
-
-message OperatorNodeDetail {
-  OperatorKind operator_kind = 1;
-  // KEY_BY / CORRELATE 专用：key 提取函数
-  common.FunctionDescriptor key_selector = 2;
-  // FOLD 专用：累加器初始值
-  common.Value fold_initial_value = 4;
-  // JOIN 专用：超时时间
-  int64 join_timeout_ms = 5;
-}
-
-// ======================== Sink 节点 ========================
-
-enum SinkKind {
-  SINK_KIND_UNSPECIFIED = 0;
-  PRINT                 = 1;
-}
-
-message SinkNodeDetail {
-  SinkKind sink_kind = 1;
+message NodeConfig {
+  int32              replicas      = 4;
+  common.Resource    resource      = 5;
 }

@@ -1,18 +1,18 @@
-package com.kekwy.iarnet.sdk.util;
+package com.kekwy.iarnet.sdk.dsl;
 
-import com.kekwy.iarnet.sdk.function.SourceFunction;
+import com.kekwy.iarnet.sdk.function.InputFunction;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-public final class Sources {
+public final class Inputs {
 
-    private Sources() {
+    private Inputs() {
     }
 
     @SafeVarargs
-    public static <T> SourceFunction<T> of(T... items) {
-        return new SourceFunction<>() {
+    public static <T> InputFunction<T> of(T... items) {
+        return new InputFunction<>() {
 
             private final T[] data = Arrays.copyOf(items, items.length);
             private int index = 0;

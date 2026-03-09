@@ -32,12 +32,17 @@ public interface EdgeOrBuilder extends
       getToNodeIdBytes();
 
   /**
-   * <pre>
-   * 0 = 主输出（默认），1 = branch 的 unmatched 输出
-   * </pre>
-   *
-   * <code>int32 from_port = 3;</code>
-   * @return The fromPort.
+   * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+   * @return Whether the conditionFunction field is set.
    */
-  int getFromPort();
+  boolean hasConditionFunction();
+  /**
+   * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+   * @return The conditionFunction.
+   */
+  com.kekwy.iarnet.proto.common.FunctionDescriptor getConditionFunction();
+  /**
+   * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+   */
+  com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getConditionFunctionOrBuilder();
 }

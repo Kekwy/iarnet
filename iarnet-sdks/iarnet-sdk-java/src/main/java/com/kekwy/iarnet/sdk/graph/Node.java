@@ -2,23 +2,18 @@ package com.kekwy.iarnet.sdk.graph;
 
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Type;
+import com.kekwy.iarnet.proto.workflow.NodeConfig;
 import com.kekwy.iarnet.proto.workflow.NodeKind;
 import com.kekwy.iarnet.sdk.Resource;
 
-/**
- * 工作流图中的节点基类，与 proto {@code workflow.Node} 对齐。
- * <p>
- * {@code function}、{@code replicas}、{@code resource} 位于 Node 级别（proto 规范），
- * 各子类仅携带各自的 kind-specific detail。
- */
+
 public abstract class Node {
 
     private final String id;
-    private Type inputType;
-    private Type outputType;
     private FunctionDescriptor function;
-    private int replicas;
-    private Resource resource;
+    private NodeConfig nodeConfig;
+
+
 
     protected Node(String id, Type outputType) {
         this.id = id;

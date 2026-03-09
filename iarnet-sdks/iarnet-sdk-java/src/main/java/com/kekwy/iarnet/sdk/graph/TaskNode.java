@@ -17,7 +17,6 @@ public class TaskNode extends Node {
 
     private final OperatorKind operatorKind;
 
-
     private TaskNode(Builder builder) {
         super(builder.id, builder.inputType, builder.outputType,
               builder.function, builder.replicas, builder.resource);

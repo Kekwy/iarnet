@@ -17,7 +17,6 @@ private static final long serialVersionUID = 0L;
   }
   private Node() {
     id_ = "";
-    kind_ = 0;
   }
 
   @java.lang.Override
@@ -43,49 +42,6 @@ private static final long serialVersionUID = 0L;
     return com.kekwy.iarnet.proto.workflow.Workflow.internal_static_iarnet_workflow_Node_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             com.kekwy.iarnet.proto.workflow.Node.class, com.kekwy.iarnet.proto.workflow.Node.Builder.class);
-  }
-
-  private int detailCase_ = 0;
-  private java.lang.Object detail_;
-  public enum DetailCase
-      implements com.google.protobuf.Internal.EnumLite,
-          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
-    SOURCE_DETAIL(8),
-    OPERATOR_DETAIL(9),
-    SINK_DETAIL(10),
-    DETAIL_NOT_SET(0);
-    private final int value;
-    private DetailCase(int value) {
-      this.value = value;
-    }
-    /**
-     * @param value The number of the enum to look for.
-     * @return The enum associated with the given number.
-     * @deprecated Use {@link #forNumber(int)} instead.
-     */
-    @java.lang.Deprecated
-    public static DetailCase valueOf(int value) {
-      return forNumber(value);
-    }
-
-    public static DetailCase forNumber(int value) {
-      switch (value) {
-        case 8: return SOURCE_DETAIL;
-        case 9: return OPERATOR_DETAIL;
-        case 10: return SINK_DETAIL;
-        case 0: return DETAIL_NOT_SET;
-        default: return null;
-      }
-    }
-    public int getNumber() {
-      return this.value;
-    }
-  };
-
-  public DetailCase
-  getDetailCase() {
-    return DetailCase.forNumber(
-        detailCase_);
   }
 
   public static final int ID_FIELD_NUMBER = 1;
@@ -127,80 +83,10 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int KIND_FIELD_NUMBER = 2;
-  private int kind_ = 0;
-  /**
-   * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-   * @return The enum numeric value on the wire for kind.
-   */
-  @java.lang.Override public int getKindValue() {
-    return kind_;
-  }
-  /**
-   * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-   * @return The kind.
-   */
-  @java.lang.Override public com.kekwy.iarnet.proto.workflow.NodeKind getKind() {
-    com.kekwy.iarnet.proto.workflow.NodeKind result = com.kekwy.iarnet.proto.workflow.NodeKind.forNumber(kind_);
-    return result == null ? com.kekwy.iarnet.proto.workflow.NodeKind.UNRECOGNIZED : result;
-  }
-
-  public static final int INPUT_TYPE_FIELD_NUMBER = 3;
-  private com.kekwy.iarnet.proto.common.Type inputType_;
-  /**
-   * <code>.iarnet.common.Type input_type = 3;</code>
-   * @return Whether the inputType field is set.
-   */
-  @java.lang.Override
-  public boolean hasInputType() {
-    return inputType_ != null;
-  }
-  /**
-   * <code>.iarnet.common.Type input_type = 3;</code>
-   * @return The inputType.
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.common.Type getInputType() {
-    return inputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : inputType_;
-  }
-  /**
-   * <code>.iarnet.common.Type input_type = 3;</code>
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.common.TypeOrBuilder getInputTypeOrBuilder() {
-    return inputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : inputType_;
-  }
-
-  public static final int OUTPUT_TYPE_FIELD_NUMBER = 4;
-  private com.kekwy.iarnet.proto.common.Type outputType_;
-  /**
-   * <code>.iarnet.common.Type output_type = 4;</code>
-   * @return Whether the outputType field is set.
-   */
-  @java.lang.Override
-  public boolean hasOutputType() {
-    return outputType_ != null;
-  }
-  /**
-   * <code>.iarnet.common.Type output_type = 4;</code>
-   * @return The outputType.
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.common.Type getOutputType() {
-    return outputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
-  }
-  /**
-   * <code>.iarnet.common.Type output_type = 4;</code>
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.common.TypeOrBuilder getOutputTypeOrBuilder() {
-    return outputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
-  }
-
-  public static final int FUNCTION_FIELD_NUMBER = 5;
+  public static final int FUNCTION_FIELD_NUMBER = 2;
   private com.kekwy.iarnet.proto.common.FunctionDescriptor function_;
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
    * @return Whether the function field is set.
    */
   @java.lang.Override
@@ -208,7 +94,7 @@ private static final long serialVersionUID = 0L;
     return function_ != null;
   }
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
    * @return The function.
    */
   @java.lang.Override
@@ -216,141 +102,37 @@ private static final long serialVersionUID = 0L;
     return function_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : function_;
   }
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionOrBuilder() {
     return function_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : function_;
   }
 
-  public static final int REPLICAS_FIELD_NUMBER = 6;
-  private int replicas_ = 0;
+  public static final int NODECONFIG_FIELD_NUMBER = 3;
+  private com.kekwy.iarnet.proto.workflow.NodeConfig nodeConfig_;
   /**
-   * <code>int32 replicas = 6;</code>
-   * @return The replicas.
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * @return Whether the nodeConfig field is set.
    */
   @java.lang.Override
-  public int getReplicas() {
-    return replicas_;
-  }
-
-  public static final int RESOURCE_FIELD_NUMBER = 7;
-  private com.kekwy.iarnet.proto.common.Resource resource_;
-  /**
-   * <code>.iarnet.common.Resource resource = 7;</code>
-   * @return Whether the resource field is set.
-   */
-  @java.lang.Override
-  public boolean hasResource() {
-    return resource_ != null;
+  public boolean hasNodeConfig() {
+    return nodeConfig_ != null;
   }
   /**
-   * <code>.iarnet.common.Resource resource = 7;</code>
-   * @return The resource.
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * @return The nodeConfig.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.Resource getResource() {
-    return resource_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+  public com.kekwy.iarnet.proto.workflow.NodeConfig getNodeConfig() {
+    return nodeConfig_ == null ? com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance() : nodeConfig_;
   }
   /**
-   * <code>.iarnet.common.Resource resource = 7;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceOrBuilder() {
-    return resource_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
-  }
-
-  public static final int SOURCE_DETAIL_FIELD_NUMBER = 8;
-  /**
-   * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-   * @return Whether the sourceDetail field is set.
-   */
-  @java.lang.Override
-  public boolean hasSourceDetail() {
-    return detailCase_ == 8;
-  }
-  /**
-   * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-   * @return The sourceDetail.
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.workflow.SourceNodeDetail getSourceDetail() {
-    if (detailCase_ == 8) {
-       return (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_;
-    }
-    return com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance();
-  }
-  /**
-   * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.workflow.SourceNodeDetailOrBuilder getSourceDetailOrBuilder() {
-    if (detailCase_ == 8) {
-       return (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_;
-    }
-    return com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance();
-  }
-
-  public static final int OPERATOR_DETAIL_FIELD_NUMBER = 9;
-  /**
-   * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-   * @return Whether the operatorDetail field is set.
-   */
-  @java.lang.Override
-  public boolean hasOperatorDetail() {
-    return detailCase_ == 9;
-  }
-  /**
-   * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-   * @return The operatorDetail.
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.workflow.OperatorNodeDetail getOperatorDetail() {
-    if (detailCase_ == 9) {
-       return (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_;
-    }
-    return com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance();
-  }
-  /**
-   * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.workflow.OperatorNodeDetailOrBuilder getOperatorDetailOrBuilder() {
-    if (detailCase_ == 9) {
-       return (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_;
-    }
-    return com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance();
-  }
-
-  public static final int SINK_DETAIL_FIELD_NUMBER = 10;
-  /**
-   * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-   * @return Whether the sinkDetail field is set.
-   */
-  @java.lang.Override
-  public boolean hasSinkDetail() {
-    return detailCase_ == 10;
-  }
-  /**
-   * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-   * @return The sinkDetail.
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.workflow.SinkNodeDetail getSinkDetail() {
-    if (detailCase_ == 10) {
-       return (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_;
-    }
-    return com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance();
-  }
-  /**
-   * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.workflow.SinkNodeDetailOrBuilder getSinkDetailOrBuilder() {
-    if (detailCase_ == 10) {
-       return (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_;
-    }
-    return com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance();
+  public com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder() {
+    return nodeConfig_ == null ? com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance() : nodeConfig_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -370,32 +152,11 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
     }
-    if (kind_ != com.kekwy.iarnet.proto.workflow.NodeKind.NODE_KIND_UNSPECIFIED.getNumber()) {
-      output.writeEnum(2, kind_);
-    }
-    if (inputType_ != null) {
-      output.writeMessage(3, getInputType());
-    }
-    if (outputType_ != null) {
-      output.writeMessage(4, getOutputType());
-    }
     if (function_ != null) {
-      output.writeMessage(5, getFunction());
+      output.writeMessage(2, getFunction());
     }
-    if (replicas_ != 0) {
-      output.writeInt32(6, replicas_);
-    }
-    if (resource_ != null) {
-      output.writeMessage(7, getResource());
-    }
-    if (detailCase_ == 8) {
-      output.writeMessage(8, (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_);
-    }
-    if (detailCase_ == 9) {
-      output.writeMessage(9, (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_);
-    }
-    if (detailCase_ == 10) {
-      output.writeMessage(10, (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_);
+    if (nodeConfig_ != null) {
+      output.writeMessage(3, getNodeConfig());
     }
     getUnknownFields().writeTo(output);
   }
@@ -409,41 +170,13 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
     }
-    if (kind_ != com.kekwy.iarnet.proto.workflow.NodeKind.NODE_KIND_UNSPECIFIED.getNumber()) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeEnumSize(2, kind_);
-    }
-    if (inputType_ != null) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(3, getInputType());
-    }
-    if (outputType_ != null) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(4, getOutputType());
-    }
     if (function_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, getFunction());
+        .computeMessageSize(2, getFunction());
     }
-    if (replicas_ != 0) {
+    if (nodeConfig_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(6, replicas_);
-    }
-    if (resource_ != null) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(7, getResource());
-    }
-    if (detailCase_ == 8) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(8, (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_);
-    }
-    if (detailCase_ == 9) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(9, (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_);
-    }
-    if (detailCase_ == 10) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(10, (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_);
+        .computeMessageSize(3, getNodeConfig());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -462,45 +195,15 @@ private static final long serialVersionUID = 0L;
 
     if (!getId()
         .equals(other.getId())) return false;
-    if (kind_ != other.kind_) return false;
-    if (hasInputType() != other.hasInputType()) return false;
-    if (hasInputType()) {
-      if (!getInputType()
-          .equals(other.getInputType())) return false;
-    }
-    if (hasOutputType() != other.hasOutputType()) return false;
-    if (hasOutputType()) {
-      if (!getOutputType()
-          .equals(other.getOutputType())) return false;
-    }
     if (hasFunction() != other.hasFunction()) return false;
     if (hasFunction()) {
       if (!getFunction()
           .equals(other.getFunction())) return false;
     }
-    if (getReplicas()
-        != other.getReplicas()) return false;
-    if (hasResource() != other.hasResource()) return false;
-    if (hasResource()) {
-      if (!getResource()
-          .equals(other.getResource())) return false;
-    }
-    if (!getDetailCase().equals(other.getDetailCase())) return false;
-    switch (detailCase_) {
-      case 8:
-        if (!getSourceDetail()
-            .equals(other.getSourceDetail())) return false;
-        break;
-      case 9:
-        if (!getOperatorDetail()
-            .equals(other.getOperatorDetail())) return false;
-        break;
-      case 10:
-        if (!getSinkDetail()
-            .equals(other.getSinkDetail())) return false;
-        break;
-      case 0:
-      default:
+    if (hasNodeConfig() != other.hasNodeConfig()) return false;
+    if (hasNodeConfig()) {
+      if (!getNodeConfig()
+          .equals(other.getNodeConfig())) return false;
     }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
@@ -515,41 +218,13 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + ID_FIELD_NUMBER;
     hash = (53 * hash) + getId().hashCode();
-    hash = (37 * hash) + KIND_FIELD_NUMBER;
-    hash = (53 * hash) + kind_;
-    if (hasInputType()) {
-      hash = (37 * hash) + INPUT_TYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getInputType().hashCode();
-    }
-    if (hasOutputType()) {
-      hash = (37 * hash) + OUTPUT_TYPE_FIELD_NUMBER;
-      hash = (53 * hash) + getOutputType().hashCode();
-    }
     if (hasFunction()) {
       hash = (37 * hash) + FUNCTION_FIELD_NUMBER;
       hash = (53 * hash) + getFunction().hashCode();
     }
-    hash = (37 * hash) + REPLICAS_FIELD_NUMBER;
-    hash = (53 * hash) + getReplicas();
-    if (hasResource()) {
-      hash = (37 * hash) + RESOURCE_FIELD_NUMBER;
-      hash = (53 * hash) + getResource().hashCode();
-    }
-    switch (detailCase_) {
-      case 8:
-        hash = (37 * hash) + SOURCE_DETAIL_FIELD_NUMBER;
-        hash = (53 * hash) + getSourceDetail().hashCode();
-        break;
-      case 9:
-        hash = (37 * hash) + OPERATOR_DETAIL_FIELD_NUMBER;
-        hash = (53 * hash) + getOperatorDetail().hashCode();
-        break;
-      case 10:
-        hash = (37 * hash) + SINK_DETAIL_FIELD_NUMBER;
-        hash = (53 * hash) + getSinkDetail().hashCode();
-        break;
-      case 0:
-      default:
+    if (hasNodeConfig()) {
+      hash = (37 * hash) + NODECONFIG_FIELD_NUMBER;
+      hash = (53 * hash) + getNodeConfig().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -681,39 +356,16 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       id_ = "";
-      kind_ = 0;
-      inputType_ = null;
-      if (inputTypeBuilder_ != null) {
-        inputTypeBuilder_.dispose();
-        inputTypeBuilder_ = null;
-      }
-      outputType_ = null;
-      if (outputTypeBuilder_ != null) {
-        outputTypeBuilder_.dispose();
-        outputTypeBuilder_ = null;
-      }
       function_ = null;
       if (functionBuilder_ != null) {
         functionBuilder_.dispose();
         functionBuilder_ = null;
       }
-      replicas_ = 0;
-      resource_ = null;
-      if (resourceBuilder_ != null) {
-        resourceBuilder_.dispose();
-        resourceBuilder_ = null;
+      nodeConfig_ = null;
+      if (nodeConfigBuilder_ != null) {
+        nodeConfigBuilder_.dispose();
+        nodeConfigBuilder_ = null;
       }
-      if (sourceDetailBuilder_ != null) {
-        sourceDetailBuilder_.clear();
-      }
-      if (operatorDetailBuilder_ != null) {
-        operatorDetailBuilder_.clear();
-      }
-      if (sinkDetailBuilder_ != null) {
-        sinkDetailBuilder_.clear();
-      }
-      detailCase_ = 0;
-      detail_ = null;
       return this;
     }
 
@@ -741,7 +393,6 @@ private static final long serialVersionUID = 0L;
     public com.kekwy.iarnet.proto.workflow.Node buildPartial() {
       com.kekwy.iarnet.proto.workflow.Node result = new com.kekwy.iarnet.proto.workflow.Node(this);
       if (bitField0_ != 0) { buildPartial0(result); }
-      buildPartialOneofs(result);
       onBuilt();
       return result;
     }
@@ -752,47 +403,14 @@ private static final long serialVersionUID = 0L;
         result.id_ = id_;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.kind_ = kind_;
-      }
-      if (((from_bitField0_ & 0x00000004) != 0)) {
-        result.inputType_ = inputTypeBuilder_ == null
-            ? inputType_
-            : inputTypeBuilder_.build();
-      }
-      if (((from_bitField0_ & 0x00000008) != 0)) {
-        result.outputType_ = outputTypeBuilder_ == null
-            ? outputType_
-            : outputTypeBuilder_.build();
-      }
-      if (((from_bitField0_ & 0x00000010) != 0)) {
         result.function_ = functionBuilder_ == null
             ? function_
             : functionBuilder_.build();
       }
-      if (((from_bitField0_ & 0x00000020) != 0)) {
-        result.replicas_ = replicas_;
-      }
-      if (((from_bitField0_ & 0x00000040) != 0)) {
-        result.resource_ = resourceBuilder_ == null
-            ? resource_
-            : resourceBuilder_.build();
-      }
-    }
-
-    private void buildPartialOneofs(com.kekwy.iarnet.proto.workflow.Node result) {
-      result.detailCase_ = detailCase_;
-      result.detail_ = this.detail_;
-      if (detailCase_ == 8 &&
-          sourceDetailBuilder_ != null) {
-        result.detail_ = sourceDetailBuilder_.build();
-      }
-      if (detailCase_ == 9 &&
-          operatorDetailBuilder_ != null) {
-        result.detail_ = operatorDetailBuilder_.build();
-      }
-      if (detailCase_ == 10 &&
-          sinkDetailBuilder_ != null) {
-        result.detail_ = sinkDetailBuilder_.build();
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.nodeConfig_ = nodeConfigBuilder_ == null
+            ? nodeConfig_
+            : nodeConfigBuilder_.build();
       }
     }
 
@@ -845,40 +463,11 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000001;
         onChanged();
       }
-      if (other.kind_ != 0) {
-        setKindValue(other.getKindValue());
-      }
-      if (other.hasInputType()) {
-        mergeInputType(other.getInputType());
-      }
-      if (other.hasOutputType()) {
-        mergeOutputType(other.getOutputType());
-      }
       if (other.hasFunction()) {
         mergeFunction(other.getFunction());
       }
-      if (other.getReplicas() != 0) {
-        setReplicas(other.getReplicas());
-      }
-      if (other.hasResource()) {
-        mergeResource(other.getResource());
-      }
-      switch (other.getDetailCase()) {
-        case SOURCE_DETAIL: {
-          mergeSourceDetail(other.getSourceDetail());
-          break;
-        }
-        case OPERATOR_DETAIL: {
-          mergeOperatorDetail(other.getOperatorDetail());
-          break;
-        }
-        case SINK_DETAIL: {
-          mergeSinkDetail(other.getSinkDetail());
-          break;
-        }
-        case DETAIL_NOT_SET: {
-          break;
-        }
+      if (other.hasNodeConfig()) {
+        mergeNodeConfig(other.getNodeConfig());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -911,65 +500,20 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000001;
               break;
             } // case 10
-            case 16: {
-              kind_ = input.readEnum();
+            case 18: {
+              input.readMessage(
+                  getFunctionFieldBuilder().getBuilder(),
+                  extensionRegistry);
               bitField0_ |= 0x00000002;
               break;
-            } // case 16
+            } // case 18
             case 26: {
               input.readMessage(
-                  getInputTypeFieldBuilder().getBuilder(),
+                  getNodeConfigFieldBuilder().getBuilder(),
                   extensionRegistry);
               bitField0_ |= 0x00000004;
               break;
             } // case 26
-            case 34: {
-              input.readMessage(
-                  getOutputTypeFieldBuilder().getBuilder(),
-                  extensionRegistry);
-              bitField0_ |= 0x00000008;
-              break;
-            } // case 34
-            case 42: {
-              input.readMessage(
-                  getFunctionFieldBuilder().getBuilder(),
-                  extensionRegistry);
-              bitField0_ |= 0x00000010;
-              break;
-            } // case 42
-            case 48: {
-              replicas_ = input.readInt32();
-              bitField0_ |= 0x00000020;
-              break;
-            } // case 48
-            case 58: {
-              input.readMessage(
-                  getResourceFieldBuilder().getBuilder(),
-                  extensionRegistry);
-              bitField0_ |= 0x00000040;
-              break;
-            } // case 58
-            case 66: {
-              input.readMessage(
-                  getSourceDetailFieldBuilder().getBuilder(),
-                  extensionRegistry);
-              detailCase_ = 8;
-              break;
-            } // case 66
-            case 74: {
-              input.readMessage(
-                  getOperatorDetailFieldBuilder().getBuilder(),
-                  extensionRegistry);
-              detailCase_ = 9;
-              break;
-            } // case 74
-            case 82: {
-              input.readMessage(
-                  getSinkDetailFieldBuilder().getBuilder(),
-                  extensionRegistry);
-              detailCase_ = 10;
-              break;
-            } // case 82
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -985,21 +529,6 @@ private static final long serialVersionUID = 0L;
       } // finally
       return this;
     }
-    private int detailCase_ = 0;
-    private java.lang.Object detail_;
-    public DetailCase
-        getDetailCase() {
-      return DetailCase.forNumber(
-          detailCase_);
-    }
-
-    public Builder clearDetail() {
-      detailCase_ = 0;
-      detail_ = null;
-      onChanged();
-      return this;
-    }
-
     private int bitField0_;
 
     private java.lang.Object id_ = "";
@@ -1074,309 +603,18 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int kind_ = 0;
-    /**
-     * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-     * @return The enum numeric value on the wire for kind.
-     */
-    @java.lang.Override public int getKindValue() {
-      return kind_;
-    }
-    /**
-     * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-     * @param value The enum numeric value on the wire for kind to set.
-     * @return This builder for chaining.
-     */
-    public Builder setKindValue(int value) {
-      kind_ = value;
-      bitField0_ |= 0x00000002;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-     * @return The kind.
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.NodeKind getKind() {
-      com.kekwy.iarnet.proto.workflow.NodeKind result = com.kekwy.iarnet.proto.workflow.NodeKind.forNumber(kind_);
-      return result == null ? com.kekwy.iarnet.proto.workflow.NodeKind.UNRECOGNIZED : result;
-    }
-    /**
-     * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-     * @param value The kind to set.
-     * @return This builder for chaining.
-     */
-    public Builder setKind(com.kekwy.iarnet.proto.workflow.NodeKind value) {
-      if (value == null) {
-        throw new NullPointerException();
-      }
-      bitField0_ |= 0x00000002;
-      kind_ = value.getNumber();
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearKind() {
-      bitField0_ = (bitField0_ & ~0x00000002);
-      kind_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private com.kekwy.iarnet.proto.common.Type inputType_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> inputTypeBuilder_;
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     * @return Whether the inputType field is set.
-     */
-    public boolean hasInputType() {
-      return ((bitField0_ & 0x00000004) != 0);
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     * @return The inputType.
-     */
-    public com.kekwy.iarnet.proto.common.Type getInputType() {
-      if (inputTypeBuilder_ == null) {
-        return inputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : inputType_;
-      } else {
-        return inputTypeBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    public Builder setInputType(com.kekwy.iarnet.proto.common.Type value) {
-      if (inputTypeBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        inputType_ = value;
-      } else {
-        inputTypeBuilder_.setMessage(value);
-      }
-      bitField0_ |= 0x00000004;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    public Builder setInputType(
-        com.kekwy.iarnet.proto.common.Type.Builder builderForValue) {
-      if (inputTypeBuilder_ == null) {
-        inputType_ = builderForValue.build();
-      } else {
-        inputTypeBuilder_.setMessage(builderForValue.build());
-      }
-      bitField0_ |= 0x00000004;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    public Builder mergeInputType(com.kekwy.iarnet.proto.common.Type value) {
-      if (inputTypeBuilder_ == null) {
-        if (((bitField0_ & 0x00000004) != 0) &&
-          inputType_ != null &&
-          inputType_ != com.kekwy.iarnet.proto.common.Type.getDefaultInstance()) {
-          getInputTypeBuilder().mergeFrom(value);
-        } else {
-          inputType_ = value;
-        }
-      } else {
-        inputTypeBuilder_.mergeFrom(value);
-      }
-      bitField0_ |= 0x00000004;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    public Builder clearInputType() {
-      bitField0_ = (bitField0_ & ~0x00000004);
-      inputType_ = null;
-      if (inputTypeBuilder_ != null) {
-        inputTypeBuilder_.dispose();
-        inputTypeBuilder_ = null;
-      }
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    public com.kekwy.iarnet.proto.common.Type.Builder getInputTypeBuilder() {
-      bitField0_ |= 0x00000004;
-      onChanged();
-      return getInputTypeFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    public com.kekwy.iarnet.proto.common.TypeOrBuilder getInputTypeOrBuilder() {
-      if (inputTypeBuilder_ != null) {
-        return inputTypeBuilder_.getMessageOrBuilder();
-      } else {
-        return inputType_ == null ?
-            com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : inputType_;
-      }
-    }
-    /**
-     * <code>.iarnet.common.Type input_type = 3;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> 
-        getInputTypeFieldBuilder() {
-      if (inputTypeBuilder_ == null) {
-        inputTypeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder>(
-                getInputType(),
-                getParentForChildren(),
-                isClean());
-        inputType_ = null;
-      }
-      return inputTypeBuilder_;
-    }
-
-    private com.kekwy.iarnet.proto.common.Type outputType_;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> outputTypeBuilder_;
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     * @return Whether the outputType field is set.
-     */
-    public boolean hasOutputType() {
-      return ((bitField0_ & 0x00000008) != 0);
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     * @return The outputType.
-     */
-    public com.kekwy.iarnet.proto.common.Type getOutputType() {
-      if (outputTypeBuilder_ == null) {
-        return outputType_ == null ? com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
-      } else {
-        return outputTypeBuilder_.getMessage();
-      }
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    public Builder setOutputType(com.kekwy.iarnet.proto.common.Type value) {
-      if (outputTypeBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        outputType_ = value;
-      } else {
-        outputTypeBuilder_.setMessage(value);
-      }
-      bitField0_ |= 0x00000008;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    public Builder setOutputType(
-        com.kekwy.iarnet.proto.common.Type.Builder builderForValue) {
-      if (outputTypeBuilder_ == null) {
-        outputType_ = builderForValue.build();
-      } else {
-        outputTypeBuilder_.setMessage(builderForValue.build());
-      }
-      bitField0_ |= 0x00000008;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    public Builder mergeOutputType(com.kekwy.iarnet.proto.common.Type value) {
-      if (outputTypeBuilder_ == null) {
-        if (((bitField0_ & 0x00000008) != 0) &&
-          outputType_ != null &&
-          outputType_ != com.kekwy.iarnet.proto.common.Type.getDefaultInstance()) {
-          getOutputTypeBuilder().mergeFrom(value);
-        } else {
-          outputType_ = value;
-        }
-      } else {
-        outputTypeBuilder_.mergeFrom(value);
-      }
-      bitField0_ |= 0x00000008;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    public Builder clearOutputType() {
-      bitField0_ = (bitField0_ & ~0x00000008);
-      outputType_ = null;
-      if (outputTypeBuilder_ != null) {
-        outputTypeBuilder_.dispose();
-        outputTypeBuilder_ = null;
-      }
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    public com.kekwy.iarnet.proto.common.Type.Builder getOutputTypeBuilder() {
-      bitField0_ |= 0x00000008;
-      onChanged();
-      return getOutputTypeFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    public com.kekwy.iarnet.proto.common.TypeOrBuilder getOutputTypeOrBuilder() {
-      if (outputTypeBuilder_ != null) {
-        return outputTypeBuilder_.getMessageOrBuilder();
-      } else {
-        return outputType_ == null ?
-            com.kekwy.iarnet.proto.common.Type.getDefaultInstance() : outputType_;
-      }
-    }
-    /**
-     * <code>.iarnet.common.Type output_type = 4;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder> 
-        getOutputTypeFieldBuilder() {
-      if (outputTypeBuilder_ == null) {
-        outputTypeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.common.Type, com.kekwy.iarnet.proto.common.Type.Builder, com.kekwy.iarnet.proto.common.TypeOrBuilder>(
-                getOutputType(),
-                getParentForChildren(),
-                isClean());
-        outputType_ = null;
-      }
-      return outputTypeBuilder_;
-    }
-
     private com.kekwy.iarnet.proto.common.FunctionDescriptor function_;
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> functionBuilder_;
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      * @return Whether the function field is set.
      */
     public boolean hasFunction() {
-      return ((bitField0_ & 0x00000010) != 0);
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      * @return The function.
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptor getFunction() {
@@ -1387,7 +625,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     public Builder setFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionBuilder_ == null) {
@@ -1398,12 +636,12 @@ private static final long serialVersionUID = 0L;
       } else {
         functionBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000010;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     public Builder setFunction(
         com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder builderForValue) {
@@ -1412,16 +650,16 @@ private static final long serialVersionUID = 0L;
       } else {
         functionBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000010;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     public Builder mergeFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionBuilder_ == null) {
-        if (((bitField0_ & 0x00000010) != 0) &&
+        if (((bitField0_ & 0x00000002) != 0) &&
           function_ != null &&
           function_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
           getFunctionBuilder().mergeFrom(value);
@@ -1431,15 +669,15 @@ private static final long serialVersionUID = 0L;
       } else {
         functionBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00000010;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     public Builder clearFunction() {
-      bitField0_ = (bitField0_ & ~0x00000010);
+      bitField0_ = (bitField0_ & ~0x00000002);
       function_ = null;
       if (functionBuilder_ != null) {
         functionBuilder_.dispose();
@@ -1449,15 +687,15 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getFunctionBuilder() {
-      bitField0_ |= 0x00000010;
+      bitField0_ |= 0x00000002;
       onChanged();
       return getFunctionFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionOrBuilder() {
       if (functionBuilder_ != null) {
@@ -1468,7 +706,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> 
@@ -1484,581 +722,123 @@ private static final long serialVersionUID = 0L;
       return functionBuilder_;
     }
 
-    private int replicas_ ;
-    /**
-     * <code>int32 replicas = 6;</code>
-     * @return The replicas.
-     */
-    @java.lang.Override
-    public int getReplicas() {
-      return replicas_;
-    }
-    /**
-     * <code>int32 replicas = 6;</code>
-     * @param value The replicas to set.
-     * @return This builder for chaining.
-     */
-    public Builder setReplicas(int value) {
-      
-      replicas_ = value;
-      bitField0_ |= 0x00000020;
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>int32 replicas = 6;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearReplicas() {
-      bitField0_ = (bitField0_ & ~0x00000020);
-      replicas_ = 0;
-      onChanged();
-      return this;
-    }
-
-    private com.kekwy.iarnet.proto.common.Resource resource_;
+    private com.kekwy.iarnet.proto.workflow.NodeConfig nodeConfig_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> resourceBuilder_;
+        com.kekwy.iarnet.proto.workflow.NodeConfig, com.kekwy.iarnet.proto.workflow.NodeConfig.Builder, com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder> nodeConfigBuilder_;
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
-     * @return Whether the resource field is set.
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * @return Whether the nodeConfig field is set.
      */
-    public boolean hasResource() {
-      return ((bitField0_ & 0x00000040) != 0);
+    public boolean hasNodeConfig() {
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
-     * @return The resource.
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * @return The nodeConfig.
      */
-    public com.kekwy.iarnet.proto.common.Resource getResource() {
-      if (resourceBuilder_ == null) {
-        return resource_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+    public com.kekwy.iarnet.proto.workflow.NodeConfig getNodeConfig() {
+      if (nodeConfigBuilder_ == null) {
+        return nodeConfig_ == null ? com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance() : nodeConfig_;
       } else {
-        return resourceBuilder_.getMessage();
+        return nodeConfigBuilder_.getMessage();
       }
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
-    public Builder setResource(com.kekwy.iarnet.proto.common.Resource value) {
-      if (resourceBuilder_ == null) {
+    public Builder setNodeConfig(com.kekwy.iarnet.proto.workflow.NodeConfig value) {
+      if (nodeConfigBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        resource_ = value;
+        nodeConfig_ = value;
       } else {
-        resourceBuilder_.setMessage(value);
+        nodeConfigBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
-    public Builder setResource(
-        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
-      if (resourceBuilder_ == null) {
-        resource_ = builderForValue.build();
+    public Builder setNodeConfig(
+        com.kekwy.iarnet.proto.workflow.NodeConfig.Builder builderForValue) {
+      if (nodeConfigBuilder_ == null) {
+        nodeConfig_ = builderForValue.build();
       } else {
-        resourceBuilder_.setMessage(builderForValue.build());
+        nodeConfigBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
-    public Builder mergeResource(com.kekwy.iarnet.proto.common.Resource value) {
-      if (resourceBuilder_ == null) {
-        if (((bitField0_ & 0x00000040) != 0) &&
-          resource_ != null &&
-          resource_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
-          getResourceBuilder().mergeFrom(value);
+    public Builder mergeNodeConfig(com.kekwy.iarnet.proto.workflow.NodeConfig value) {
+      if (nodeConfigBuilder_ == null) {
+        if (((bitField0_ & 0x00000004) != 0) &&
+          nodeConfig_ != null &&
+          nodeConfig_ != com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance()) {
+          getNodeConfigBuilder().mergeFrom(value);
         } else {
-          resource_ = value;
+          nodeConfig_ = value;
         }
       } else {
-        resourceBuilder_.mergeFrom(value);
+        nodeConfigBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
-    public Builder clearResource() {
-      bitField0_ = (bitField0_ & ~0x00000040);
-      resource_ = null;
-      if (resourceBuilder_ != null) {
-        resourceBuilder_.dispose();
-        resourceBuilder_ = null;
+    public Builder clearNodeConfig() {
+      bitField0_ = (bitField0_ & ~0x00000004);
+      nodeConfig_ = null;
+      if (nodeConfigBuilder_ != null) {
+        nodeConfigBuilder_.dispose();
+        nodeConfigBuilder_ = null;
       }
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
-    public com.kekwy.iarnet.proto.common.Resource.Builder getResourceBuilder() {
-      bitField0_ |= 0x00000040;
+    public com.kekwy.iarnet.proto.workflow.NodeConfig.Builder getNodeConfigBuilder() {
+      bitField0_ |= 0x00000004;
       onChanged();
-      return getResourceFieldBuilder().getBuilder();
+      return getNodeConfigFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
-    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceOrBuilder() {
-      if (resourceBuilder_ != null) {
-        return resourceBuilder_.getMessageOrBuilder();
+    public com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder() {
+      if (nodeConfigBuilder_ != null) {
+        return nodeConfigBuilder_.getMessageOrBuilder();
       } else {
-        return resource_ == null ?
-            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+        return nodeConfig_ == null ?
+            com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance() : nodeConfig_;
       }
     }
     /**
-     * <code>.iarnet.common.Resource resource = 7;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
-        getResourceFieldBuilder() {
-      if (resourceBuilder_ == null) {
-        resourceBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
-                getResource(),
+        com.kekwy.iarnet.proto.workflow.NodeConfig, com.kekwy.iarnet.proto.workflow.NodeConfig.Builder, com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder> 
+        getNodeConfigFieldBuilder() {
+      if (nodeConfigBuilder_ == null) {
+        nodeConfigBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.workflow.NodeConfig, com.kekwy.iarnet.proto.workflow.NodeConfig.Builder, com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder>(
+                getNodeConfig(),
                 getParentForChildren(),
                 isClean());
-        resource_ = null;
+        nodeConfig_ = null;
       }
-      return resourceBuilder_;
-    }
-
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.workflow.SourceNodeDetail, com.kekwy.iarnet.proto.workflow.SourceNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.SourceNodeDetailOrBuilder> sourceDetailBuilder_;
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     * @return Whether the sourceDetail field is set.
-     */
-    @java.lang.Override
-    public boolean hasSourceDetail() {
-      return detailCase_ == 8;
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     * @return The sourceDetail.
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.SourceNodeDetail getSourceDetail() {
-      if (sourceDetailBuilder_ == null) {
-        if (detailCase_ == 8) {
-          return (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_;
-        }
-        return com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance();
-      } else {
-        if (detailCase_ == 8) {
-          return sourceDetailBuilder_.getMessage();
-        }
-        return com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance();
-      }
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    public Builder setSourceDetail(com.kekwy.iarnet.proto.workflow.SourceNodeDetail value) {
-      if (sourceDetailBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        detail_ = value;
-        onChanged();
-      } else {
-        sourceDetailBuilder_.setMessage(value);
-      }
-      detailCase_ = 8;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    public Builder setSourceDetail(
-        com.kekwy.iarnet.proto.workflow.SourceNodeDetail.Builder builderForValue) {
-      if (sourceDetailBuilder_ == null) {
-        detail_ = builderForValue.build();
-        onChanged();
-      } else {
-        sourceDetailBuilder_.setMessage(builderForValue.build());
-      }
-      detailCase_ = 8;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    public Builder mergeSourceDetail(com.kekwy.iarnet.proto.workflow.SourceNodeDetail value) {
-      if (sourceDetailBuilder_ == null) {
-        if (detailCase_ == 8 &&
-            detail_ != com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance()) {
-          detail_ = com.kekwy.iarnet.proto.workflow.SourceNodeDetail.newBuilder((com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_)
-              .mergeFrom(value).buildPartial();
-        } else {
-          detail_ = value;
-        }
-        onChanged();
-      } else {
-        if (detailCase_ == 8) {
-          sourceDetailBuilder_.mergeFrom(value);
-        } else {
-          sourceDetailBuilder_.setMessage(value);
-        }
-      }
-      detailCase_ = 8;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    public Builder clearSourceDetail() {
-      if (sourceDetailBuilder_ == null) {
-        if (detailCase_ == 8) {
-          detailCase_ = 0;
-          detail_ = null;
-          onChanged();
-        }
-      } else {
-        if (detailCase_ == 8) {
-          detailCase_ = 0;
-          detail_ = null;
-        }
-        sourceDetailBuilder_.clear();
-      }
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    public com.kekwy.iarnet.proto.workflow.SourceNodeDetail.Builder getSourceDetailBuilder() {
-      return getSourceDetailFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.SourceNodeDetailOrBuilder getSourceDetailOrBuilder() {
-      if ((detailCase_ == 8) && (sourceDetailBuilder_ != null)) {
-        return sourceDetailBuilder_.getMessageOrBuilder();
-      } else {
-        if (detailCase_ == 8) {
-          return (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_;
-        }
-        return com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance();
-      }
-    }
-    /**
-     * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.workflow.SourceNodeDetail, com.kekwy.iarnet.proto.workflow.SourceNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.SourceNodeDetailOrBuilder> 
-        getSourceDetailFieldBuilder() {
-      if (sourceDetailBuilder_ == null) {
-        if (!(detailCase_ == 8)) {
-          detail_ = com.kekwy.iarnet.proto.workflow.SourceNodeDetail.getDefaultInstance();
-        }
-        sourceDetailBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.workflow.SourceNodeDetail, com.kekwy.iarnet.proto.workflow.SourceNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.SourceNodeDetailOrBuilder>(
-                (com.kekwy.iarnet.proto.workflow.SourceNodeDetail) detail_,
-                getParentForChildren(),
-                isClean());
-        detail_ = null;
-      }
-      detailCase_ = 8;
-      onChanged();
-      return sourceDetailBuilder_;
-    }
-
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.workflow.OperatorNodeDetail, com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.OperatorNodeDetailOrBuilder> operatorDetailBuilder_;
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     * @return Whether the operatorDetail field is set.
-     */
-    @java.lang.Override
-    public boolean hasOperatorDetail() {
-      return detailCase_ == 9;
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     * @return The operatorDetail.
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.OperatorNodeDetail getOperatorDetail() {
-      if (operatorDetailBuilder_ == null) {
-        if (detailCase_ == 9) {
-          return (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_;
-        }
-        return com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance();
-      } else {
-        if (detailCase_ == 9) {
-          return operatorDetailBuilder_.getMessage();
-        }
-        return com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance();
-      }
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    public Builder setOperatorDetail(com.kekwy.iarnet.proto.workflow.OperatorNodeDetail value) {
-      if (operatorDetailBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        detail_ = value;
-        onChanged();
-      } else {
-        operatorDetailBuilder_.setMessage(value);
-      }
-      detailCase_ = 9;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    public Builder setOperatorDetail(
-        com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.Builder builderForValue) {
-      if (operatorDetailBuilder_ == null) {
-        detail_ = builderForValue.build();
-        onChanged();
-      } else {
-        operatorDetailBuilder_.setMessage(builderForValue.build());
-      }
-      detailCase_ = 9;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    public Builder mergeOperatorDetail(com.kekwy.iarnet.proto.workflow.OperatorNodeDetail value) {
-      if (operatorDetailBuilder_ == null) {
-        if (detailCase_ == 9 &&
-            detail_ != com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance()) {
-          detail_ = com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.newBuilder((com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_)
-              .mergeFrom(value).buildPartial();
-        } else {
-          detail_ = value;
-        }
-        onChanged();
-      } else {
-        if (detailCase_ == 9) {
-          operatorDetailBuilder_.mergeFrom(value);
-        } else {
-          operatorDetailBuilder_.setMessage(value);
-        }
-      }
-      detailCase_ = 9;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    public Builder clearOperatorDetail() {
-      if (operatorDetailBuilder_ == null) {
-        if (detailCase_ == 9) {
-          detailCase_ = 0;
-          detail_ = null;
-          onChanged();
-        }
-      } else {
-        if (detailCase_ == 9) {
-          detailCase_ = 0;
-          detail_ = null;
-        }
-        operatorDetailBuilder_.clear();
-      }
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    public com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.Builder getOperatorDetailBuilder() {
-      return getOperatorDetailFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.OperatorNodeDetailOrBuilder getOperatorDetailOrBuilder() {
-      if ((detailCase_ == 9) && (operatorDetailBuilder_ != null)) {
-        return operatorDetailBuilder_.getMessageOrBuilder();
-      } else {
-        if (detailCase_ == 9) {
-          return (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_;
-        }
-        return com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance();
-      }
-    }
-    /**
-     * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.workflow.OperatorNodeDetail, com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.OperatorNodeDetailOrBuilder> 
-        getOperatorDetailFieldBuilder() {
-      if (operatorDetailBuilder_ == null) {
-        if (!(detailCase_ == 9)) {
-          detail_ = com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.getDefaultInstance();
-        }
-        operatorDetailBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.workflow.OperatorNodeDetail, com.kekwy.iarnet.proto.workflow.OperatorNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.OperatorNodeDetailOrBuilder>(
-                (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) detail_,
-                getParentForChildren(),
-                isClean());
-        detail_ = null;
-      }
-      detailCase_ = 9;
-      onChanged();
-      return operatorDetailBuilder_;
-    }
-
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.workflow.SinkNodeDetail, com.kekwy.iarnet.proto.workflow.SinkNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.SinkNodeDetailOrBuilder> sinkDetailBuilder_;
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     * @return Whether the sinkDetail field is set.
-     */
-    @java.lang.Override
-    public boolean hasSinkDetail() {
-      return detailCase_ == 10;
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     * @return The sinkDetail.
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.SinkNodeDetail getSinkDetail() {
-      if (sinkDetailBuilder_ == null) {
-        if (detailCase_ == 10) {
-          return (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_;
-        }
-        return com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance();
-      } else {
-        if (detailCase_ == 10) {
-          return sinkDetailBuilder_.getMessage();
-        }
-        return com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance();
-      }
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    public Builder setSinkDetail(com.kekwy.iarnet.proto.workflow.SinkNodeDetail value) {
-      if (sinkDetailBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        detail_ = value;
-        onChanged();
-      } else {
-        sinkDetailBuilder_.setMessage(value);
-      }
-      detailCase_ = 10;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    public Builder setSinkDetail(
-        com.kekwy.iarnet.proto.workflow.SinkNodeDetail.Builder builderForValue) {
-      if (sinkDetailBuilder_ == null) {
-        detail_ = builderForValue.build();
-        onChanged();
-      } else {
-        sinkDetailBuilder_.setMessage(builderForValue.build());
-      }
-      detailCase_ = 10;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    public Builder mergeSinkDetail(com.kekwy.iarnet.proto.workflow.SinkNodeDetail value) {
-      if (sinkDetailBuilder_ == null) {
-        if (detailCase_ == 10 &&
-            detail_ != com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance()) {
-          detail_ = com.kekwy.iarnet.proto.workflow.SinkNodeDetail.newBuilder((com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_)
-              .mergeFrom(value).buildPartial();
-        } else {
-          detail_ = value;
-        }
-        onChanged();
-      } else {
-        if (detailCase_ == 10) {
-          sinkDetailBuilder_.mergeFrom(value);
-        } else {
-          sinkDetailBuilder_.setMessage(value);
-        }
-      }
-      detailCase_ = 10;
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    public Builder clearSinkDetail() {
-      if (sinkDetailBuilder_ == null) {
-        if (detailCase_ == 10) {
-          detailCase_ = 0;
-          detail_ = null;
-          onChanged();
-        }
-      } else {
-        if (detailCase_ == 10) {
-          detailCase_ = 0;
-          detail_ = null;
-        }
-        sinkDetailBuilder_.clear();
-      }
-      return this;
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    public com.kekwy.iarnet.proto.workflow.SinkNodeDetail.Builder getSinkDetailBuilder() {
-      return getSinkDetailFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    @java.lang.Override
-    public com.kekwy.iarnet.proto.workflow.SinkNodeDetailOrBuilder getSinkDetailOrBuilder() {
-      if ((detailCase_ == 10) && (sinkDetailBuilder_ != null)) {
-        return sinkDetailBuilder_.getMessageOrBuilder();
-      } else {
-        if (detailCase_ == 10) {
-          return (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_;
-        }
-        return com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance();
-      }
-    }
-    /**
-     * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.workflow.SinkNodeDetail, com.kekwy.iarnet.proto.workflow.SinkNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.SinkNodeDetailOrBuilder> 
-        getSinkDetailFieldBuilder() {
-      if (sinkDetailBuilder_ == null) {
-        if (!(detailCase_ == 10)) {
-          detail_ = com.kekwy.iarnet.proto.workflow.SinkNodeDetail.getDefaultInstance();
-        }
-        sinkDetailBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.workflow.SinkNodeDetail, com.kekwy.iarnet.proto.workflow.SinkNodeDetail.Builder, com.kekwy.iarnet.proto.workflow.SinkNodeDetailOrBuilder>(
-                (com.kekwy.iarnet.proto.workflow.SinkNodeDetail) detail_,
-                getParentForChildren(),
-                isClean());
-        detail_ = null;
-      }
-      detailCase_ = 10;
-      onChanged();
-      return sinkDetailBuilder_;
+      return nodeConfigBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

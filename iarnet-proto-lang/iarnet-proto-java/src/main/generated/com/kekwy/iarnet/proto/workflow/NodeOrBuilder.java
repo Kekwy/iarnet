@@ -20,126 +20,32 @@ public interface NodeOrBuilder extends
       getIdBytes();
 
   /**
-   * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-   * @return The enum numeric value on the wire for kind.
-   */
-  int getKindValue();
-  /**
-   * <code>.iarnet.workflow.NodeKind kind = 2;</code>
-   * @return The kind.
-   */
-  com.kekwy.iarnet.proto.workflow.NodeKind getKind();
-
-  /**
-   * <code>.iarnet.common.Type input_type = 3;</code>
-   * @return Whether the inputType field is set.
-   */
-  boolean hasInputType();
-  /**
-   * <code>.iarnet.common.Type input_type = 3;</code>
-   * @return The inputType.
-   */
-  com.kekwy.iarnet.proto.common.Type getInputType();
-  /**
-   * <code>.iarnet.common.Type input_type = 3;</code>
-   */
-  com.kekwy.iarnet.proto.common.TypeOrBuilder getInputTypeOrBuilder();
-
-  /**
-   * <code>.iarnet.common.Type output_type = 4;</code>
-   * @return Whether the outputType field is set.
-   */
-  boolean hasOutputType();
-  /**
-   * <code>.iarnet.common.Type output_type = 4;</code>
-   * @return The outputType.
-   */
-  com.kekwy.iarnet.proto.common.Type getOutputType();
-  /**
-   * <code>.iarnet.common.Type output_type = 4;</code>
-   */
-  com.kekwy.iarnet.proto.common.TypeOrBuilder getOutputTypeOrBuilder();
-
-  /**
-   * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
    * @return Whether the function field is set.
    */
   boolean hasFunction();
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
    * @return The function.
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptor getFunction();
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 5;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionOrBuilder();
 
   /**
-   * <code>int32 replicas = 6;</code>
-   * @return The replicas.
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * @return Whether the nodeConfig field is set.
    */
-  int getReplicas();
-
+  boolean hasNodeConfig();
   /**
-   * <code>.iarnet.common.Resource resource = 7;</code>
-   * @return Whether the resource field is set.
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * @return The nodeConfig.
    */
-  boolean hasResource();
+  com.kekwy.iarnet.proto.workflow.NodeConfig getNodeConfig();
   /**
-   * <code>.iarnet.common.Resource resource = 7;</code>
-   * @return The resource.
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
    */
-  com.kekwy.iarnet.proto.common.Resource getResource();
-  /**
-   * <code>.iarnet.common.Resource resource = 7;</code>
-   */
-  com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceOrBuilder();
-
-  /**
-   * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-   * @return Whether the sourceDetail field is set.
-   */
-  boolean hasSourceDetail();
-  /**
-   * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-   * @return The sourceDetail.
-   */
-  com.kekwy.iarnet.proto.workflow.SourceNodeDetail getSourceDetail();
-  /**
-   * <code>.iarnet.workflow.SourceNodeDetail source_detail = 8;</code>
-   */
-  com.kekwy.iarnet.proto.workflow.SourceNodeDetailOrBuilder getSourceDetailOrBuilder();
-
-  /**
-   * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-   * @return Whether the operatorDetail field is set.
-   */
-  boolean hasOperatorDetail();
-  /**
-   * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-   * @return The operatorDetail.
-   */
-  com.kekwy.iarnet.proto.workflow.OperatorNodeDetail getOperatorDetail();
-  /**
-   * <code>.iarnet.workflow.OperatorNodeDetail operator_detail = 9;</code>
-   */
-  com.kekwy.iarnet.proto.workflow.OperatorNodeDetailOrBuilder getOperatorDetailOrBuilder();
-
-  /**
-   * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-   * @return Whether the sinkDetail field is set.
-   */
-  boolean hasSinkDetail();
-  /**
-   * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-   * @return The sinkDetail.
-   */
-  com.kekwy.iarnet.proto.workflow.SinkNodeDetail getSinkDetail();
-  /**
-   * <code>.iarnet.workflow.SinkNodeDetail sink_detail = 10;</code>
-   */
-  com.kekwy.iarnet.proto.workflow.SinkNodeDetailOrBuilder getSinkDetailOrBuilder();
-
-  public com.kekwy.iarnet.proto.workflow.Node.DetailCase getDetailCase();
+  com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder();
 }

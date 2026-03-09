@@ -30,30 +30,10 @@ public final class Workflow {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_iarnet_workflow_Node_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_workflow_SourceNodeDetail_descriptor;
+    internal_static_iarnet_workflow_NodeConfig_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_workflow_SourceNodeDetail_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_workflow_ConstantSourceDetail_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_workflow_ConstantSourceDetail_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_workflow_FileSourceDetail_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_workflow_FileSourceDetail_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_workflow_OperatorNodeDetail_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_workflow_OperatorNodeDetail_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_workflow_SinkNodeDetail_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_workflow_SinkNodeDetail_fieldAccessorTable;
+      internal_static_iarnet_workflow_NodeConfig_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -65,57 +45,26 @@ public final class Workflow {
     java.lang.String[] descriptorData = {
       "\n\036iarnet/workflow/workflow.proto\022\017iarnet" +
       ".workflow\032\034iarnet/common/function.proto\032" +
-      "\034iarnet/common/resource.proto\032\030iarnet/co" +
-      "mmon/type.proto\"\210\001\n\rWorkflowGraph\022\023\n\013wor" +
-      "kflow_id\030\001 \001(\t\022\026\n\016application_id\030\002 \001(\t\022$" +
-      "\n\005nodes\030\003 \003(\0132\025.iarnet.workflow.Node\022$\n\005" +
-      "edges\030\004 \003(\0132\025.iarnet.workflow.Edge\"C\n\004Ed" +
-      "ge\022\024\n\014from_node_id\030\001 \001(\t\022\022\n\nto_node_id\030\002" +
-      " \001(\t\022\021\n\tfrom_port\030\003 \001(\005\"\276\003\n\004Node\022\n\n\002id\030\001" +
-      " \001(\t\022\'\n\004kind\030\002 \001(\0162\031.iarnet.workflow.Nod" +
-      "eKind\022\'\n\ninput_type\030\003 \001(\0132\023.iarnet.commo" +
-      "n.Type\022(\n\013output_type\030\004 \001(\0132\023.iarnet.com" +
-      "mon.Type\0223\n\010function\030\005 \001(\0132!.iarnet.comm" +
-      "on.FunctionDescriptor\022\020\n\010replicas\030\006 \001(\005\022" +
-      ")\n\010resource\030\007 \001(\0132\027.iarnet.common.Resour" +
-      "ce\022:\n\rsource_detail\030\010 \001(\0132!.iarnet.workf" +
-      "low.SourceNodeDetailH\000\022>\n\017operator_detai" +
-      "l\030\t \001(\0132#.iarnet.workflow.OperatorNodeDe" +
-      "tailH\000\0226\n\013sink_detail\030\n \001(\0132\037.iarnet.wor" +
-      "kflow.SinkNodeDetailH\000B\010\n\006detail\"\330\001\n\020Sou" +
-      "rceNodeDetail\0220\n\013source_kind\030\001 \001(\0162\033.iar" +
-      "net.workflow.SourceKind\022G\n\026constant_sour" +
-      "ce_detail\030\002 \001(\0132%.iarnet.workflow.Consta" +
-      "ntSourceDetailH\000\022?\n\022file_source_detail\030\003" +
-      " \001(\0132!.iarnet.workflow.FileSourceDetailH" +
-      "\000B\010\n\006detail\"<\n\024ConstantSourceDetail\022$\n\006v" +
-      "alues\030\001 \003(\0132\024.iarnet.common.Value\"%\n\020Fil" +
-      "eSourceDetail\022\021\n\tfile_path\030\001 \001(\t\"\316\001\n\022Ope" +
-      "ratorNodeDetail\0224\n\roperator_kind\030\001 \001(\0162\035" +
-      ".iarnet.workflow.OperatorKind\0227\n\014key_sel" +
-      "ector\030\002 \001(\0132!.iarnet.common.FunctionDesc" +
-      "riptor\0220\n\022fold_initial_value\030\004 \001(\0132\024.iar" +
-      "net.common.Value\022\027\n\017join_timeout_ms\030\005 \001(" +
-      "\003\">\n\016SinkNodeDetail\022,\n\tsink_kind\030\001 \001(\0162\031" +
-      ".iarnet.workflow.SinkKind*I\n\010NodeKind\022\031\n" +
-      "\025NODE_KIND_UNSPECIFIED\020\000\022\n\n\006SOURCE\020\001\022\014\n\010" +
-      "OPERATOR\020\002\022\010\n\004SINK\020\003*A\n\nSourceKind\022\033\n\027SO" +
-      "URCE_KIND_UNSPECIFIED\020\000\022\014\n\010CONSTANT\020\001\022\010\n" +
-      "\004FILE\020\002*\324\001\n\014OperatorKind\022\035\n\031OPERATOR_KIN" +
-      "D_UNSPECIFIED\020\000\022\020\n\014OPERATOR_MAP\020\001\022\025\n\021OPE" +
-      "RATOR_FLAT_MAP\020\002\022\023\n\017OPERATOR_FILTER\020\003\022\022\n" +
-      "\016OPERATOR_UNION\020\004\022\023\n\017OPERATOR_KEY_BY\020\005\022\026" +
-      "\n\022OPERATOR_CORRELATE\020\006\022\021\n\rOPERATOR_FOLD\020" +
-      "\007\022\023\n\017OPERATOR_BRANCH\020\t*0\n\010SinkKind\022\031\n\025SI" +
-      "NK_KIND_UNSPECIFIED\020\000\022\t\n\005PRINT\020\001B#\n\037com." +
-      "kekwy.iarnet.proto.workflowP\001b\006proto3"
+      "\034iarnet/common/resource.proto\"\210\001\n\rWorkfl" +
+      "owGraph\022\023\n\013workflow_id\030\001 \001(\t\022\026\n\016applicat" +
+      "ion_id\030\002 \001(\t\022$\n\005nodes\030\003 \003(\0132\025.iarnet.wor" +
+      "kflow.Node\022$\n\005edges\030\004 \003(\0132\025.iarnet.workf" +
+      "low.Edge\"\211\001\n\004Edge\022\024\n\014from_node_id\030\001 \001(\t\022" +
+      "\022\n\nto_node_id\030\002 \001(\t\022A\n\021conditionFunction" +
+      "\030\003 \001(\0132!.iarnet.common.FunctionDescripto" +
+      "rH\000\210\001\001B\024\n\022_conditionFunction\"x\n\004Node\022\n\n\002" +
+      "id\030\001 \001(\t\0223\n\010function\030\002 \001(\0132!.iarnet.comm" +
+      "on.FunctionDescriptor\022/\n\nnodeConfig\030\003 \001(" +
+      "\0132\033.iarnet.workflow.NodeConfig\"I\n\nNodeCo" +
+      "nfig\022\020\n\010replicas\030\004 \001(\005\022)\n\010resource\030\005 \001(\013" +
+      "2\027.iarnet.common.ResourceB#\n\037com.kekwy.i" +
+      "arnet.proto.workflowP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.kekwy.iarnet.proto.common.Function.getDescriptor(),
           com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor(),
-          com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor(),
         });
     internal_static_iarnet_workflow_WorkflowGraph_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -128,46 +77,21 @@ public final class Workflow {
     internal_static_iarnet_workflow_Edge_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_Edge_descriptor,
-        new java.lang.String[] { "FromNodeId", "ToNodeId", "FromPort", });
+        new java.lang.String[] { "FromNodeId", "ToNodeId", "ConditionFunction", "ConditionFunction", });
     internal_static_iarnet_workflow_Node_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_iarnet_workflow_Node_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_Node_descriptor,
-        new java.lang.String[] { "Id", "Kind", "InputType", "OutputType", "Function", "Replicas", "Resource", "SourceDetail", "OperatorDetail", "SinkDetail", "Detail", });
-    internal_static_iarnet_workflow_SourceNodeDetail_descriptor =
+        new java.lang.String[] { "Id", "Function", "NodeConfig", });
+    internal_static_iarnet_workflow_NodeConfig_descriptor =
       getDescriptor().getMessageTypes().get(3);
-    internal_static_iarnet_workflow_SourceNodeDetail_fieldAccessorTable = new
+    internal_static_iarnet_workflow_NodeConfig_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_workflow_SourceNodeDetail_descriptor,
-        new java.lang.String[] { "SourceKind", "ConstantSourceDetail", "FileSourceDetail", "Detail", });
-    internal_static_iarnet_workflow_ConstantSourceDetail_descriptor =
-      getDescriptor().getMessageTypes().get(4);
-    internal_static_iarnet_workflow_ConstantSourceDetail_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_workflow_ConstantSourceDetail_descriptor,
-        new java.lang.String[] { "Values", });
-    internal_static_iarnet_workflow_FileSourceDetail_descriptor =
-      getDescriptor().getMessageTypes().get(5);
-    internal_static_iarnet_workflow_FileSourceDetail_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_workflow_FileSourceDetail_descriptor,
-        new java.lang.String[] { "FilePath", });
-    internal_static_iarnet_workflow_OperatorNodeDetail_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_iarnet_workflow_OperatorNodeDetail_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_workflow_OperatorNodeDetail_descriptor,
-        new java.lang.String[] { "OperatorKind", "KeySelector", "FoldInitialValue", "JoinTimeoutMs", });
-    internal_static_iarnet_workflow_SinkNodeDetail_descriptor =
-      getDescriptor().getMessageTypes().get(7);
-    internal_static_iarnet_workflow_SinkNodeDetail_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_workflow_SinkNodeDetail_descriptor,
-        new java.lang.String[] { "SinkKind", });
+        internal_static_iarnet_workflow_NodeConfig_descriptor,
+        new java.lang.String[] { "Replicas", "Resource", });
     com.kekwy.iarnet.proto.common.Function.getDescriptor();
     com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor();
-    com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

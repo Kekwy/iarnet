@@ -45,6 +45,7 @@ private static final long serialVersionUID = 0L;
             com.kekwy.iarnet.proto.workflow.Edge.class, com.kekwy.iarnet.proto.workflow.Edge.Builder.class);
   }
 
+  private int bitField0_;
   public static final int FROM_NODE_ID_FIELD_NUMBER = 1;
   @SuppressWarnings("serial")
   private volatile java.lang.Object fromNodeId_ = "";
@@ -123,19 +124,30 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int FROM_PORT_FIELD_NUMBER = 3;
-  private int fromPort_ = 0;
+  public static final int CONDITIONFUNCTION_FIELD_NUMBER = 3;
+  private com.kekwy.iarnet.proto.common.FunctionDescriptor conditionFunction_;
   /**
-   * <pre>
-   * 0 = 主输出（默认），1 = branch 的 unmatched 输出
-   * </pre>
-   *
-   * <code>int32 from_port = 3;</code>
-   * @return The fromPort.
+   * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+   * @return Whether the conditionFunction field is set.
    */
   @java.lang.Override
-  public int getFromPort() {
-    return fromPort_;
+  public boolean hasConditionFunction() {
+    return ((bitField0_ & 0x00000001) != 0);
+  }
+  /**
+   * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+   * @return The conditionFunction.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.FunctionDescriptor getConditionFunction() {
+    return conditionFunction_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : conditionFunction_;
+  }
+  /**
+   * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getConditionFunctionOrBuilder() {
+    return conditionFunction_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : conditionFunction_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -158,8 +170,8 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(toNodeId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, toNodeId_);
     }
-    if (fromPort_ != 0) {
-      output.writeInt32(3, fromPort_);
+    if (((bitField0_ & 0x00000001) != 0)) {
+      output.writeMessage(3, getConditionFunction());
     }
     getUnknownFields().writeTo(output);
   }
@@ -176,9 +188,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(toNodeId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, toNodeId_);
     }
-    if (fromPort_ != 0) {
+    if (((bitField0_ & 0x00000001) != 0)) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(3, fromPort_);
+        .computeMessageSize(3, getConditionFunction());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -199,8 +211,11 @@ private static final long serialVersionUID = 0L;
         .equals(other.getFromNodeId())) return false;
     if (!getToNodeId()
         .equals(other.getToNodeId())) return false;
-    if (getFromPort()
-        != other.getFromPort()) return false;
+    if (hasConditionFunction() != other.hasConditionFunction()) return false;
+    if (hasConditionFunction()) {
+      if (!getConditionFunction()
+          .equals(other.getConditionFunction())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -216,8 +231,10 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getFromNodeId().hashCode();
     hash = (37 * hash) + TO_NODE_ID_FIELD_NUMBER;
     hash = (53 * hash) + getToNodeId().hashCode();
-    hash = (37 * hash) + FROM_PORT_FIELD_NUMBER;
-    hash = (53 * hash) + getFromPort();
+    if (hasConditionFunction()) {
+      hash = (37 * hash) + CONDITIONFUNCTION_FIELD_NUMBER;
+      hash = (53 * hash) + getConditionFunction().hashCode();
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -335,13 +352,19 @@ private static final long serialVersionUID = 0L;
 
     // Construct using com.kekwy.iarnet.proto.workflow.Edge.newBuilder()
     private Builder() {
-
+      maybeForceBuilderInitialization();
     }
 
     private Builder(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
-
+      maybeForceBuilderInitialization();
+    }
+    private void maybeForceBuilderInitialization() {
+      if (com.google.protobuf.GeneratedMessageV3
+              .alwaysUseFieldBuilders) {
+        getConditionFunctionFieldBuilder();
+      }
     }
     @java.lang.Override
     public Builder clear() {
@@ -349,7 +372,11 @@ private static final long serialVersionUID = 0L;
       bitField0_ = 0;
       fromNodeId_ = "";
       toNodeId_ = "";
-      fromPort_ = 0;
+      conditionFunction_ = null;
+      if (conditionFunctionBuilder_ != null) {
+        conditionFunctionBuilder_.dispose();
+        conditionFunctionBuilder_ = null;
+      }
       return this;
     }
 
@@ -389,9 +416,14 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000002) != 0)) {
         result.toNodeId_ = toNodeId_;
       }
+      int to_bitField0_ = 0;
       if (((from_bitField0_ & 0x00000004) != 0)) {
-        result.fromPort_ = fromPort_;
+        result.conditionFunction_ = conditionFunctionBuilder_ == null
+            ? conditionFunction_
+            : conditionFunctionBuilder_.build();
+        to_bitField0_ |= 0x00000001;
       }
+      result.bitField0_ |= to_bitField0_;
     }
 
     @java.lang.Override
@@ -448,8 +480,8 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000002;
         onChanged();
       }
-      if (other.getFromPort() != 0) {
-        setFromPort(other.getFromPort());
+      if (other.hasConditionFunction()) {
+        mergeConditionFunction(other.getConditionFunction());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -487,11 +519,13 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000002;
               break;
             } // case 18
-            case 24: {
-              fromPort_ = input.readInt32();
+            case 26: {
+              input.readMessage(
+                  getConditionFunctionFieldBuilder().getBuilder(),
+                  extensionRegistry);
               bitField0_ |= 0x00000004;
               break;
-            } // case 24
+            } // case 26
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -653,48 +687,123 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int fromPort_ ;
+    private com.kekwy.iarnet.proto.common.FunctionDescriptor conditionFunction_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> conditionFunctionBuilder_;
     /**
-     * <pre>
-     * 0 = 主输出（默认），1 = branch 的 unmatched 输出
-     * </pre>
-     *
-     * <code>int32 from_port = 3;</code>
-     * @return The fromPort.
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     * @return Whether the conditionFunction field is set.
      */
-    @java.lang.Override
-    public int getFromPort() {
-      return fromPort_;
+    public boolean hasConditionFunction() {
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <pre>
-     * 0 = 主输出（默认），1 = branch 的 unmatched 输出
-     * </pre>
-     *
-     * <code>int32 from_port = 3;</code>
-     * @param value The fromPort to set.
-     * @return This builder for chaining.
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     * @return The conditionFunction.
      */
-    public Builder setFromPort(int value) {
-      
-      fromPort_ = value;
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor getConditionFunction() {
+      if (conditionFunctionBuilder_ == null) {
+        return conditionFunction_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : conditionFunction_;
+      } else {
+        return conditionFunctionBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     */
+    public Builder setConditionFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
+      if (conditionFunctionBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        conditionFunction_ = value;
+      } else {
+        conditionFunctionBuilder_.setMessage(value);
+      }
       bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <pre>
-     * 0 = 主输出（默认），1 = branch 的 unmatched 输出
-     * </pre>
-     *
-     * <code>int32 from_port = 3;</code>
-     * @return This builder for chaining.
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
      */
-    public Builder clearFromPort() {
-      bitField0_ = (bitField0_ & ~0x00000004);
-      fromPort_ = 0;
+    public Builder setConditionFunction(
+        com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder builderForValue) {
+      if (conditionFunctionBuilder_ == null) {
+        conditionFunction_ = builderForValue.build();
+      } else {
+        conditionFunctionBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
+    }
+    /**
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     */
+    public Builder mergeConditionFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
+      if (conditionFunctionBuilder_ == null) {
+        if (((bitField0_ & 0x00000004) != 0) &&
+          conditionFunction_ != null &&
+          conditionFunction_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
+          getConditionFunctionBuilder().mergeFrom(value);
+        } else {
+          conditionFunction_ = value;
+        }
+      } else {
+        conditionFunctionBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     */
+    public Builder clearConditionFunction() {
+      bitField0_ = (bitField0_ & ~0x00000004);
+      conditionFunction_ = null;
+      if (conditionFunctionBuilder_ != null) {
+        conditionFunctionBuilder_.dispose();
+        conditionFunctionBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     */
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getConditionFunctionBuilder() {
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return getConditionFunctionFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     */
+    public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getConditionFunctionOrBuilder() {
+      if (conditionFunctionBuilder_ != null) {
+        return conditionFunctionBuilder_.getMessageOrBuilder();
+      } else {
+        return conditionFunction_ == null ?
+            com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : conditionFunction_;
+      }
+    }
+    /**
+     * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> 
+        getConditionFunctionFieldBuilder() {
+      if (conditionFunctionBuilder_ == null) {
+        conditionFunctionBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder>(
+                getConditionFunction(),
+                getParentForChildren(),
+                isClean());
+        conditionFunction_ = null;
+      }
+      return conditionFunctionBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

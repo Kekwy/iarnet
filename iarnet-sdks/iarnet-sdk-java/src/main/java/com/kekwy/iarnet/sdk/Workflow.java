@@ -10,16 +10,10 @@ import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.workflow.Edge;
-import com.kekwy.iarnet.proto.workflow.OperatorKind;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
 import com.kekwy.iarnet.sdk.converter.SourceToNodeVisitor;
 import com.kekwy.iarnet.sdk.converter.WorkflowGraphBuilder;
 import com.kekwy.iarnet.sdk.function.*;
-import com.kekwy.iarnet.sdk.function.Function.PythonFunction;
-import com.kekwy.iarnet.sdk.graph.Node;
-import com.kekwy.iarnet.sdk.graph.TaskNode;
-import com.kekwy.iarnet.sdk.graph.SourceNode;
-import com.kekwy.iarnet.sdk.source.Source;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
 import com.kekwy.iarnet.sdk.util.TypeToken;
@@ -46,27 +40,6 @@ public class Workflow {
         this.name = name;
     }
 
-    public static Workflow create(String name) {
-        return new Workflow(name);
-    }
-
-    private final List<Node> nodes = new ArrayList<>();
-    private final List<Edge> edges = new ArrayList<>();
-
-    public <T> Flow<T> source(Source<T> source) {
-        SourceToNodeVisitor visitor = new SourceToNodeVisitor();
-        SourceNode node = source.accept(visitor);
-        nodes.add(node);
-        return new DefaultFlow<>(List.of(new Precursor(node)));
-    }
-
-    public List<Node> getNodes() {
-        return List.copyOf(nodes);
-    }
-
-    public List<Edge> getEdges() {
-        return List.copyOf(edges);
-    }
 
     // ======================== 构建 WorkflowGraph ========================
 
@@ -140,6 +113,29 @@ public class Workflow {
         }
     }
 
+    public static Workflow create(String name) {
+        return new Workflow(name);
+    }
+
+    private final List<Node> nodes = new ArrayList<>();
+    private final List<Edge> edges = new ArrayList<>();
+
+    public <T> Flow<T> input(InputFunction<T> function) {
+        SourceToNodeVisitor visitor = new SourceToNodeVisitor();
+        SourceNode node = source.accept(visitor);
+        nodes.add(node);
+        return new DefaultFlow<>(List.of(new Precursor(node)));
+    }
+
+    public List<Node> getNodes() {
+        return List.copyOf(nodes);
+    }
+
+    public List<Edge> getEdges() {
+        return List.copyOf(edges);
+    }
+
+
     // ======== DefaultFlow ========
 
     private record Precursor(Node node, int port) {
@@ -170,12 +166,12 @@ public class Workflow {
         }
 
         @Override
-        public EndFlow<T> then(String name, SinkFunction<T> function) {
+        public EndFlow<T> then(String name, OutputFunction<T> function) {
             return then(name, function, null);
         }
 
         @Override
-        public EndFlow<T> then(String name, SinkFunction<T> function, ExecutionConfig config) {
+        public EndFlow<T> then(String name, OutputFunction<T> function, ExecutionConfig config) {
             TaskNode node = addTaskNode(name, precursors, function, config, null);
             return new DefaultEndFlow<>(List.of(new Precursor(node)));
         }
@@ -274,12 +270,12 @@ public class Workflow {
         }
 
         @Override
-        public EndFlow<T> then(String name, SinkFunction<T> function) {
+        public EndFlow<T> then(String name, OutputFunction<T> function) {
             return then(name, function, null);
         }
 
         @Override
-        public EndFlow<T> then(String name, SinkFunction<T> function, ExecutionConfig config) {
+        public EndFlow<T> then(String name, OutputFunction<T> function, ExecutionConfig config) {
             BranchFunction<T> branchFn = value -> condition.test(value) ? 0 : 1;
             TaskNode branchNode = addBranchNode(precursors, branchFn);
             TaskNode sinkNode = addTaskNode(name, List.of(new Precursor(branchNode, 0)), function, config, null);

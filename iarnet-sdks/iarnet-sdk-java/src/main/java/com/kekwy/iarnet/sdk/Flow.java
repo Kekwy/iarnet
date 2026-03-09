@@ -10,9 +10,9 @@ public interface Flow<T> {
 
     <R> Flow<R> then(String name, TaskFunction<T, R> function, ExecutionConfig config);
 
-    EndFlow<T> then(String name, SinkFunction<T> function);
+    EndFlow<T> then(String name, OutputFunction<T> function);
 
-    EndFlow<T> then(String name, SinkFunction<T> function, ExecutionConfig config);
+    EndFlow<T> then(String name, OutputFunction<T> function, ExecutionConfig config);
 
     <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function);
 

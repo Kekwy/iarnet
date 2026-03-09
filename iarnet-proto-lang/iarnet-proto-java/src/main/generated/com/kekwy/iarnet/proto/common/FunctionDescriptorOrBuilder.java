@@ -19,13 +19,52 @@ public interface FunctionDescriptorOrBuilder extends
   com.kekwy.iarnet.proto.common.Lang getLang();
 
   /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  java.util.List<com.kekwy.iarnet.proto.common.Type> 
+      getInputsTypeList();
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  com.kekwy.iarnet.proto.common.Type getInputsType(int index);
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  int getInputsTypeCount();
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  java.util.List<? extends com.kekwy.iarnet.proto.common.TypeOrBuilder> 
+      getInputsTypeOrBuilderList();
+  /**
+   * <code>repeated .iarnet.common.Type inputs_type = 2;</code>
+   */
+  com.kekwy.iarnet.proto.common.TypeOrBuilder getInputsTypeOrBuilder(
+      int index);
+
+  /**
+   * <code>.iarnet.common.Type output_type = 3;</code>
+   * @return Whether the outputType field is set.
+   */
+  boolean hasOutputType();
+  /**
+   * <code>.iarnet.common.Type output_type = 3;</code>
+   * @return The outputType.
+   */
+  com.kekwy.iarnet.proto.common.Type getOutputType();
+  /**
+   * <code>.iarnet.common.Type output_type = 3;</code>
+   */
+  com.kekwy.iarnet.proto.common.TypeOrBuilder getOutputTypeOrBuilder();
+
+  /**
    * <pre>
    * 函数定位标识
    * Java:   完整类名，如 "com.example.MyMapper"
    * Python: "模块:函数名"，如 "transforms:to_upper"
    * </pre>
    *
-   * <code>string function_identifier = 2;</code>
+   * <code>string function_identifier = 4;</code>
    * @return The functionIdentifier.
    */
   java.lang.String getFunctionIdentifier();
@@ -36,7 +75,7 @@ public interface FunctionDescriptorOrBuilder extends
    * Python: "模块:函数名"，如 "transforms:to_upper"
    * </pre>
    *
-   * <code>string function_identifier = 2;</code>
+   * <code>string function_identifier = 4;</code>
    * @return The bytes for functionIdentifier.
    */
   com.google.protobuf.ByteString
@@ -50,7 +89,7 @@ public interface FunctionDescriptorOrBuilder extends
    * 后端优先使用此字段还原函数；若为空则通过 identifier + artifact 加载
    * </pre>
    *
-   * <code>bytes serialized_function = 3;</code>
+   * <code>bytes serialized_function = 5;</code>
    * @return The serializedFunction.
    */
   com.google.protobuf.ByteString getSerializedFunction();
@@ -58,24 +97,24 @@ public interface FunctionDescriptorOrBuilder extends
   /**
    * <pre>
    * 函数代码所在的工件路径（可选）
-   * Java:   JAR 文件路径
+   * Java:   java maven 项目根目录
    * Python: 源码目录路径（requirements.txt 须位于同目录下）
    * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
    * </pre>
    *
-   * <code>string source_path = 4;</code>
+   * <code>string source_path = 6;</code>
    * @return The sourcePath.
    */
   java.lang.String getSourcePath();
   /**
    * <pre>
    * 函数代码所在的工件路径（可选）
-   * Java:   JAR 文件路径
+   * Java:   java maven 项目根目录
    * Python: 源码目录路径（requirements.txt 须位于同目录下）
    * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
    * </pre>
    *
-   * <code>string source_path = 4;</code>
+   * <code>string source_path = 6;</code>
    * @return The bytes for sourcePath.
    */
   com.google.protobuf.ByteString
