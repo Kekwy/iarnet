@@ -13,7 +13,7 @@ option java_multiple_files = true;
 message WorkflowGraph {
   string   workflow_id      = 1;
   string   application_id   = 2;
-  string  name = 3;
+  string   name             = 3;
   repeated Node nodes       = 4;
   repeated Edge edges       = 5;
 }
@@ -36,6 +36,6 @@ message Node {
 }
 
 message NodeConfig {
-  int32              replicas      = 1;
-  common.ResourceSpec    resource_spec      = 2;
+  int32               replicas      = 1;
+  common.ResourceSpec resource_spec      = 2;
 }

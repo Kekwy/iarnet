@@ -394,20 +394,30 @@ public class Workflow {
     private static FunctionDescriptor buildFunctionDescriptor(Function function,
                                                               List<Type> inputTypes, Type outputType, String nodeId) {
 
-        if (function.getLang() == Lang.LANG_JAVA) {
-            FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
-                    .setLang(function.getLang())
-                    .setFunctionIdentifier(function.getClass().getName())
-                    .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(function)));
-            for (Type t : inputTypes) {
-                b.addInputsType(t);
-            }
-            if (outputType != null) {
-                b.setOutputType(outputType);
-            }
-            return b.build();
+        if (function.getLang() == Lang.LANG_GO || function.getLang() == Lang.LANG_UNSPECIFIED) {
+            throw new IllegalArgumentException("不支持的函数语言: " + function.getLang());
         }
-        throw new IllegalArgumentException("不支持的函数语言: " + function.getLang());
+
+        FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
+                .setLang(function.getLang());
+
+        if (function instanceof PythonTaskFunction<?, ?> fn) {
+            b.setFunctionIdentifier(fn.getFunctionIdentifier())
+                    .setSourcePath(fn.getSourcePath());
+        } else if (function.getLang() == Lang.LANG_JAVA) {
+            b.setFunctionIdentifier(function.getClass().getName())
+                    .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(function)));
+        }
+
+        for (Type t : inputTypes) {
+            b.addInputsType(t);
+        }
+        if (outputType != null) {
+            b.setOutputType(outputType);
+        }
+        return b.build();
+
+
     }
 
     /**
