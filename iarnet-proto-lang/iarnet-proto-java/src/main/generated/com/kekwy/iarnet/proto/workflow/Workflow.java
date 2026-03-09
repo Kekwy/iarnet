@@ -45,33 +45,34 @@ public final class Workflow {
     java.lang.String[] descriptorData = {
       "\n\036iarnet/workflow/workflow.proto\022\017iarnet" +
       ".workflow\032\034iarnet/common/function.proto\032" +
-      "\034iarnet/common/resource.proto\"\210\001\n\rWorkfl" +
+      "\034iarnet/common/resource.proto\"\226\001\n\rWorkfl" +
       "owGraph\022\023\n\013workflow_id\030\001 \001(\t\022\026\n\016applicat" +
-      "ion_id\030\002 \001(\t\022$\n\005nodes\030\003 \003(\0132\025.iarnet.wor" +
-      "kflow.Node\022$\n\005edges\030\004 \003(\0132\025.iarnet.workf" +
-      "low.Edge\"\211\001\n\004Edge\022\024\n\014from_node_id\030\001 \001(\t\022" +
-      "\022\n\nto_node_id\030\002 \001(\t\022A\n\021conditionFunction" +
-      "\030\003 \001(\0132!.iarnet.common.FunctionDescripto" +
-      "rH\000\210\001\001B\024\n\022_conditionFunction\"x\n\004Node\022\n\n\002" +
-      "id\030\001 \001(\t\0223\n\010function\030\002 \001(\0132!.iarnet.comm" +
-      "on.FunctionDescriptor\022/\n\nnodeConfig\030\003 \001(" +
-      "\0132\033.iarnet.workflow.NodeConfig\"I\n\nNodeCo" +
-      "nfig\022\020\n\010replicas\030\004 \001(\005\022)\n\010resource\030\005 \001(\013" +
-      "2\027.iarnet.common.ResourceB#\n\037com.kekwy.i" +
-      "arnet.proto.workflowP\001b\006proto3"
+      "ion_id\030\002 \001(\t\022\014\n\004name\030\003 \001(\t\022$\n\005nodes\030\004 \003(" +
+      "\0132\025.iarnet.workflow.Node\022$\n\005edges\030\005 \003(\0132" +
+      "\025.iarnet.workflow.Edge\"\211\001\n\004Edge\022\024\n\014from_" +
+      "node_id\030\001 \001(\t\022\022\n\nto_node_id\030\002 \001(\t\022A\n\021con" +
+      "ditionFunction\030\003 \001(\0132!.iarnet.common.Fun" +
+      "ctionDescriptorH\000\210\001\001B\024\n\022_conditionFuncti" +
+      "on\"\206\001\n\004Node\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\0223\n" +
+      "\010function\030\003 \001(\0132!.iarnet.common.Function" +
+      "Descriptor\022/\n\nnodeConfig\030\004 \001(\0132\033.iarnet." +
+      "workflow.NodeConfig\"R\n\nNodeConfig\022\020\n\010rep" +
+      "licas\030\001 \001(\005\0222\n\rresource_spec\030\002 \001(\0132\033.iar" +
+      "net.common.ResourceSpecB#\n\037com.kekwy.iar" +
+      "net.proto.workflowP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.kekwy.iarnet.proto.common.Function.getDescriptor(),
-          com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor(),
+          com.kekwy.iarnet.proto.common.Resource.getDescriptor(),
         });
     internal_static_iarnet_workflow_WorkflowGraph_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_iarnet_workflow_WorkflowGraph_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_WorkflowGraph_descriptor,
-        new java.lang.String[] { "WorkflowId", "ApplicationId", "Nodes", "Edges", });
+        new java.lang.String[] { "WorkflowId", "ApplicationId", "Name", "Nodes", "Edges", });
     internal_static_iarnet_workflow_Edge_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_iarnet_workflow_Edge_fieldAccessorTable = new
@@ -83,15 +84,15 @@ public final class Workflow {
     internal_static_iarnet_workflow_Node_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_Node_descriptor,
-        new java.lang.String[] { "Id", "Function", "NodeConfig", });
+        new java.lang.String[] { "Id", "Name", "Function", "NodeConfig", });
     internal_static_iarnet_workflow_NodeConfig_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_workflow_NodeConfig_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_NodeConfig_descriptor,
-        new java.lang.String[] { "Replicas", "Resource", });
+        new java.lang.String[] { "Replicas", "ResourceSpec", });
     com.kekwy.iarnet.proto.common.Function.getDescriptor();
-    com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor();
+    com.kekwy.iarnet.proto.common.Resource.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

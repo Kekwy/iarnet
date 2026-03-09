@@ -1,7 +1,8 @@
 package com.kekwy.iarnet.sdk.util;
 
-import com.kekwy.iarnet.sdk.function.Function;
-import com.kekwy.iarnet.sdk.function.Function.PythonFunction;
+import com.kekwy.iarnet.sdk.function.InputFunction;
+import com.kekwy.iarnet.sdk.function.TaskFunction;
+import com.kekwy.iarnet.sdk.function.UnionFunction;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -9,16 +10,18 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.util.Optional;
 
 /**
- * 从函数对象中提取返回类型的工具类。
+ * 从函数对象中提取输出类型的工具类。
+ * <p>
+ * 支持接口：{@link InputFunction}、{@link TaskFunction}、{@link UnionFunction}。
  * <p>
  * 推断优先级：
  * <ol>
- *   <li>PythonFunction：直接从 {@link PythonFunction#getReturnType()} 获取</li>
- *   <li>具名类 / 匿名内部类：通过 {@code getGenericInterfaces()} 提取泛型参数</li>
- *   <li>Lambda（简单返回类型）：通过 {@link SerializedLambda} 提取实现方法的返回类型</li>
- *   <li>Lambda（泛型返回类型）：推断失败，返回 {@code null}，需用户显式调用 {@code .returns()}</li>
+ *   <li>具名类 / 匿名内部类：通过 {@code getGenericInterfaces()} / {@code getGenericSuperclass()} 提取泛型参数</li>
+ *   <li>Lambda：通过 {@link SerializedLambda} 提取实现方法的返回类型；{@link InputFunction} 的 {@code next()} 返回 {@link Optional}{@code <O>}，会自动解包得到 O</li>
+ *   <li>推断失败（如 lambda 返回类型被擦除为 Object）：返回 {@code null}，需用户显式调用 {@code .returns(TypeToken)}</li>
  * </ol>
  */
 public final class TypeExtractor {
@@ -29,69 +32,63 @@ public final class TypeExtractor {
     /**
      * 从函数对象中提取输出类型。
      *
-     * @param function           函数对象（MapFunction / FlatMapFunction / FilterFunction）
-     * @param functionalInterface 目标函数式接口的 Class（如 MapFunction.class）
-     * @param typeArgIndex       要提取的泛型参数索引（MapFunction 的 R 是索引 1，FilterFunction 无输出泛型）
+     * @param function            函数对象（InputFunction / TaskFunction / UnionFunction）
+     * @param functionalInterface 目标函数式接口的 Class（如 InputFunction.class、TaskFunction.class、UnionFunction.class）
+     * @param typeArgIndex        要提取的泛型参数索引：InputFunction 的 O 为 0，TaskFunction 的 O 为 1，UnionFunction 的 V 为 2
      * @return 提取到的 Type，推断失败时返回 null
      */
     public static Type extractOutputType(Object function, Class<?> functionalInterface, int typeArgIndex) {
-        // 1. PythonFunction：信息已完备
-        if (function instanceof PythonFunction pf) {
-            return pf.getReturnType();
-        }
-
-        // 2. 尝试从 getGenericInterfaces() 提取（具名类 / 匿名内部类）
+        // 1. 尝试从 getGenericInterfaces() / getGenericSuperclass() 提取（具名类 / 匿名内部类）
         Type fromInterfaces = extractFromGenericInterfaces(function, functionalInterface, typeArgIndex);
         if (fromInterfaces != null) {
             return fromInterfaces;
         }
 
-        // 3. 尝试从 SerializedLambda 提取（lambda 简单返回类型）
-        return extractFromSerializedLambda(function);
+        // 2. 尝试从 SerializedLambda 提取（lambda）
+        return extractFromSerializedLambda(function, functionalInterface);
     }
 
     /**
-     * 通过 getGenericInterfaces() 提取泛型参数。
+     * 通过 getGenericInterfaces() / getGenericSuperclass() 提取泛型参数。
      * 对具名类和匿名内部类有效，对 lambda 无效（返回擦除后的 raw type）。
      */
     private static Type extractFromGenericInterfaces(Object function, Class<?> targetInterface, int typeArgIndex) {
         for (Type iface : function.getClass().getGenericInterfaces()) {
-            if (iface instanceof ParameterizedType pt) {
-                if (targetInterface.isAssignableFrom((Class<?>) pt.getRawType())) {
-                    Type[] args = pt.getActualTypeArguments();
-                    if (args.length > typeArgIndex) {
-                        Type arg = args[typeArgIndex];
-                        if (!(arg instanceof TypeVariable)) {
-                            return arg;
-                        }
-                    }
-                }
+            Type extracted = extractTypeArgFromParameterizedType(iface, targetInterface, typeArgIndex);
+            if (extracted != null) {
+                return extracted;
             }
         }
 
-        // 继续向上查找父类链（处理 class A extends B implements MapFunction<S,R> 的情况）
         Type superClass = function.getClass().getGenericSuperclass();
-        if (superClass instanceof ParameterizedType pt) {
-            Type rawType = pt.getRawType();
-            if (rawType instanceof Class<?> rawClass && targetInterface.isAssignableFrom(rawClass)) {
-                Type[] args = pt.getActualTypeArguments();
-                if (args.length > typeArgIndex) {
-                    Type arg = args[typeArgIndex];
-                    if (!(arg instanceof TypeVariable)) {
-                        return arg;
-                    }
-                }
-            }
+        if (superClass != null) {
+            return extractTypeArgFromParameterizedType(superClass, targetInterface, typeArgIndex);
         }
 
         return null;
     }
 
+    private static Type extractTypeArgFromParameterizedType(Type type, Class<?> targetInterface, int typeArgIndex) {
+        if (!(type instanceof ParameterizedType pt)) {
+            return null;
+        }
+        Type rawType = pt.getRawType();
+        if (!(rawType instanceof Class<?> rawClass) || !targetInterface.isAssignableFrom(rawClass)) {
+            return null;
+        }
+        Type[] args = pt.getActualTypeArguments();
+        if (args.length <= typeArgIndex) {
+            return null;
+        }
+        Type arg = args[typeArgIndex];
+        return (arg instanceof TypeVariable) ? null : arg;
+    }
+
     /**
      * 通过 SerializedLambda 提取 lambda 实现方法的返回类型。
-     * 仅对返回具体 Class（非泛型）的 lambda 有效。
+     * 对于 InputFunction，{@code next()} 返回 {@link Optional}{@code <O>}，会解包得到 O。
      */
-    private static Type extractFromSerializedLambda(Object function) {
+    private static Type extractFromSerializedLambda(Object function, Class<?> functionalInterface) {
         if (!(function instanceof Serializable)) {
             return null;
         }
@@ -117,9 +114,20 @@ public final class TypeExtractor {
 
             Type returnType = implMethod.getGenericReturnType();
 
-            // 如果返回的是 Object.class，说明类型被擦除了，推断失败
+            // 类型擦除（如 lambda 返回泛型）时无法推断
             if (returnType == Object.class) {
                 return null;
+            }
+
+            // InputFunction.next() 返回 Optional<O>，需解包得到 O
+            if (functionalInterface == InputFunction.class && returnType instanceof ParameterizedType pt) {
+                if (pt.getRawType() == Optional.class) {
+                    Type[] args = pt.getActualTypeArguments();
+                    if (args.length > 0 && !(args[0] instanceof TypeVariable)) {
+                        return args[0];
+                    }
+                    return null;
+                }
             }
 
             return returnType;
@@ -129,9 +137,11 @@ public final class TypeExtractor {
     }
 
     private static Method findImplMethod(Class<?> implClass, String methodName) {
-        for (Method m : implClass.getDeclaredMethods()) {
-            if (m.getName().equals(methodName)) {
-                return m;
+        for (Class<?> c = implClass; c != null; c = c.getSuperclass()) {
+            for (Method m : c.getDeclaredMethods()) {
+                if (m.getName().equals(methodName)) {
+                    return m;
+                }
             }
         }
         return null;

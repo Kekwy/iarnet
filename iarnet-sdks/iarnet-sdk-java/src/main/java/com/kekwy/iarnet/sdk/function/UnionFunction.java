@@ -1,11 +1,15 @@
 package com.kekwy.iarnet.sdk.function;
 
-import java.io.Serializable;
-import java.util.Optional;
+import com.kekwy.iarnet.proto.common.Lang;
+import com.kekwy.iarnet.sdk.type.OptionalValue;
 
 @FunctionalInterface
-public interface UnionFunction<T, U, V> extends Serializable {
+public interface UnionFunction<T, U, V> extends Function {
 
-    V union(Optional<T> t, Optional<U> u);
+    V union(OptionalValue<T> t, OptionalValue<U> u);
 
+    @Override
+    default Lang getLang() {
+        return Lang.LANG_JAVA;
+    }
 }

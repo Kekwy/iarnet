@@ -72,7 +72,7 @@ public interface DeployInstanceRequestOrBuilder extends
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.common.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
    * @return Whether the resourceRequest field is set.
    */
   boolean hasResourceRequest();
@@ -81,18 +81,18 @@ public interface DeployInstanceRequestOrBuilder extends
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.common.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
    * @return The resourceRequest.
    */
-  com.kekwy.iarnet.proto.common.Resource getResourceRequest();
+  com.kekwy.iarnet.proto.common.ResourceSpec getResourceRequest();
   /**
    * <pre>
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.common.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
    */
-  com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceRequestOrBuilder();
+  com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getResourceRequestOrBuilder();
 
   /**
    * <pre>

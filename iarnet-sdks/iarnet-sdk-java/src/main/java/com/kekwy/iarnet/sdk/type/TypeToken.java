@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.sdk.util;
+package com.kekwy.iarnet.sdk.type;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

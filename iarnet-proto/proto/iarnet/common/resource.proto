@@ -7,7 +7,7 @@ option java_multiple_files = true;
 
 // ======================== 资源配额 ========================
 
-message Resource {
+message ResourceSpec {
   double cpu    = 1;
   string memory = 2;
   double gpu    = 3;

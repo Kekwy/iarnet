@@ -18,6 +18,7 @@ private static final long serialVersionUID = 0L;
   private WorkflowGraph() {
     workflowId_ = "";
     applicationId_ = "";
+    name_ = "";
     nodes_ = java.util.Collections.emptyList();
     edges_ = java.util.Collections.emptyList();
   }
@@ -125,18 +126,57 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int NODES_FIELD_NUMBER = 3;
+  public static final int NAME_FIELD_NUMBER = 3;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object name_ = "";
+  /**
+   * <code>string name = 3;</code>
+   * @return The name.
+   */
+  @java.lang.Override
+  public java.lang.String getName() {
+    java.lang.Object ref = name_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      name_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string name = 3;</code>
+   * @return The bytes for name.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getNameBytes() {
+    java.lang.Object ref = name_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      name_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int NODES_FIELD_NUMBER = 4;
   @SuppressWarnings("serial")
   private java.util.List<com.kekwy.iarnet.proto.workflow.Node> nodes_;
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   @java.lang.Override
   public java.util.List<com.kekwy.iarnet.proto.workflow.Node> getNodesList() {
     return nodes_;
   }
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   @java.lang.Override
   public java.util.List<? extends com.kekwy.iarnet.proto.workflow.NodeOrBuilder> 
@@ -144,21 +184,21 @@ private static final long serialVersionUID = 0L;
     return nodes_;
   }
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   @java.lang.Override
   public int getNodesCount() {
     return nodes_.size();
   }
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.workflow.Node getNodes(int index) {
     return nodes_.get(index);
   }
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.workflow.NodeOrBuilder getNodesOrBuilder(
@@ -166,18 +206,18 @@ private static final long serialVersionUID = 0L;
     return nodes_.get(index);
   }
 
-  public static final int EDGES_FIELD_NUMBER = 4;
+  public static final int EDGES_FIELD_NUMBER = 5;
   @SuppressWarnings("serial")
   private java.util.List<com.kekwy.iarnet.proto.workflow.Edge> edges_;
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   @java.lang.Override
   public java.util.List<com.kekwy.iarnet.proto.workflow.Edge> getEdgesList() {
     return edges_;
   }
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   @java.lang.Override
   public java.util.List<? extends com.kekwy.iarnet.proto.workflow.EdgeOrBuilder> 
@@ -185,21 +225,21 @@ private static final long serialVersionUID = 0L;
     return edges_;
   }
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   @java.lang.Override
   public int getEdgesCount() {
     return edges_.size();
   }
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.workflow.Edge getEdges(int index) {
     return edges_.get(index);
   }
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.workflow.EdgeOrBuilder getEdgesOrBuilder(
@@ -227,11 +267,14 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(applicationId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, applicationId_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, name_);
+    }
     for (int i = 0; i < nodes_.size(); i++) {
-      output.writeMessage(3, nodes_.get(i));
+      output.writeMessage(4, nodes_.get(i));
     }
     for (int i = 0; i < edges_.size(); i++) {
-      output.writeMessage(4, edges_.get(i));
+      output.writeMessage(5, edges_.get(i));
     }
     getUnknownFields().writeTo(output);
   }
@@ -248,13 +291,16 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(applicationId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, applicationId_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, name_);
+    }
     for (int i = 0; i < nodes_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(3, nodes_.get(i));
+        .computeMessageSize(4, nodes_.get(i));
     }
     for (int i = 0; i < edges_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(4, edges_.get(i));
+        .computeMessageSize(5, edges_.get(i));
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -275,6 +321,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getWorkflowId())) return false;
     if (!getApplicationId()
         .equals(other.getApplicationId())) return false;
+    if (!getName()
+        .equals(other.getName())) return false;
     if (!getNodesList()
         .equals(other.getNodesList())) return false;
     if (!getEdgesList()
@@ -294,6 +342,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getWorkflowId().hashCode();
     hash = (37 * hash) + APPLICATION_ID_FIELD_NUMBER;
     hash = (53 * hash) + getApplicationId().hashCode();
+    hash = (37 * hash) + NAME_FIELD_NUMBER;
+    hash = (53 * hash) + getName().hashCode();
     if (getNodesCount() > 0) {
       hash = (37 * hash) + NODES_FIELD_NUMBER;
       hash = (53 * hash) + getNodesList().hashCode();
@@ -433,20 +483,21 @@ private static final long serialVersionUID = 0L;
       bitField0_ = 0;
       workflowId_ = "";
       applicationId_ = "";
+      name_ = "";
       if (nodesBuilder_ == null) {
         nodes_ = java.util.Collections.emptyList();
       } else {
         nodes_ = null;
         nodesBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00000004);
+      bitField0_ = (bitField0_ & ~0x00000008);
       if (edgesBuilder_ == null) {
         edges_ = java.util.Collections.emptyList();
       } else {
         edges_ = null;
         edgesBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00000008);
+      bitField0_ = (bitField0_ & ~0x00000010);
       return this;
     }
 
@@ -481,18 +532,18 @@ private static final long serialVersionUID = 0L;
 
     private void buildPartialRepeatedFields(com.kekwy.iarnet.proto.workflow.WorkflowGraph result) {
       if (nodesBuilder_ == null) {
-        if (((bitField0_ & 0x00000004) != 0)) {
+        if (((bitField0_ & 0x00000008) != 0)) {
           nodes_ = java.util.Collections.unmodifiableList(nodes_);
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
         }
         result.nodes_ = nodes_;
       } else {
         result.nodes_ = nodesBuilder_.build();
       }
       if (edgesBuilder_ == null) {
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000010) != 0)) {
           edges_ = java.util.Collections.unmodifiableList(edges_);
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.edges_ = edges_;
       } else {
@@ -507,6 +558,9 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
         result.applicationId_ = applicationId_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.name_ = name_;
       }
     }
 
@@ -564,11 +618,16 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000002;
         onChanged();
       }
+      if (!other.getName().isEmpty()) {
+        name_ = other.name_;
+        bitField0_ |= 0x00000004;
+        onChanged();
+      }
       if (nodesBuilder_ == null) {
         if (!other.nodes_.isEmpty()) {
           if (nodes_.isEmpty()) {
             nodes_ = other.nodes_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           } else {
             ensureNodesIsMutable();
             nodes_.addAll(other.nodes_);
@@ -581,7 +640,7 @@ private static final long serialVersionUID = 0L;
             nodesBuilder_.dispose();
             nodesBuilder_ = null;
             nodes_ = other.nodes_;
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
             nodesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getNodesFieldBuilder() : null;
@@ -594,7 +653,7 @@ private static final long serialVersionUID = 0L;
         if (!other.edges_.isEmpty()) {
           if (edges_.isEmpty()) {
             edges_ = other.edges_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           } else {
             ensureEdgesIsMutable();
             edges_.addAll(other.edges_);
@@ -607,7 +666,7 @@ private static final long serialVersionUID = 0L;
             edgesBuilder_.dispose();
             edgesBuilder_ = null;
             edges_ = other.edges_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
             edgesBuilder_ = 
               com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                  getEdgesFieldBuilder() : null;
@@ -653,6 +712,11 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 18
             case 26: {
+              name_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 26
+            case 34: {
               com.kekwy.iarnet.proto.workflow.Node m =
                   input.readMessage(
                       com.kekwy.iarnet.proto.workflow.Node.parser(),
@@ -664,8 +728,8 @@ private static final long serialVersionUID = 0L;
                 nodesBuilder_.addMessage(m);
               }
               break;
-            } // case 26
-            case 34: {
+            } // case 34
+            case 42: {
               com.kekwy.iarnet.proto.workflow.Edge m =
                   input.readMessage(
                       com.kekwy.iarnet.proto.workflow.Edge.parser(),
@@ -677,7 +741,7 @@ private static final long serialVersionUID = 0L;
                 edgesBuilder_.addMessage(m);
               }
               break;
-            } // case 34
+            } // case 42
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -839,12 +903,84 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private java.lang.Object name_ = "";
+    /**
+     * <code>string name = 3;</code>
+     * @return The name.
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @return The bytes for name.
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @param value The name to set.
+     * @return This builder for chaining.
+     */
+    public Builder setName(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      name_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearName() {
+      name_ = getDefaultInstance().getName();
+      bitField0_ = (bitField0_ & ~0x00000004);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string name = 3;</code>
+     * @param value The bytes for name to set.
+     * @return This builder for chaining.
+     */
+    public Builder setNameBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      name_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+
     private java.util.List<com.kekwy.iarnet.proto.workflow.Node> nodes_ =
       java.util.Collections.emptyList();
     private void ensureNodesIsMutable() {
-      if (!((bitField0_ & 0x00000004) != 0)) {
+      if (!((bitField0_ & 0x00000008) != 0)) {
         nodes_ = new java.util.ArrayList<com.kekwy.iarnet.proto.workflow.Node>(nodes_);
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
        }
     }
 
@@ -852,7 +988,7 @@ private static final long serialVersionUID = 0L;
         com.kekwy.iarnet.proto.workflow.Node, com.kekwy.iarnet.proto.workflow.Node.Builder, com.kekwy.iarnet.proto.workflow.NodeOrBuilder> nodesBuilder_;
 
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public java.util.List<com.kekwy.iarnet.proto.workflow.Node> getNodesList() {
       if (nodesBuilder_ == null) {
@@ -862,7 +998,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public int getNodesCount() {
       if (nodesBuilder_ == null) {
@@ -872,7 +1008,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Node getNodes(int index) {
       if (nodesBuilder_ == null) {
@@ -882,7 +1018,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder setNodes(
         int index, com.kekwy.iarnet.proto.workflow.Node value) {
@@ -899,7 +1035,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder setNodes(
         int index, com.kekwy.iarnet.proto.workflow.Node.Builder builderForValue) {
@@ -913,7 +1049,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder addNodes(com.kekwy.iarnet.proto.workflow.Node value) {
       if (nodesBuilder_ == null) {
@@ -929,7 +1065,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder addNodes(
         int index, com.kekwy.iarnet.proto.workflow.Node value) {
@@ -946,7 +1082,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder addNodes(
         com.kekwy.iarnet.proto.workflow.Node.Builder builderForValue) {
@@ -960,7 +1096,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder addNodes(
         int index, com.kekwy.iarnet.proto.workflow.Node.Builder builderForValue) {
@@ -974,7 +1110,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder addAllNodes(
         java.lang.Iterable<? extends com.kekwy.iarnet.proto.workflow.Node> values) {
@@ -989,12 +1125,12 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder clearNodes() {
       if (nodesBuilder_ == null) {
         nodes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
       } else {
         nodesBuilder_.clear();
@@ -1002,7 +1138,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public Builder removeNodes(int index) {
       if (nodesBuilder_ == null) {
@@ -1015,14 +1151,14 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Node.Builder getNodesBuilder(
         int index) {
       return getNodesFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.NodeOrBuilder getNodesOrBuilder(
         int index) {
@@ -1032,7 +1168,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public java.util.List<? extends com.kekwy.iarnet.proto.workflow.NodeOrBuilder> 
          getNodesOrBuilderList() {
@@ -1043,14 +1179,14 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Node.Builder addNodesBuilder() {
       return getNodesFieldBuilder().addBuilder(
           com.kekwy.iarnet.proto.workflow.Node.getDefaultInstance());
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Node.Builder addNodesBuilder(
         int index) {
@@ -1058,7 +1194,7 @@ private static final long serialVersionUID = 0L;
           index, com.kekwy.iarnet.proto.workflow.Node.getDefaultInstance());
     }
     /**
-     * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+     * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
      */
     public java.util.List<com.kekwy.iarnet.proto.workflow.Node.Builder> 
          getNodesBuilderList() {
@@ -1071,7 +1207,7 @@ private static final long serialVersionUID = 0L;
         nodesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             com.kekwy.iarnet.proto.workflow.Node, com.kekwy.iarnet.proto.workflow.Node.Builder, com.kekwy.iarnet.proto.workflow.NodeOrBuilder>(
                 nodes_,
-                ((bitField0_ & 0x00000004) != 0),
+                ((bitField0_ & 0x00000008) != 0),
                 getParentForChildren(),
                 isClean());
         nodes_ = null;
@@ -1082,9 +1218,9 @@ private static final long serialVersionUID = 0L;
     private java.util.List<com.kekwy.iarnet.proto.workflow.Edge> edges_ =
       java.util.Collections.emptyList();
     private void ensureEdgesIsMutable() {
-      if (!((bitField0_ & 0x00000008) != 0)) {
+      if (!((bitField0_ & 0x00000010) != 0)) {
         edges_ = new java.util.ArrayList<com.kekwy.iarnet.proto.workflow.Edge>(edges_);
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
        }
     }
 
@@ -1092,7 +1228,7 @@ private static final long serialVersionUID = 0L;
         com.kekwy.iarnet.proto.workflow.Edge, com.kekwy.iarnet.proto.workflow.Edge.Builder, com.kekwy.iarnet.proto.workflow.EdgeOrBuilder> edgesBuilder_;
 
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public java.util.List<com.kekwy.iarnet.proto.workflow.Edge> getEdgesList() {
       if (edgesBuilder_ == null) {
@@ -1102,7 +1238,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public int getEdgesCount() {
       if (edgesBuilder_ == null) {
@@ -1112,7 +1248,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Edge getEdges(int index) {
       if (edgesBuilder_ == null) {
@@ -1122,7 +1258,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder setEdges(
         int index, com.kekwy.iarnet.proto.workflow.Edge value) {
@@ -1139,7 +1275,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder setEdges(
         int index, com.kekwy.iarnet.proto.workflow.Edge.Builder builderForValue) {
@@ -1153,7 +1289,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder addEdges(com.kekwy.iarnet.proto.workflow.Edge value) {
       if (edgesBuilder_ == null) {
@@ -1169,7 +1305,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder addEdges(
         int index, com.kekwy.iarnet.proto.workflow.Edge value) {
@@ -1186,7 +1322,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder addEdges(
         com.kekwy.iarnet.proto.workflow.Edge.Builder builderForValue) {
@@ -1200,7 +1336,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder addEdges(
         int index, com.kekwy.iarnet.proto.workflow.Edge.Builder builderForValue) {
@@ -1214,7 +1350,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder addAllEdges(
         java.lang.Iterable<? extends com.kekwy.iarnet.proto.workflow.Edge> values) {
@@ -1229,12 +1365,12 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder clearEdges() {
       if (edgesBuilder_ == null) {
         edges_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
       } else {
         edgesBuilder_.clear();
@@ -1242,7 +1378,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public Builder removeEdges(int index) {
       if (edgesBuilder_ == null) {
@@ -1255,14 +1391,14 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Edge.Builder getEdgesBuilder(
         int index) {
       return getEdgesFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public com.kekwy.iarnet.proto.workflow.EdgeOrBuilder getEdgesOrBuilder(
         int index) {
@@ -1272,7 +1408,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public java.util.List<? extends com.kekwy.iarnet.proto.workflow.EdgeOrBuilder> 
          getEdgesOrBuilderList() {
@@ -1283,14 +1419,14 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Edge.Builder addEdgesBuilder() {
       return getEdgesFieldBuilder().addBuilder(
           com.kekwy.iarnet.proto.workflow.Edge.getDefaultInstance());
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public com.kekwy.iarnet.proto.workflow.Edge.Builder addEdgesBuilder(
         int index) {
@@ -1298,7 +1434,7 @@ private static final long serialVersionUID = 0L;
           index, com.kekwy.iarnet.proto.workflow.Edge.getDefaultInstance());
     }
     /**
-     * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+     * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
      */
     public java.util.List<com.kekwy.iarnet.proto.workflow.Edge.Builder> 
          getEdgesBuilderList() {
@@ -1311,7 +1447,7 @@ private static final long serialVersionUID = 0L;
         edgesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
             com.kekwy.iarnet.proto.workflow.Edge, com.kekwy.iarnet.proto.workflow.Edge.Builder, com.kekwy.iarnet.proto.workflow.EdgeOrBuilder>(
                 edges_,
-                ((bitField0_ & 0x00000008) != 0),
+                ((bitField0_ & 0x00000010) != 0),
                 getParentForChildren(),
                 isClean());
         edges_ = null;

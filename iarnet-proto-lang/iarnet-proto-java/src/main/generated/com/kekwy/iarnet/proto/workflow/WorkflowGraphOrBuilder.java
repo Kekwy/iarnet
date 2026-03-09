@@ -32,49 +32,61 @@ public interface WorkflowGraphOrBuilder extends
       getApplicationIdBytes();
 
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>string name = 3;</code>
+   * @return The name.
+   */
+  java.lang.String getName();
+  /**
+   * <code>string name = 3;</code>
+   * @return The bytes for name.
+   */
+  com.google.protobuf.ByteString
+      getNameBytes();
+
+  /**
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   java.util.List<com.kekwy.iarnet.proto.workflow.Node> 
       getNodesList();
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   com.kekwy.iarnet.proto.workflow.Node getNodes(int index);
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   int getNodesCount();
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   java.util.List<? extends com.kekwy.iarnet.proto.workflow.NodeOrBuilder> 
       getNodesOrBuilderList();
   /**
-   * <code>repeated .iarnet.workflow.Node nodes = 3;</code>
+   * <code>repeated .iarnet.workflow.Node nodes = 4;</code>
    */
   com.kekwy.iarnet.proto.workflow.NodeOrBuilder getNodesOrBuilder(
       int index);
 
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   java.util.List<com.kekwy.iarnet.proto.workflow.Edge> 
       getEdgesList();
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   com.kekwy.iarnet.proto.workflow.Edge getEdges(int index);
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   int getEdgesCount();
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   java.util.List<? extends com.kekwy.iarnet.proto.workflow.EdgeOrBuilder> 
       getEdgesOrBuilderList();
   /**
-   * <code>repeated .iarnet.workflow.Edge edges = 4;</code>
+   * <code>repeated .iarnet.workflow.Edge edges = 5;</code>
    */
   com.kekwy.iarnet.proto.workflow.EdgeOrBuilder getEdgesOrBuilder(
       int index);

@@ -3,8 +3,8 @@
 
 package com.kekwy.iarnet.proto.common;
 
-public interface ResourceOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:iarnet.common.Resource)
+public interface ResourceSpecOrBuilder extends
+    // @@protoc_insertion_point(interface_extends:iarnet.common.ResourceSpec)
     com.google.protobuf.MessageOrBuilder {
 
   /**

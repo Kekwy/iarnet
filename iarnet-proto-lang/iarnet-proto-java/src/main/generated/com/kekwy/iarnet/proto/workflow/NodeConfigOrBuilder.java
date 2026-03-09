@@ -8,23 +8,23 @@ public interface NodeConfigOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>int32 replicas = 4;</code>
+   * <code>int32 replicas = 1;</code>
    * @return The replicas.
    */
   int getReplicas();
 
   /**
-   * <code>.iarnet.common.Resource resource = 5;</code>
-   * @return Whether the resource field is set.
+   * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
+   * @return Whether the resourceSpec field is set.
    */
-  boolean hasResource();
+  boolean hasResourceSpec();
   /**
-   * <code>.iarnet.common.Resource resource = 5;</code>
-   * @return The resource.
+   * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
+   * @return The resourceSpec.
    */
-  com.kekwy.iarnet.proto.common.Resource getResource();
+  com.kekwy.iarnet.proto.common.ResourceSpec getResourceSpec();
   /**
-   * <code>.iarnet.common.Resource resource = 5;</code>
+   * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
    */
-  com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceOrBuilder();
+  com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getResourceSpecOrBuilder();
 }

@@ -20,32 +20,44 @@ public interface NodeOrBuilder extends
       getIdBytes();
 
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+   * <code>string name = 2;</code>
+   * @return The name.
+   */
+  java.lang.String getName();
+  /**
+   * <code>string name = 2;</code>
+   * @return The bytes for name.
+   */
+  com.google.protobuf.ByteString
+      getNameBytes();
+
+  /**
+   * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
    * @return Whether the function field is set.
    */
   boolean hasFunction();
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
    * @return The function.
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptor getFunction();
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionOrBuilder();
 
   /**
-   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    * @return Whether the nodeConfig field is set.
    */
   boolean hasNodeConfig();
   /**
-   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    * @return The nodeConfig.
    */
   com.kekwy.iarnet.proto.workflow.NodeConfig getNodeConfig();
   /**
-   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    */
   com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder();
 }

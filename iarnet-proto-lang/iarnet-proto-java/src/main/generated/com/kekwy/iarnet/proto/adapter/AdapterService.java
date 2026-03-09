@@ -139,59 +139,60 @@ public final class AdapterService {
       "\022\023\n\013artifact_id\030\001 \001(\t\022\021\n\tfile_name\030\002 \001(\t" +
       "\022\014\n\004data\030\003 \001(\014\022\022\n\nlast_chunk\030\004 \001(\010\"F\n\030Tr" +
       "ansferArtifactResponse\022\023\n\013artifact_id\030\001 " +
-      "\001(\t\022\025\n\rartifact_path\030\002 \001(\t\"\276\004\n\025DeployIns" +
+      "\001(\t\022\025\n\rartifact_path\030\002 \001(\t\"\302\004\n\025DeployIns" +
       "tanceRequest\022\023\n\013instance_id\030\001 \001(\t\022\023\n\013art" +
-      "ifact_id\030\002 \001(\t\022\024\n\014artifact_url\030\003 \001(\t\0221\n\020" +
-      "resource_request\030\004 \001(\0132\027.iarnet.common.R" +
-      "esource\022D\n\010env_vars\030\005 \003(\01322.iarnet.adapt" +
-      "er.DeployInstanceRequest.EnvVarsEntry\022A\n" +
-      "\006labels\030\006 \003(\01321.iarnet.adapter.DeployIns" +
-      "tanceRequest.LabelsEntry\022!\n\004lang\030\007 \001(\0162\023" +
-      ".iarnet.common.Lang\022\034\n\024upstream_actor_ad" +
-      "drs\030\010 \003(\t\022\036\n\026downstream_actor_addrs\030\t \003(" +
-      "\t\022>\n\023function_descriptor\030\n \001(\0132!.iarnet." +
-      "common.FunctionDescriptor\022)\n\013source_rows" +
-      "\030\013 \003(\0132\024.iarnet.common.Value\032.\n\014EnvVarsE" +
-      "ntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001\032-\n\013" +
-      "LabelsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:" +
-      "\0028\001\"H\n\026DeployInstanceResponse\022.\n\010instanc" +
-      "e\030\001 \001(\0132\034.iarnet.adapter.InstanceInfo\"*\n" +
-      "\023StopInstanceRequest\022\023\n\013instance_id\030\001 \001(" +
-      "\t\"8\n\024StopInstanceResponse\022\017\n\007success\030\001 \001" +
-      "(\010\022\017\n\007message\030\002 \001(\t\",\n\025RemoveInstanceReq" +
-      "uest\022\023\n\013instance_id\030\001 \001(\t\":\n\026RemoveInsta" +
-      "nceResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007message\030" +
-      "\002 \001(\t\"/\n\030GetInstanceStatusRequest\022\023\n\013ins" +
-      "tance_id\030\001 \001(\t\"K\n\031GetInstanceStatusRespo" +
-      "nse\022.\n\010instance\030\001 \001(\0132\034.iarnet.adapter.I" +
-      "nstanceInfo\"\031\n\027GetResourceUsageRequest\"N" +
-      "\n\030GetResourceUsageResponse\0222\n\010capacity\030\001" +
-      " \001(\0132 .iarnet.adapter.ResourceCapacity\"2" +
-      "\n\033GetNetworkCandidatesRequest\022\023\n\013instanc" +
-      "e_id\030\001 \001(\t\"T\n\034GetNetworkCandidatesRespon" +
-      "se\0224\n\ncandidates\030\001 \003(\0132 .iarnet.adapter." +
-      "NetworkCandidate\"m\n\020NetworkCandidate\022+\n\004" +
-      "type\030\001 \001(\0162\035.iarnet.adapter.CandidateTyp" +
-      "e\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\022\020\n\010priorit" +
-      "y\030\004 \001(\005\"\215\001\n\020ResourceCapacity\022&\n\005total\030\001 " +
-      "\001(\0132\027.iarnet.common.Resource\022%\n\004used\030\002 \001" +
-      "(\0132\027.iarnet.common.Resource\022*\n\tavailable" +
-      "\030\003 \001(\0132\027.iarnet.common.Resource\"\226\001\n\014Inst" +
-      "anceInfo\022\023\n\013instance_id\030\001 \001(\t\022\024\n\014contain" +
-      "er_id\030\002 \001(\t\022\014\n\004host\030\003 \001(\t\022\014\n\004port\030\004 \001(\005\022" +
-      ".\n\006status\030\005 \001(\0162\036.iarnet.adapter.Instanc" +
-      "eStatus\022\017\n\007message\030\006 \001(\t*V\n\rCandidateTyp" +
-      "e\022\036\n\032CANDIDATE_TYPE_UNSPECIFIED\020\000\022\n\n\006DIR" +
-      "ECT\020\001\022\016\n\nNAT_MAPPED\020\002\022\t\n\005RELAY\020\003*q\n\016Inst" +
-      "anceStatus\022\037\n\033INSTANCE_STATUS_UNSPECIFIE" +
-      "D\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNNING\020\002\022\013\n\007STOPPED" +
-      "\020\003\022\n\n\006FAILED\020\004\022\013\n\007REMOVED\020\005B\"\n\036com.kekwy" +
-      ".iarnet.proto.adapterP\001b\006proto3"
+      "ifact_id\030\002 \001(\t\022\024\n\014artifact_url\030\003 \001(\t\0225\n\020" +
+      "resource_request\030\004 \001(\0132\033.iarnet.common.R" +
+      "esourceSpec\022D\n\010env_vars\030\005 \003(\01322.iarnet.a" +
+      "dapter.DeployInstanceRequest.EnvVarsEntr" +
+      "y\022A\n\006labels\030\006 \003(\01321.iarnet.adapter.Deplo" +
+      "yInstanceRequest.LabelsEntry\022!\n\004lang\030\007 \001" +
+      "(\0162\023.iarnet.common.Lang\022\034\n\024upstream_acto" +
+      "r_addrs\030\010 \003(\t\022\036\n\026downstream_actor_addrs\030" +
+      "\t \003(\t\022>\n\023function_descriptor\030\n \001(\0132!.iar" +
+      "net.common.FunctionDescriptor\022)\n\013source_" +
+      "rows\030\013 \003(\0132\024.iarnet.common.Value\032.\n\014EnvV" +
+      "arsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\001" +
+      "\032-\n\013LabelsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 " +
+      "\001(\t:\0028\001\"H\n\026DeployInstanceResponse\022.\n\010ins" +
+      "tance\030\001 \001(\0132\034.iarnet.adapter.InstanceInf" +
+      "o\"*\n\023StopInstanceRequest\022\023\n\013instance_id\030" +
+      "\001 \001(\t\"8\n\024StopInstanceResponse\022\017\n\007success" +
+      "\030\001 \001(\010\022\017\n\007message\030\002 \001(\t\",\n\025RemoveInstanc" +
+      "eRequest\022\023\n\013instance_id\030\001 \001(\t\":\n\026RemoveI" +
+      "nstanceResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007mess" +
+      "age\030\002 \001(\t\"/\n\030GetInstanceStatusRequest\022\023\n" +
+      "\013instance_id\030\001 \001(\t\"K\n\031GetInstanceStatusR" +
+      "esponse\022.\n\010instance\030\001 \001(\0132\034.iarnet.adapt" +
+      "er.InstanceInfo\"\031\n\027GetResourceUsageReque" +
+      "st\"N\n\030GetResourceUsageResponse\0222\n\010capaci" +
+      "ty\030\001 \001(\0132 .iarnet.adapter.ResourceCapaci" +
+      "ty\"2\n\033GetNetworkCandidatesRequest\022\023\n\013ins" +
+      "tance_id\030\001 \001(\t\"T\n\034GetNetworkCandidatesRe" +
+      "sponse\0224\n\ncandidates\030\001 \003(\0132 .iarnet.adap" +
+      "ter.NetworkCandidate\"m\n\020NetworkCandidate" +
+      "\022+\n\004type\030\001 \001(\0162\035.iarnet.adapter.Candidat" +
+      "eType\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\022\020\n\010pri" +
+      "ority\030\004 \001(\005\"\231\001\n\020ResourceCapacity\022*\n\005tota" +
+      "l\030\001 \001(\0132\033.iarnet.common.ResourceSpec\022)\n\004" +
+      "used\030\002 \001(\0132\033.iarnet.common.ResourceSpec\022" +
+      ".\n\tavailable\030\003 \001(\0132\033.iarnet.common.Resou" +
+      "rceSpec\"\226\001\n\014InstanceInfo\022\023\n\013instance_id\030" +
+      "\001 \001(\t\022\024\n\014container_id\030\002 \001(\t\022\014\n\004host\030\003 \001(" +
+      "\t\022\014\n\004port\030\004 \001(\005\022.\n\006status\030\005 \001(\0162\036.iarnet" +
+      ".adapter.InstanceStatus\022\017\n\007message\030\006 \001(\t" +
+      "*V\n\rCandidateType\022\036\n\032CANDIDATE_TYPE_UNSP" +
+      "ECIFIED\020\000\022\n\n\006DIRECT\020\001\022\016\n\nNAT_MAPPED\020\002\022\t\n" +
+      "\005RELAY\020\003*q\n\016InstanceStatus\022\037\n\033INSTANCE_S" +
+      "TATUS_UNSPECIFIED\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNN" +
+      "ING\020\002\022\013\n\007STOPPED\020\003\022\n\n\006FAILED\020\004\022\013\n\007REMOVE" +
+      "D\020\005B\"\n\036com.kekwy.iarnet.proto.adapterP\001b" +
+      "\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor(),
+          com.kekwy.iarnet.proto.common.Resource.getDescriptor(),
           com.kekwy.iarnet.proto.common.Function.getDescriptor(),
           com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor(),
         });
@@ -321,7 +322,7 @@ public final class AdapterService {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_adapter_InstanceInfo_descriptor,
         new java.lang.String[] { "InstanceId", "ContainerId", "Host", "Port", "Status", "Message", });
-    com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor();
+    com.kekwy.iarnet.proto.common.Resource.getDescriptor();
     com.kekwy.iarnet.proto.common.Function.getDescriptor();
     com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor();
   }

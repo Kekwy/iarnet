@@ -43,10 +43,10 @@ private static final long serialVersionUID = 0L;
             com.kekwy.iarnet.proto.workflow.NodeConfig.class, com.kekwy.iarnet.proto.workflow.NodeConfig.Builder.class);
   }
 
-  public static final int REPLICAS_FIELD_NUMBER = 4;
+  public static final int REPLICAS_FIELD_NUMBER = 1;
   private int replicas_ = 0;
   /**
-   * <code>int32 replicas = 4;</code>
+   * <code>int32 replicas = 1;</code>
    * @return The replicas.
    */
   @java.lang.Override
@@ -54,30 +54,30 @@ private static final long serialVersionUID = 0L;
     return replicas_;
   }
 
-  public static final int RESOURCE_FIELD_NUMBER = 5;
-  private com.kekwy.iarnet.proto.common.Resource resource_;
+  public static final int RESOURCE_SPEC_FIELD_NUMBER = 2;
+  private com.kekwy.iarnet.proto.common.ResourceSpec resourceSpec_;
   /**
-   * <code>.iarnet.common.Resource resource = 5;</code>
-   * @return Whether the resource field is set.
+   * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
+   * @return Whether the resourceSpec field is set.
    */
   @java.lang.Override
-  public boolean hasResource() {
-    return resource_ != null;
+  public boolean hasResourceSpec() {
+    return resourceSpec_ != null;
   }
   /**
-   * <code>.iarnet.common.Resource resource = 5;</code>
-   * @return The resource.
+   * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
+   * @return The resourceSpec.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.Resource getResource() {
-    return resource_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+  public com.kekwy.iarnet.proto.common.ResourceSpec getResourceSpec() {
+    return resourceSpec_ == null ? com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceSpec_;
   }
   /**
-   * <code>.iarnet.common.Resource resource = 5;</code>
+   * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceOrBuilder() {
-    return resource_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+  public com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getResourceSpecOrBuilder() {
+    return resourceSpec_ == null ? com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceSpec_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -95,10 +95,10 @@ private static final long serialVersionUID = 0L;
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
     if (replicas_ != 0) {
-      output.writeInt32(4, replicas_);
+      output.writeInt32(1, replicas_);
     }
-    if (resource_ != null) {
-      output.writeMessage(5, getResource());
+    if (resourceSpec_ != null) {
+      output.writeMessage(2, getResourceSpec());
     }
     getUnknownFields().writeTo(output);
   }
@@ -111,11 +111,11 @@ private static final long serialVersionUID = 0L;
     size = 0;
     if (replicas_ != 0) {
       size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(4, replicas_);
+        .computeInt32Size(1, replicas_);
     }
-    if (resource_ != null) {
+    if (resourceSpec_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, getResource());
+        .computeMessageSize(2, getResourceSpec());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -134,10 +134,10 @@ private static final long serialVersionUID = 0L;
 
     if (getReplicas()
         != other.getReplicas()) return false;
-    if (hasResource() != other.hasResource()) return false;
-    if (hasResource()) {
-      if (!getResource()
-          .equals(other.getResource())) return false;
+    if (hasResourceSpec() != other.hasResourceSpec()) return false;
+    if (hasResourceSpec()) {
+      if (!getResourceSpec()
+          .equals(other.getResourceSpec())) return false;
     }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
@@ -152,9 +152,9 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + REPLICAS_FIELD_NUMBER;
     hash = (53 * hash) + getReplicas();
-    if (hasResource()) {
-      hash = (37 * hash) + RESOURCE_FIELD_NUMBER;
-      hash = (53 * hash) + getResource().hashCode();
+    if (hasResourceSpec()) {
+      hash = (37 * hash) + RESOURCE_SPEC_FIELD_NUMBER;
+      hash = (53 * hash) + getResourceSpec().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -286,10 +286,10 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       replicas_ = 0;
-      resource_ = null;
-      if (resourceBuilder_ != null) {
-        resourceBuilder_.dispose();
-        resourceBuilder_ = null;
+      resourceSpec_ = null;
+      if (resourceSpecBuilder_ != null) {
+        resourceSpecBuilder_.dispose();
+        resourceSpecBuilder_ = null;
       }
       return this;
     }
@@ -328,9 +328,9 @@ private static final long serialVersionUID = 0L;
         result.replicas_ = replicas_;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.resource_ = resourceBuilder_ == null
-            ? resource_
-            : resourceBuilder_.build();
+        result.resourceSpec_ = resourceSpecBuilder_ == null
+            ? resourceSpec_
+            : resourceSpecBuilder_.build();
       }
     }
 
@@ -381,8 +381,8 @@ private static final long serialVersionUID = 0L;
       if (other.getReplicas() != 0) {
         setReplicas(other.getReplicas());
       }
-      if (other.hasResource()) {
-        mergeResource(other.getResource());
+      if (other.hasResourceSpec()) {
+        mergeResourceSpec(other.getResourceSpec());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -410,18 +410,18 @@ private static final long serialVersionUID = 0L;
             case 0:
               done = true;
               break;
-            case 32: {
+            case 8: {
               replicas_ = input.readInt32();
               bitField0_ |= 0x00000001;
               break;
-            } // case 32
-            case 42: {
+            } // case 8
+            case 18: {
               input.readMessage(
-                  getResourceFieldBuilder().getBuilder(),
+                  getResourceSpecFieldBuilder().getBuilder(),
                   extensionRegistry);
               bitField0_ |= 0x00000002;
               break;
-            } // case 42
+            } // case 18
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -441,7 +441,7 @@ private static final long serialVersionUID = 0L;
 
     private int replicas_ ;
     /**
-     * <code>int32 replicas = 4;</code>
+     * <code>int32 replicas = 1;</code>
      * @return The replicas.
      */
     @java.lang.Override
@@ -449,7 +449,7 @@ private static final long serialVersionUID = 0L;
       return replicas_;
     }
     /**
-     * <code>int32 replicas = 4;</code>
+     * <code>int32 replicas = 1;</code>
      * @param value The replicas to set.
      * @return This builder for chaining.
      */
@@ -461,7 +461,7 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>int32 replicas = 4;</code>
+     * <code>int32 replicas = 1;</code>
      * @return This builder for chaining.
      */
     public Builder clearReplicas() {
@@ -471,123 +471,123 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.kekwy.iarnet.proto.common.Resource resource_;
+    private com.kekwy.iarnet.proto.common.ResourceSpec resourceSpec_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> resourceBuilder_;
+        com.kekwy.iarnet.proto.common.ResourceSpec, com.kekwy.iarnet.proto.common.ResourceSpec.Builder, com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder> resourceSpecBuilder_;
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
-     * @return Whether the resource field is set.
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
+     * @return Whether the resourceSpec field is set.
      */
-    public boolean hasResource() {
+    public boolean hasResourceSpec() {
       return ((bitField0_ & 0x00000002) != 0);
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
-     * @return The resource.
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
+     * @return The resourceSpec.
      */
-    public com.kekwy.iarnet.proto.common.Resource getResource() {
-      if (resourceBuilder_ == null) {
-        return resource_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+    public com.kekwy.iarnet.proto.common.ResourceSpec getResourceSpec() {
+      if (resourceSpecBuilder_ == null) {
+        return resourceSpec_ == null ? com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceSpec_;
       } else {
-        return resourceBuilder_.getMessage();
+        return resourceSpecBuilder_.getMessage();
       }
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
-    public Builder setResource(com.kekwy.iarnet.proto.common.Resource value) {
-      if (resourceBuilder_ == null) {
+    public Builder setResourceSpec(com.kekwy.iarnet.proto.common.ResourceSpec value) {
+      if (resourceSpecBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        resource_ = value;
+        resourceSpec_ = value;
       } else {
-        resourceBuilder_.setMessage(value);
+        resourceSpecBuilder_.setMessage(value);
       }
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
-    public Builder setResource(
-        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
-      if (resourceBuilder_ == null) {
-        resource_ = builderForValue.build();
+    public Builder setResourceSpec(
+        com.kekwy.iarnet.proto.common.ResourceSpec.Builder builderForValue) {
+      if (resourceSpecBuilder_ == null) {
+        resourceSpec_ = builderForValue.build();
       } else {
-        resourceBuilder_.setMessage(builderForValue.build());
+        resourceSpecBuilder_.setMessage(builderForValue.build());
       }
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
-    public Builder mergeResource(com.kekwy.iarnet.proto.common.Resource value) {
-      if (resourceBuilder_ == null) {
+    public Builder mergeResourceSpec(com.kekwy.iarnet.proto.common.ResourceSpec value) {
+      if (resourceSpecBuilder_ == null) {
         if (((bitField0_ & 0x00000002) != 0) &&
-          resource_ != null &&
-          resource_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
-          getResourceBuilder().mergeFrom(value);
+          resourceSpec_ != null &&
+          resourceSpec_ != com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance()) {
+          getResourceSpecBuilder().mergeFrom(value);
         } else {
-          resource_ = value;
+          resourceSpec_ = value;
         }
       } else {
-        resourceBuilder_.mergeFrom(value);
+        resourceSpecBuilder_.mergeFrom(value);
       }
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
-    public Builder clearResource() {
+    public Builder clearResourceSpec() {
       bitField0_ = (bitField0_ & ~0x00000002);
-      resource_ = null;
-      if (resourceBuilder_ != null) {
-        resourceBuilder_.dispose();
-        resourceBuilder_ = null;
+      resourceSpec_ = null;
+      if (resourceSpecBuilder_ != null) {
+        resourceSpecBuilder_.dispose();
+        resourceSpecBuilder_ = null;
       }
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
-    public com.kekwy.iarnet.proto.common.Resource.Builder getResourceBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceSpec.Builder getResourceSpecBuilder() {
       bitField0_ |= 0x00000002;
       onChanged();
-      return getResourceFieldBuilder().getBuilder();
+      return getResourceSpecFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
-    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceOrBuilder() {
-      if (resourceBuilder_ != null) {
-        return resourceBuilder_.getMessageOrBuilder();
+    public com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getResourceSpecOrBuilder() {
+      if (resourceSpecBuilder_ != null) {
+        return resourceSpecBuilder_.getMessageOrBuilder();
       } else {
-        return resource_ == null ?
-            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resource_;
+        return resourceSpec_ == null ?
+            com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceSpec_;
       }
     }
     /**
-     * <code>.iarnet.common.Resource resource = 5;</code>
+     * <code>.iarnet.common.ResourceSpec resource_spec = 2;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
-        getResourceFieldBuilder() {
-      if (resourceBuilder_ == null) {
-        resourceBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
-                getResource(),
+        com.kekwy.iarnet.proto.common.ResourceSpec, com.kekwy.iarnet.proto.common.ResourceSpec.Builder, com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder> 
+        getResourceSpecFieldBuilder() {
+      if (resourceSpecBuilder_ == null) {
+        resourceSpecBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.ResourceSpec, com.kekwy.iarnet.proto.common.ResourceSpec.Builder, com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder>(
+                getResourceSpec(),
                 getParentForChildren(),
                 isClean());
-        resource_ = null;
+        resourceSpec_ = null;
       }
-      return resourceBuilder_;
+      return resourceSpecBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

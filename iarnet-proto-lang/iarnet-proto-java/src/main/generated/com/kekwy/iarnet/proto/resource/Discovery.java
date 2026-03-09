@@ -50,27 +50,27 @@ public final class Discovery {
       "_id\030\004 \001(\t\0223\n\010capacity\030\005 \001(\0132!.iarnet.res" +
       "ource.ResourceCapacity\022\014\n\004tags\030\006 \003(\t\022\017\n\007" +
       "version\030\n \001(\004\022\024\n\014gossip_count\030\013 \001(\005\022\024\n\014l" +
-      "ast_seen_ms\030\014 \001(\003\"\215\001\n\020ResourceCapacity\022&" +
-      "\n\005total\030\001 \001(\0132\027.iarnet.common.Resource\022%" +
-      "\n\004used\030\002 \001(\0132\027.iarnet.common.Resource\022*\n" +
-      "\tavailable\030\003 \001(\0132\027.iarnet.common.Resourc" +
-      "e\"\260\001\n\025NodeInfoGossipMessage\022\026\n\016sender_no" +
-      "de_id\030\001 \001(\t\022\026\n\016sender_address\030\002 \001(\t\022\030\n\020s" +
-      "ender_domain_id\030\003 \001(\t\022\022\n\nmessage_id\030\004 \001(" +
-      "\t\022\013\n\003ttl\030\005 \001(\005\022,\n\005nodes\030\n \003(\0132\035.iarnet.r" +
-      "esource.PeerNodeInfo\"p\n\026NodeInfoGossipRe" +
-      "sponse\022\022\n\nmessage_id\030\001 \001(\t\022\024\n\014timestamp_" +
-      "ms\030\002 \001(\003\022,\n\005nodes\030\n \003(\0132\035.iarnet.resourc" +
-      "e.PeerNodeInfo2u\n\020DiscoveryService\022a\n\016Go" +
-      "ssipNodeInfo\022&.iarnet.resource.NodeInfoG" +
-      "ossipMessage\032\'.iarnet.resource.NodeInfoG" +
-      "ossipResponseB#\n\037com.kekwy.iarnet.proto." +
-      "resourceP\001b\006proto3"
+      "ast_seen_ms\030\014 \001(\003\"\231\001\n\020ResourceCapacity\022*" +
+      "\n\005total\030\001 \001(\0132\033.iarnet.common.ResourceSp" +
+      "ec\022)\n\004used\030\002 \001(\0132\033.iarnet.common.Resourc" +
+      "eSpec\022.\n\tavailable\030\003 \001(\0132\033.iarnet.common" +
+      ".ResourceSpec\"\260\001\n\025NodeInfoGossipMessage\022" +
+      "\026\n\016sender_node_id\030\001 \001(\t\022\026\n\016sender_addres" +
+      "s\030\002 \001(\t\022\030\n\020sender_domain_id\030\003 \001(\t\022\022\n\nmes" +
+      "sage_id\030\004 \001(\t\022\013\n\003ttl\030\005 \001(\005\022,\n\005nodes\030\n \003(" +
+      "\0132\035.iarnet.resource.PeerNodeInfo\"p\n\026Node" +
+      "InfoGossipResponse\022\022\n\nmessage_id\030\001 \001(\t\022\024" +
+      "\n\014timestamp_ms\030\002 \001(\003\022,\n\005nodes\030\n \003(\0132\035.ia" +
+      "rnet.resource.PeerNodeInfo2u\n\020DiscoveryS" +
+      "ervice\022a\n\016GossipNodeInfo\022&.iarnet.resour" +
+      "ce.NodeInfoGossipMessage\032\'.iarnet.resour" +
+      "ce.NodeInfoGossipResponseB#\n\037com.kekwy.i" +
+      "arnet.proto.resourceP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-          com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor(),
+          com.kekwy.iarnet.proto.common.Resource.getDescriptor(),
         });
     internal_static_iarnet_resource_PeerNodeInfo_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -96,7 +96,7 @@ public final class Discovery {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_resource_NodeInfoGossipResponse_descriptor,
         new java.lang.String[] { "MessageId", "TimestampMs", "Nodes", });
-    com.kekwy.iarnet.proto.common.ResourceOuterClass.getDescriptor();
+    com.kekwy.iarnet.proto.common.Resource.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

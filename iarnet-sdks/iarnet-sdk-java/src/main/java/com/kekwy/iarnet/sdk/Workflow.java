@@ -1,7 +1,6 @@
 package com.kekwy.iarnet.sdk;
 
 import com.google.protobuf.ByteString;
-import com.kekwy.iarnet.proto.Types;
 import com.kekwy.iarnet.proto.api.SubmissionStatus;
 import com.kekwy.iarnet.proto.api.SubmitWorkflowRequest;
 import com.kekwy.iarnet.proto.api.SubmitWorkflowResponse;
@@ -10,13 +9,20 @@ import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.workflow.Edge;
+import com.kekwy.iarnet.proto.workflow.Node;
+import com.kekwy.iarnet.proto.workflow.NodeConfig;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.sdk.converter.SourceToNodeVisitor;
-import com.kekwy.iarnet.sdk.converter.WorkflowGraphBuilder;
 import com.kekwy.iarnet.sdk.function.*;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
-import com.kekwy.iarnet.sdk.util.TypeToken;
+import com.kekwy.iarnet.sdk.util.TypeExtractor;
+import com.kekwy.iarnet.sdk.type.TypeToken;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -40,7 +46,6 @@ public class Workflow {
         this.name = name;
     }
 
-
     // ======================== 构建 WorkflowGraph ========================
 
     private static final String ENV_APP_ID = "IARNET_APP_ID";
@@ -55,8 +60,47 @@ public class Workflow {
     }
 
     public WorkflowGraph buildGraph(String applicationId) {
-        WorkflowGraphBuilder builder = new WorkflowGraphBuilder();
-        return builder.build(applicationId, nodes, edges);
+        List<Node> finalizedNodes = finalizeNodesWithTypes();
+        return WorkflowGraph.newBuilder()
+                .setWorkflowId(com.kekwy.iarnet.sdk.util.IDUtil.genUUID())
+                .setApplicationId(applicationId)
+                .setName(name)
+                .addAllNodes(finalizedNodes)
+                .addAllEdges(edges)
+                .build();
+    }
+
+    /**
+     * 在 buildGraph 前补齐所有节点的 output_type：若反射推断失败，从 returns() 的提示中获取；
+     * 若仍无法获取则抛错。Sink 节点（无出边）无需 output_type，跳过。
+     */
+    private List<Node> finalizeNodesWithTypes() {
+        Set<String> hasOutgoing = new HashSet<>();
+        for (Edge e : edges) {
+            hasOutgoing.add(e.getFromNodeId());
+        }
+        List<Node> result = new ArrayList<>();
+        for (Node node : nodes) {
+            FunctionDescriptor fd = node.getFunction();
+            if (!fd.hasOutputType() || fd.getOutputType().getKind() == com.kekwy.iarnet.proto.common.TypeKind.TYPE_KIND_UNSPECIFIED) {
+                if (!hasOutgoing.contains(node.getId())) {
+                    result.add(node);
+                    continue;
+                }
+                java.lang.reflect.Type hint = nodeOutputTypeHints.get(node.getId());
+                if (hint == null) {
+                    throw new IllegalStateException(
+                            "无法推断节点 " + node.getId() + " 的输出类型，请对该 flow 调用 .returns(new TypeToken<YourType>() {}) 提供类型提示");
+                }
+                FunctionDescriptor patched = fd.toBuilder()
+                        .setOutputType(com.kekwy.iarnet.proto.Types.fromType(hint))
+                        .build();
+                result.add(node.toBuilder().setFunction(patched).build());
+            } else {
+                result.add(node);
+            }
+        }
+        return result;
     }
 
     // ======================== gRPC 提交 ========================
@@ -120,21 +164,19 @@ public class Workflow {
     private final List<Node> nodes = new ArrayList<>();
     private final List<Edge> edges = new ArrayList<>();
 
-    public <T> Flow<T> input(InputFunction<T> function) {
-        SourceToNodeVisitor visitor = new SourceToNodeVisitor();
-        SourceNode node = source.accept(visitor);
-        nodes.add(node);
-        return new DefaultFlow<>(List.of(new Precursor(node)));
+    /**
+     * 节点 ID -> 用户通过 returns() 传入的输出类型提示，用于类型擦除时兜底
+     */
+    private final Map<String, java.lang.reflect.Type> nodeOutputTypeHints = new HashMap<>();
+
+    public <T> Flow<T> input(String name, InputFunction<T> function) {
+        return input(name, function, null);
     }
 
-    public List<Node> getNodes() {
-        return List.copyOf(nodes);
+    public <T> Flow<T> input(String name, InputFunction<T> function, ExecutionConfig config) {
+        Node node = addNode(name, null, function, config);
+        return new DefaultFlow<>(node);
     }
-
-    public List<Edge> getEdges() {
-        return List.copyOf(edges);
-    }
-
 
     // ======== DefaultFlow ========
 
@@ -146,11 +188,10 @@ public class Workflow {
 
     private class DefaultFlow<T> implements Flow<T> {
 
-        // TODO: 什么场景下存在多个前驱
-        private final List<Precursor> precursors;
+        private final Node precursor;
 
-        private DefaultFlow(List<Precursor> precursors) {
-            this.precursors = precursors;
+        private DefaultFlow(Node precursor) {
+            this.precursor = precursor;
         }
 
 
@@ -161,8 +202,7 @@ public class Workflow {
 
         @Override
         public <R> Flow<R> then(String name, TaskFunction<T, R> function, ExecutionConfig config) {
-            TaskNode node = addTaskNode(name, precursors, function, config, null);
-            return new DefaultFlow<>(List.of(new Precursor(node)));
+            return new DefaultFlow<>(addNode(name, precursor, function, config));
         }
 
         @Override
@@ -172,8 +212,7 @@ public class Workflow {
 
         @Override
         public EndFlow<T> then(String name, OutputFunction<T> function, ExecutionConfig config) {
-            TaskNode node = addTaskNode(name, precursors, function, config, null);
-            return new DefaultEndFlow<>(List.of(new Precursor(node)));
+            return new DefaultEndFlow<>(addNode(name, precursor, function, config));
         }
 
         @Override
@@ -183,75 +222,45 @@ public class Workflow {
 
         @Override
         public <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function, ExecutionConfig config) {
-            if (!(other instanceof DefaultFlow)) {
+            if (!(other instanceof DefaultFlow<U> otherFlow)) {
                 throw new IllegalArgumentException("union() 仅支持同一 workflow 中的 flow");
             }
-            @SuppressWarnings("unchecked")
-            DefaultFlow<U> otherFlow = (DefaultFlow<U>) other;
-            List<Precursor> otherPrecursors = otherFlow.precursors;
-
-            String nodeId = uniqueNodeId(name);
-            Type inputType = Types.NULL; // UNION 多输入，由运行时推断
-            TaskNode unionNode = TaskNode.builder()
-                    .id(nodeId)
-                    .inputType(inputType)
-                    .outputType((Type) null)
-                    .operatorKind(OperatorKind.OPERATOR_UNION)
-                    .function(buildFunctionDescriptor(function))
-                    .replicas(config != null ? config.getReplicas() : 1)
-                    .resource(config != null ? Resource.fromSpec(config.getResource()) : null)
-                    .build();
-            nodes.add(unionNode);
-            for (Precursor p : precursors) {
-                edges.add(edge(p.node().getId(), nodeId, p.port()));
-            }
-            for (Precursor p : otherPrecursors) {
-                edges.add(edge(p.node().getId(), nodeId, p.port()));
-            }
-            return new DefaultFlow<>(List.of(new Precursor(unionNode)));
+            return new DefaultFlow<>(addUnionNode(name, precursor, otherFlow.precursor, function, config));
         }
 
         @Override
         public ConditionalFlow<T> when(ConditionFunction<T> condition) {
-            return new DefaultConditionalFlow<>(precursors, condition);
+            return new DefaultConditionalFlow<>(precursor, condition);
         }
 
 
         @Override
         public Flow<T> returns(TypeToken<T> typeHint) {
-            Type resolvedType = Types.fromType(typeHint.getType());
-            for (Precursor p : precursors) {
-                Node node = p.node();
-                if (node instanceof TaskNode op && op.getOutputType() == null) {
-                    node.setOutputType(resolvedType);
-                }
-            }
+            nodeOutputTypeHints.put(precursor.getId(), typeHint.getType());
             return this;
         }
+
     }
 
     // ======== DefaultEndFlow ========
 
     private static class DefaultEndFlow<T> implements EndFlow<T> {
-        private final List<Precursor> precursors;
+        @SuppressWarnings("FieldCanBeLocal")
+        private final Node precursor; // 预留字段
 
-        private DefaultEndFlow(List<Precursor> precursors) {
-            this.precursors = precursors;
-        }
-
-        public List<Precursor> getPrecursors() {
-            return precursors;
+        private DefaultEndFlow(Node precursor) {
+            this.precursor = precursor;
         }
     }
 
     // ======== DefaultConditionalFlow ========
 
     private class DefaultConditionalFlow<T> implements ConditionalFlow<T> {
-        private final List<Precursor> precursors;
+        private final Node precursor;
         private final ConditionFunction<T> condition;
 
-        private DefaultConditionalFlow(List<Precursor> precursors, ConditionFunction<T> condition) {
-            this.precursors = precursors;
+        private DefaultConditionalFlow(Node precursor, ConditionFunction<T> condition) {
+            this.precursor = precursor;
             this.condition = condition;
         }
 
@@ -262,11 +271,7 @@ public class Workflow {
 
         @Override
         public <R> Flow<R> then(String name, TaskFunction<T, R> function, ExecutionConfig config) {
-            BranchFunction<T> branchFn = value -> condition.test(value) ? 0 : 1;
-            TaskNode branchNode = addBranchNode(precursors, branchFn);
-            // 仅连接 port 0（满足条件的输出）到下一节点
-            TaskNode taskNode = addTaskNode(name, List.of(new Precursor(branchNode, 0)), function, config, null);
-            return new DefaultFlow<>(List.of(new Precursor(taskNode)));
+            return new DefaultFlow<>(addNode(name, precursor, function, config, condition));
         }
 
         @Override
@@ -276,10 +281,7 @@ public class Workflow {
 
         @Override
         public EndFlow<T> then(String name, OutputFunction<T> function, ExecutionConfig config) {
-            BranchFunction<T> branchFn = value -> condition.test(value) ? 0 : 1;
-            TaskNode branchNode = addBranchNode(precursors, branchFn);
-            TaskNode sinkNode = addTaskNode(name, List.of(new Precursor(branchNode, 0)), function, config, null);
-            return new DefaultEndFlow<>(List.of(new Precursor(sinkNode)));
+            return new DefaultEndFlow<>(addNode(name, precursor, function, config, condition));
         }
     }
 
@@ -289,89 +291,137 @@ public class Workflow {
         return name + "_" + IDUtil.genUUID();
     }
 
-    private TaskNode addTaskNode(String name, List<Precursor> fromPrecursors,
-                                 java.io.Serializable function, ExecutionConfig config, Type outputType) {
+    private Node addNode(String name, Node precursor,
+                         Function function, ExecutionConfig config) {
+        return addNode(name, precursor, function, config, null);
+    }
+
+    private Node addNode(String name, Node precursor,
+                         Function function, ExecutionConfig config,
+                         ConditionFunction<?> conditionFunction) {
         String nodeId = uniqueNodeId(name);
-        Type inputType = fromPrecursors.isEmpty() ? Types.NULL
-                : fromPrecursors.get(0).node().getOutputType();
-        if (inputType == null) {
-            inputType = Types.NULL;
-        }
-        TaskNode node = TaskNode.builder()
-                .id(nodeId)
-                .inputType(inputType)
-                .outputType(outputType)
-                .operatorKind(OperatorKind.OPERATOR_MAP)
-                .function(buildFunctionDescriptor(function))
-                .replicas(config != null ? config.getReplicas() : 1)
-                .resource(config != null ? Resource.fromSpec(config.getResource()) : null)
+        Type inputType = precursor != null ? precursor.getFunction().getOutputType() : null;
+        Type outputType = resolveOutputType(function, nodeId);
+
+        Node node = Node.newBuilder()
+                .setId(nodeId)
+                .setName(name)
+                .setFunction(buildFunctionDescriptor(function, inputType, outputType, nodeId))
+                .setNodeConfig(buildNodeConfig(config))
                 .build();
         nodes.add(node);
-        for (Precursor p : fromPrecursors) {
-            edges.add(edge(p.node().getId(), nodeId, p.port()));
+        if (precursor != null) {
+            Type conditionInputType = precursor.getFunction().getOutputType();
+            edges.add(buildEdge(precursor.getId(), nodeId, conditionFunction, conditionInputType));
         }
         return node;
     }
 
-    private TaskNode addBranchNode(List<Precursor> fromPrecursors, BranchFunction<?> branchFunction) {
-        String nodeId = uniqueNodeId("branch");
-        Type inputType = fromPrecursors.isEmpty() ? Types.NULL
-                : fromPrecursors.get(0).node().getOutputType();
-        if (inputType == null) {
-            inputType = Types.NULL;
-        }
-        TaskNode node = TaskNode.builder()
-                .id(nodeId)
-                .inputType(inputType)
-                .outputType(inputType)
-                .operatorKind(OperatorKind.OPERATOR_BRANCH)
-                .function(buildFunctionDescriptor(branchFunction))
-                .replicas(1)
-                .resource(null)
+    private Node addUnionNode(String name, Node precursor1, Node precursor2,
+                              UnionFunction<?, ?, ?> function, ExecutionConfig config) {
+        String nodeId = uniqueNodeId(name);
+        Type inputType1 = precursor1.getFunction().getOutputType();
+        Type inputType2 = precursor2.getFunction().getOutputType();
+        Type outputType = resolveOutputType(function, nodeId);
+
+        Node node = Node.newBuilder()
+                .setId(nodeId)
+                .setName(name)
+                .setFunction(buildFunctionDescriptor(function, List.of(inputType1, inputType2), outputType, nodeId))
+                .setNodeConfig(buildNodeConfig(config))
                 .build();
         nodes.add(node);
-        for (Precursor p : fromPrecursors) {
-            edges.add(edge(p.node().getId(), nodeId, p.port()));
-        }
+        edges.add(buildEdge(precursor1.getId(), nodeId, null, inputType1));
+        edges.add(buildEdge(precursor2.getId(), nodeId, null, inputType2));
         return node;
     }
 
-    private static Edge edge(String fromNodeId, String toNodeId) {
-        return edge(fromNodeId, toNodeId, 0);
-    }
-
-    private static Edge edge(String fromNodeId, String toNodeId, int fromPort) {
+    private static Edge buildEdge(String fromNodeId, String toNodeId,
+                                  ConditionFunction<?> conditionFunction, Type conditionInputType) {
+        FunctionDescriptor conditionFn = conditionFunction != null
+                ? buildFunctionDescriptorForCondition(conditionFunction, conditionInputType)
+                : FunctionDescriptor.getDefaultInstance();
         return Edge.newBuilder()
                 .setFromNodeId(fromNodeId)
                 .setToNodeId(toNodeId)
-                .setFromPort(fromPort)
+                .setConditionFunction(conditionFn)
                 .build();
     }
 
-    private static FunctionDescriptor buildFunctionDescriptor(java.io.Serializable function) {
-        if (function instanceof PythonFunction pf) {
+    private static NodeConfig buildNodeConfig(ExecutionConfig config) {
+        if (config == null) {
+            config = ExecutionConfig.of();
+        }
+        return NodeConfig.newBuilder()
+                .setReplicas(config.getReplicas())
+                .setResourceSpec(config.getResourceSpec())
+                .build();
+    }
+
+    /**
+     * 解析节点输出类型：优先从函数泛型反射推断，失败则用 returns() 提示，仍无则抛错。
+     * OutputFunction 无输出，返回 null。
+     */
+    private Type resolveOutputType(Function function, String nodeId) {
+        if (function instanceof OutputFunction) {
+            return null;
+        }
+        java.lang.reflect.Type extracted = null;
+        if (function instanceof InputFunction<?> fn) {
+            extracted = TypeExtractor.extractOutputType(fn, InputFunction.class, 0);
+        } else if (function instanceof TaskFunction<?, ?> fn) {
+            extracted = TypeExtractor.extractOutputType(fn, TaskFunction.class, 1);
+        } else if (function instanceof UnionFunction<?, ?, ?> fn) {
+            extracted = TypeExtractor.extractOutputType(fn, UnionFunction.class, 2);
+//        } else if (function instanceof PythonFunction pf) {
+//            extracted = pf.getReturnType();
+        }
+        if (extracted != null && extracted != Object.class) {
+            return com.kekwy.iarnet.proto.Types.fromType(extracted);
+        }
+        java.lang.reflect.Type hint = nodeOutputTypeHints.get(nodeId);
+        if (hint != null) {
+            return com.kekwy.iarnet.proto.Types.fromType(hint);
+        }
+        return null; // 交由 finalizeNodesWithTypes 检查并抛错
+    }
+
+    private static FunctionDescriptor buildFunctionDescriptor(Function function,
+                                                              Type inputType, Type outputType, String nodeId) {
+        return buildFunctionDescriptor(function, inputType != null ? List.of(inputType) : List.of(), outputType, nodeId);
+    }
+
+    private static FunctionDescriptor buildFunctionDescriptor(Function function,
+                                                              List<Type> inputTypes, Type outputType, String nodeId) {
+
+        if (function.getLang() == Lang.LANG_JAVA) {
             FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
-                    .setLang(Lang.LANG_PYTHON)
-                    .setFunctionIdentifier(pf.getCodeFile() + ":" + pf.getFunctionName());
-            if (pf.getSourcePath() != null && !pf.getSourcePath().isEmpty()) {
-                b.setSourcePath(pf.getSourcePath());
+                    .setLang(function.getLang())
+                    .setFunctionIdentifier(function.getClass().getName())
+                    .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(function)));
+            for (Type t : inputTypes) {
+                b.addInputsType(t);
+            }
+            if (outputType != null) {
+                b.setOutputType(outputType);
             }
             return b.build();
         }
+        throw new IllegalArgumentException("不支持的函数语言: " + function.getLang());
+    }
 
-        if (function instanceof Function fn) {
-            FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
-                    .setLang(fn.getLang())
-                    .setFunctionIdentifier(fn.getClass().getName())
-                    .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(fn)));
-            return b.build();
+    /**
+     * 构建边的条件函数的 FunctionDescriptor（input 来自前驱输出，output 为 boolean）。
+     */
+    private static FunctionDescriptor buildFunctionDescriptorForCondition(ConditionFunction<?> condition, Type inputType) {
+        FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
+                .setLang(condition.getLang())
+                .setFunctionIdentifier(condition.getClass().getName())
+                .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(condition)));
+        if (inputType != null) {
+            b.addInputsType(inputType);
         }
-
-        // TaskFunction, SinkFunction, UnionFunction 等仅实现 Serializable 的接口
-        return FunctionDescriptor.newBuilder()
-                .setLang(Lang.LANG_JAVA)
-                .setFunctionIdentifier(function.getClass().getName())
-                .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(function)))
-                .build();
+        b.setOutputType(com.kekwy.iarnet.proto.Types.BOOLEAN);
+        return b.build();
     }
 }

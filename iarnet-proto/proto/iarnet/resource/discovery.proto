@@ -57,9 +57,9 @@ message PeerNodeInfo {
 
 // 资源容量：复用 iarnet.ir.Resource 结构。
 message ResourceCapacity {
-  iarnet.common.Resource total     = 1;
-  iarnet.common.Resource used      = 2;
-  iarnet.common.Resource available = 3;
+  iarnet.common.ResourceSpec total     = 1;
+  iarnet.common.ResourceSpec used      = 2;
+  iarnet.common.ResourceSpec available = 3;
 }
 
 // ======================== Gossip 消息 ========================

@@ -1,25 +1,26 @@
 package com.kekwy.iarnet.sdk;
 
+import com.kekwy.iarnet.proto.common.ResourceSpec;
+
 public class ExecutionConfig {
 
-    public record ResourceSpec(
-            double cpu,
-            String memory,
-            double gpu) {
-    }
-
-    private static final ResourceSpec DEFAULT_RESOURCE = new ResourceSpec(0.5, "256Mi", 0);
+    private static final ResourceSpec DEFAULT_RESOURCE = ResourceSpec.newBuilder()
+            .setCpu(0.5).setMemory("256Mi").setGpu(0)
+            .build();
 
     public interface ResourceSpecBuilder {
         ResourceSpecBuilder cpu(double cpu);
+
         ResourceSpecBuilder memory(String memory);
+
         ResourceSpecBuilder gpu(double gpu);
+
         ResourceSpec build();
     }
 
     @FunctionalInterface
     public interface ResourceConfigurer {
-        void configure(ResourceSpecBuilder builder);
+        ResourceSpecBuilder configure(ResourceSpecBuilder builder);
     }
 
     private static class ResourceSpecBuilderImpl implements ResourceSpecBuilder {
@@ -47,7 +48,9 @@ public class ExecutionConfig {
 
         @Override
         public ResourceSpec build() {
-            return new ResourceSpec(cpu, memory, gpu);
+            return ResourceSpec.newBuilder()
+                    .setCpu(cpu).setMemory(memory).setGpu(gpu)
+                    .build();
         }
     }
 
@@ -68,7 +71,7 @@ public class ExecutionConfig {
         return replicas;
     }
 
-    public ResourceSpec getResource() {
+    public ResourceSpec getResourceSpec() {
         return resource;
     }
 
@@ -81,8 +84,7 @@ public class ExecutionConfig {
     }
 
     public ExecutionConfig resource(ResourceConfigurer configurer) {
-        ResourceSpecBuilderImpl builder = new ResourceSpecBuilderImpl();
-        configurer.configure(builder);
+        ResourceSpecBuilder builder = configurer.configure(new ResourceSpecBuilderImpl());
         this.resource = builder.build();
         return this;
     }

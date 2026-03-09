@@ -206,13 +206,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int RESOURCE_REQUEST_FIELD_NUMBER = 4;
-  private com.kekwy.iarnet.proto.common.Resource resourceRequest_;
+  private com.kekwy.iarnet.proto.common.ResourceSpec resourceRequest_;
   /**
    * <pre>
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.common.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
    * @return Whether the resourceRequest field is set.
    */
   @java.lang.Override
@@ -224,23 +224,23 @@ private static final long serialVersionUID = 0L;
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.common.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
    * @return The resourceRequest.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.Resource getResourceRequest() {
-    return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
+  public com.kekwy.iarnet.proto.common.ResourceSpec getResourceRequest() {
+    return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceRequest_;
   }
   /**
    * <pre>
    * 资源需求
    * </pre>
    *
-   * <code>.iarnet.common.Resource resource_request = 4;</code>
+   * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceRequestOrBuilder() {
-    return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
+  public com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getResourceRequestOrBuilder() {
+    return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceRequest_;
   }
 
   public static final int ENV_VARS_FIELD_NUMBER = 5;
@@ -1660,15 +1660,15 @@ java.lang.String defaultValue) {
       return this;
     }
 
-    private com.kekwy.iarnet.proto.common.Resource resourceRequest_;
+    private com.kekwy.iarnet.proto.common.ResourceSpec resourceRequest_;
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> resourceRequestBuilder_;
+        com.kekwy.iarnet.proto.common.ResourceSpec, com.kekwy.iarnet.proto.common.ResourceSpec.Builder, com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder> resourceRequestBuilder_;
     /**
      * <pre>
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      * @return Whether the resourceRequest field is set.
      */
     public boolean hasResourceRequest() {
@@ -1679,12 +1679,12 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      * @return The resourceRequest.
      */
-    public com.kekwy.iarnet.proto.common.Resource getResourceRequest() {
+    public com.kekwy.iarnet.proto.common.ResourceSpec getResourceRequest() {
       if (resourceRequestBuilder_ == null) {
-        return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
+        return resourceRequest_ == null ? com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceRequest_;
       } else {
         return resourceRequestBuilder_.getMessage();
       }
@@ -1694,9 +1694,9 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
-    public Builder setResourceRequest(com.kekwy.iarnet.proto.common.Resource value) {
+    public Builder setResourceRequest(com.kekwy.iarnet.proto.common.ResourceSpec value) {
       if (resourceRequestBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
@@ -1714,10 +1714,10 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
     public Builder setResourceRequest(
-        com.kekwy.iarnet.proto.common.Resource.Builder builderForValue) {
+        com.kekwy.iarnet.proto.common.ResourceSpec.Builder builderForValue) {
       if (resourceRequestBuilder_ == null) {
         resourceRequest_ = builderForValue.build();
       } else {
@@ -1732,13 +1732,13 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
-    public Builder mergeResourceRequest(com.kekwy.iarnet.proto.common.Resource value) {
+    public Builder mergeResourceRequest(com.kekwy.iarnet.proto.common.ResourceSpec value) {
       if (resourceRequestBuilder_ == null) {
         if (((bitField0_ & 0x00000008) != 0) &&
           resourceRequest_ != null &&
-          resourceRequest_ != com.kekwy.iarnet.proto.common.Resource.getDefaultInstance()) {
+          resourceRequest_ != com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance()) {
           getResourceRequestBuilder().mergeFrom(value);
         } else {
           resourceRequest_ = value;
@@ -1755,7 +1755,7 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
     public Builder clearResourceRequest() {
       bitField0_ = (bitField0_ & ~0x00000008);
@@ -1772,9 +1772,9 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
-    public com.kekwy.iarnet.proto.common.Resource.Builder getResourceRequestBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceSpec.Builder getResourceRequestBuilder() {
       bitField0_ |= 0x00000008;
       onChanged();
       return getResourceRequestFieldBuilder().getBuilder();
@@ -1784,14 +1784,14 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
-    public com.kekwy.iarnet.proto.common.ResourceOrBuilder getResourceRequestOrBuilder() {
+    public com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getResourceRequestOrBuilder() {
       if (resourceRequestBuilder_ != null) {
         return resourceRequestBuilder_.getMessageOrBuilder();
       } else {
         return resourceRequest_ == null ?
-            com.kekwy.iarnet.proto.common.Resource.getDefaultInstance() : resourceRequest_;
+            com.kekwy.iarnet.proto.common.ResourceSpec.getDefaultInstance() : resourceRequest_;
       }
     }
     /**
@@ -1799,14 +1799,14 @@ java.lang.String defaultValue) {
      * 资源需求
      * </pre>
      *
-     * <code>.iarnet.common.Resource resource_request = 4;</code>
+     * <code>.iarnet.common.ResourceSpec resource_request = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder> 
+        com.kekwy.iarnet.proto.common.ResourceSpec, com.kekwy.iarnet.proto.common.ResourceSpec.Builder, com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder> 
         getResourceRequestFieldBuilder() {
       if (resourceRequestBuilder_ == null) {
         resourceRequestBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.kekwy.iarnet.proto.common.Resource, com.kekwy.iarnet.proto.common.Resource.Builder, com.kekwy.iarnet.proto.common.ResourceOrBuilder>(
+            com.kekwy.iarnet.proto.common.ResourceSpec, com.kekwy.iarnet.proto.common.ResourceSpec.Builder, com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder>(
                 getResourceRequest(),
                 getParentForChildren(),
                 isClean());

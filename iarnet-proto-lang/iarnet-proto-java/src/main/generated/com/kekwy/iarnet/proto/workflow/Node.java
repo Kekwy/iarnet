@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private Node() {
     id_ = "";
+    name_ = "";
   }
 
   @java.lang.Override
@@ -83,10 +84,49 @@ private static final long serialVersionUID = 0L;
     }
   }
 
-  public static final int FUNCTION_FIELD_NUMBER = 2;
+  public static final int NAME_FIELD_NUMBER = 2;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object name_ = "";
+  /**
+   * <code>string name = 2;</code>
+   * @return The name.
+   */
+  @java.lang.Override
+  public java.lang.String getName() {
+    java.lang.Object ref = name_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      name_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>string name = 2;</code>
+   * @return The bytes for name.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getNameBytes() {
+    java.lang.Object ref = name_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      name_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int FUNCTION_FIELD_NUMBER = 3;
   private com.kekwy.iarnet.proto.common.FunctionDescriptor function_;
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
    * @return Whether the function field is set.
    */
   @java.lang.Override
@@ -94,7 +134,7 @@ private static final long serialVersionUID = 0L;
     return function_ != null;
   }
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
    * @return The function.
    */
   @java.lang.Override
@@ -102,17 +142,17 @@ private static final long serialVersionUID = 0L;
     return function_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : function_;
   }
   /**
-   * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+   * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionOrBuilder() {
     return function_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : function_;
   }
 
-  public static final int NODECONFIG_FIELD_NUMBER = 3;
+  public static final int NODECONFIG_FIELD_NUMBER = 4;
   private com.kekwy.iarnet.proto.workflow.NodeConfig nodeConfig_;
   /**
-   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    * @return Whether the nodeConfig field is set.
    */
   @java.lang.Override
@@ -120,7 +160,7 @@ private static final long serialVersionUID = 0L;
     return nodeConfig_ != null;
   }
   /**
-   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    * @return The nodeConfig.
    */
   @java.lang.Override
@@ -128,7 +168,7 @@ private static final long serialVersionUID = 0L;
     return nodeConfig_ == null ? com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance() : nodeConfig_;
   }
   /**
-   * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+   * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    */
   @java.lang.Override
   public com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder() {
@@ -152,11 +192,14 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
+    }
     if (function_ != null) {
-      output.writeMessage(2, getFunction());
+      output.writeMessage(3, getFunction());
     }
     if (nodeConfig_ != null) {
-      output.writeMessage(3, getNodeConfig());
+      output.writeMessage(4, getNodeConfig());
     }
     getUnknownFields().writeTo(output);
   }
@@ -170,13 +213,16 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
+    }
     if (function_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getFunction());
+        .computeMessageSize(3, getFunction());
     }
     if (nodeConfig_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(3, getNodeConfig());
+        .computeMessageSize(4, getNodeConfig());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -195,6 +241,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getId()
         .equals(other.getId())) return false;
+    if (!getName()
+        .equals(other.getName())) return false;
     if (hasFunction() != other.hasFunction()) return false;
     if (hasFunction()) {
       if (!getFunction()
@@ -218,6 +266,8 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + ID_FIELD_NUMBER;
     hash = (53 * hash) + getId().hashCode();
+    hash = (37 * hash) + NAME_FIELD_NUMBER;
+    hash = (53 * hash) + getName().hashCode();
     if (hasFunction()) {
       hash = (37 * hash) + FUNCTION_FIELD_NUMBER;
       hash = (53 * hash) + getFunction().hashCode();
@@ -356,6 +406,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       id_ = "";
+      name_ = "";
       function_ = null;
       if (functionBuilder_ != null) {
         functionBuilder_.dispose();
@@ -403,11 +454,14 @@ private static final long serialVersionUID = 0L;
         result.id_ = id_;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.name_ = name_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
         result.function_ = functionBuilder_ == null
             ? function_
             : functionBuilder_.build();
       }
-      if (((from_bitField0_ & 0x00000004) != 0)) {
+      if (((from_bitField0_ & 0x00000008) != 0)) {
         result.nodeConfig_ = nodeConfigBuilder_ == null
             ? nodeConfig_
             : nodeConfigBuilder_.build();
@@ -463,6 +517,11 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000001;
         onChanged();
       }
+      if (!other.getName().isEmpty()) {
+        name_ = other.name_;
+        bitField0_ |= 0x00000002;
+        onChanged();
+      }
       if (other.hasFunction()) {
         mergeFunction(other.getFunction());
       }
@@ -501,19 +560,24 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 10
             case 18: {
-              input.readMessage(
-                  getFunctionFieldBuilder().getBuilder(),
-                  extensionRegistry);
+              name_ = input.readStringRequireUtf8();
               bitField0_ |= 0x00000002;
               break;
             } // case 18
             case 26: {
               input.readMessage(
-                  getNodeConfigFieldBuilder().getBuilder(),
+                  getFunctionFieldBuilder().getBuilder(),
                   extensionRegistry);
               bitField0_ |= 0x00000004;
               break;
             } // case 26
+            case 34: {
+              input.readMessage(
+                  getNodeConfigFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 34
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -603,18 +667,90 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
+    private java.lang.Object name_ = "";
+    /**
+     * <code>string name = 2;</code>
+     * @return The name.
+     */
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        name_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string name = 2;</code>
+     * @return The bytes for name.
+     */
+    public com.google.protobuf.ByteString
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string name = 2;</code>
+     * @param value The name to set.
+     * @return This builder for chaining.
+     */
+    public Builder setName(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      name_ = value;
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string name = 2;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearName() {
+      name_ = getDefaultInstance().getName();
+      bitField0_ = (bitField0_ & ~0x00000002);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string name = 2;</code>
+     * @param value The bytes for name to set.
+     * @return This builder for chaining.
+     */
+    public Builder setNameBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      name_ = value;
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+
     private com.kekwy.iarnet.proto.common.FunctionDescriptor function_;
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> functionBuilder_;
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      * @return Whether the function field is set.
      */
     public boolean hasFunction() {
-      return ((bitField0_ & 0x00000002) != 0);
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      * @return The function.
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptor getFunction() {
@@ -625,7 +761,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     public Builder setFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionBuilder_ == null) {
@@ -636,12 +772,12 @@ private static final long serialVersionUID = 0L;
       } else {
         functionBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000002;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     public Builder setFunction(
         com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder builderForValue) {
@@ -650,16 +786,16 @@ private static final long serialVersionUID = 0L;
       } else {
         functionBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000002;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     public Builder mergeFunction(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionBuilder_ == null) {
-        if (((bitField0_ & 0x00000002) != 0) &&
+        if (((bitField0_ & 0x00000004) != 0) &&
           function_ != null &&
           function_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
           getFunctionBuilder().mergeFrom(value);
@@ -669,15 +805,15 @@ private static final long serialVersionUID = 0L;
       } else {
         functionBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00000002;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     public Builder clearFunction() {
-      bitField0_ = (bitField0_ & ~0x00000002);
+      bitField0_ = (bitField0_ & ~0x00000004);
       function_ = null;
       if (functionBuilder_ != null) {
         functionBuilder_.dispose();
@@ -687,15 +823,15 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getFunctionBuilder() {
-      bitField0_ |= 0x00000002;
+      bitField0_ |= 0x00000004;
       onChanged();
       return getFunctionFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionOrBuilder() {
       if (functionBuilder_ != null) {
@@ -706,7 +842,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.common.FunctionDescriptor function = 2;</code>
+     * <code>.iarnet.common.FunctionDescriptor function = 3;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> 
@@ -726,14 +862,14 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.workflow.NodeConfig, com.kekwy.iarnet.proto.workflow.NodeConfig.Builder, com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder> nodeConfigBuilder_;
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      * @return Whether the nodeConfig field is set.
      */
     public boolean hasNodeConfig() {
-      return ((bitField0_ & 0x00000004) != 0);
+      return ((bitField0_ & 0x00000008) != 0);
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      * @return The nodeConfig.
      */
     public com.kekwy.iarnet.proto.workflow.NodeConfig getNodeConfig() {
@@ -744,7 +880,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     public Builder setNodeConfig(com.kekwy.iarnet.proto.workflow.NodeConfig value) {
       if (nodeConfigBuilder_ == null) {
@@ -755,12 +891,12 @@ private static final long serialVersionUID = 0L;
       } else {
         nodeConfigBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     public Builder setNodeConfig(
         com.kekwy.iarnet.proto.workflow.NodeConfig.Builder builderForValue) {
@@ -769,16 +905,16 @@ private static final long serialVersionUID = 0L;
       } else {
         nodeConfigBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     public Builder mergeNodeConfig(com.kekwy.iarnet.proto.workflow.NodeConfig value) {
       if (nodeConfigBuilder_ == null) {
-        if (((bitField0_ & 0x00000004) != 0) &&
+        if (((bitField0_ & 0x00000008) != 0) &&
           nodeConfig_ != null &&
           nodeConfig_ != com.kekwy.iarnet.proto.workflow.NodeConfig.getDefaultInstance()) {
           getNodeConfigBuilder().mergeFrom(value);
@@ -788,15 +924,15 @@ private static final long serialVersionUID = 0L;
       } else {
         nodeConfigBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     public Builder clearNodeConfig() {
-      bitField0_ = (bitField0_ & ~0x00000004);
+      bitField0_ = (bitField0_ & ~0x00000008);
       nodeConfig_ = null;
       if (nodeConfigBuilder_ != null) {
         nodeConfigBuilder_.dispose();
@@ -806,15 +942,15 @@ private static final long serialVersionUID = 0L;
       return this;
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.NodeConfig.Builder getNodeConfigBuilder() {
-      bitField0_ |= 0x00000004;
+      bitField0_ |= 0x00000008;
       onChanged();
       return getNodeConfigFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     public com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder() {
       if (nodeConfigBuilder_ != null) {
@@ -825,7 +961,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.workflow.NodeConfig nodeConfig = 3;</code>
+     * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.workflow.NodeConfig, com.kekwy.iarnet.proto.workflow.NodeConfig.Builder, com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder> 

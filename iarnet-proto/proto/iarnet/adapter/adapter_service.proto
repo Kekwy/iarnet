@@ -45,7 +45,7 @@ message DeployInstanceRequest {
   string              instance_id      = 1;  // 实例唯一标识（由 control-plane 生成）
   string              artifact_id      = 2;  // artifact 标识，用于本地缓存去重与目录命名
   string              artifact_url     = 3;  // artifact 拉取地址（如 OSS 预签名 URL）；Adapter 收到后按需拉取再部署
-  iarnet.common.Resource  resource_request = 4;  // 资源需求
+  iarnet.common.ResourceSpec  resource_request = 4;  // 资源需求
   map<string, string> env_vars         = 5;  // 环境变量
   map<string, string> labels           = 6;  // 实例标签（便于管理和查询）
   iarnet.common.Lang      lang             = 7;  // 算子使用的编程语言 / 运行时
@@ -123,9 +123,9 @@ enum CandidateType {
 
 // 资源容量：描述设备总资源、已使用、可用
 message ResourceCapacity {
-  iarnet.common.Resource total     = 1;
-  iarnet.common.Resource used      = 2;
-  iarnet.common.Resource available = 3;
+  iarnet.common.ResourceSpec total     = 1;
+  iarnet.common.ResourceSpec used      = 2;
+  iarnet.common.ResourceSpec available = 3;
 }
 
 // 实例信息

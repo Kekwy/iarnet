@@ -8,47 +8,47 @@ public interface ResourceCapacityOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>.iarnet.common.Resource total = 1;</code>
+   * <code>.iarnet.common.ResourceSpec total = 1;</code>
    * @return Whether the total field is set.
    */
   boolean hasTotal();
   /**
-   * <code>.iarnet.common.Resource total = 1;</code>
+   * <code>.iarnet.common.ResourceSpec total = 1;</code>
    * @return The total.
    */
-  com.kekwy.iarnet.proto.common.Resource getTotal();
+  com.kekwy.iarnet.proto.common.ResourceSpec getTotal();
   /**
-   * <code>.iarnet.common.Resource total = 1;</code>
+   * <code>.iarnet.common.ResourceSpec total = 1;</code>
    */
-  com.kekwy.iarnet.proto.common.ResourceOrBuilder getTotalOrBuilder();
+  com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getTotalOrBuilder();
 
   /**
-   * <code>.iarnet.common.Resource used = 2;</code>
+   * <code>.iarnet.common.ResourceSpec used = 2;</code>
    * @return Whether the used field is set.
    */
   boolean hasUsed();
   /**
-   * <code>.iarnet.common.Resource used = 2;</code>
+   * <code>.iarnet.common.ResourceSpec used = 2;</code>
    * @return The used.
    */
-  com.kekwy.iarnet.proto.common.Resource getUsed();
+  com.kekwy.iarnet.proto.common.ResourceSpec getUsed();
   /**
-   * <code>.iarnet.common.Resource used = 2;</code>
+   * <code>.iarnet.common.ResourceSpec used = 2;</code>
    */
-  com.kekwy.iarnet.proto.common.ResourceOrBuilder getUsedOrBuilder();
+  com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getUsedOrBuilder();
 
   /**
-   * <code>.iarnet.common.Resource available = 3;</code>
+   * <code>.iarnet.common.ResourceSpec available = 3;</code>
    * @return Whether the available field is set.
    */
   boolean hasAvailable();
   /**
-   * <code>.iarnet.common.Resource available = 3;</code>
+   * <code>.iarnet.common.ResourceSpec available = 3;</code>
    * @return The available.
    */
-  com.kekwy.iarnet.proto.common.Resource getAvailable();
+  com.kekwy.iarnet.proto.common.ResourceSpec getAvailable();
   /**
-   * <code>.iarnet.common.Resource available = 3;</code>
+   * <code>.iarnet.common.ResourceSpec available = 3;</code>
    */
-  com.kekwy.iarnet.proto.common.ResourceOrBuilder getAvailableOrBuilder();
+  com.kekwy.iarnet.proto.common.ResourceSpecOrBuilder getAvailableOrBuilder();
 }

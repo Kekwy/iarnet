@@ -2,13 +2,10 @@ package com.kekwy.iarnet.sdk.function;
 
 import com.kekwy.iarnet.proto.common.Lang;
 
-@FunctionalInterface
-public interface TaskFunction<I, O> extends Function {
-
-    O apply(I input);
+public interface PythonTaskFunction<I, O> extends TaskFunction<I, O> {
 
     @Override
     default Lang getLang() {
-        return Lang.LANG_JAVA;
+        return Lang.LANG_PYTHON;
     }
 }

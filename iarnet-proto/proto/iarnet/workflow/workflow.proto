@@ -13,8 +13,9 @@ option java_multiple_files = true;
 message WorkflowGraph {
   string   workflow_id      = 1;
   string   application_id   = 2;
-  repeated Node nodes       = 3;
-  repeated Edge edges       = 4;
+  string  name = 3;
+  repeated Node nodes       = 4;
+  repeated Edge edges       = 5;
 }
 
 // ======================== 边 ========================
@@ -29,11 +30,12 @@ message Edge {
 
 message Node {
   string   id          = 1;
-  common.FunctionDescriptor function      = 2;
-  NodeConfig nodeConfig = 3;
+  string  name = 2;
+  common.FunctionDescriptor function      = 3;
+  NodeConfig nodeConfig = 4;
 }
 
 message NodeConfig {
-  int32              replicas      = 4;
-  common.Resource    resource      = 5;
+  int32              replicas      = 1;
+  common.ResourceSpec    resource_spec      = 2;
 }
