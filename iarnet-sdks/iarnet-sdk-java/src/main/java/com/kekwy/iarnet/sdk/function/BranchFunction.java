@@ -2,9 +2,10 @@ package com.kekwy.iarnet.sdk.function;
 
 import com.kekwy.iarnet.proto.common.Lang;
 
+@FunctionalInterface
 public interface BranchFunction <T> extends Function {
 
-    int toPort(T value);
+    int selectPort(T value);
 
     @Override
     default Lang getLang() {
