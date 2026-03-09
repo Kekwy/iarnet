@@ -6,7 +6,7 @@ public interface NodeVisitor<R> {
 
     R visit(FileSourceNode node);
 
-    R visit(OperatorNode node);
+    R visit(TaskNode node);
 
     R visit(SinkNode node);
 }

@@ -23,9 +23,9 @@ message WorkflowGraph {
 // ======================== 边 ========================
 
 message Edge {
-  string from_node_id = 1;
-  string to_node_id   = 2;
-  int32  from_port    = 3;  // 0 = 主输出（默认），1 = branch 的 unmatched 输出
+  string   from_node_id = 1;
+  string   to_node_id   = 2;
+  optional common.FunctionDescriptor conditionFunction      = 3;
 }
 
 // ======================== 节点 ========================
@@ -33,18 +33,17 @@ message Edge {
 enum NodeKind {
   NODE_KIND_UNSPECIFIED = 0;
   SOURCE                = 1;
-  OPERATOR              = 2;
+  TASK              = 2;
   SINK                  = 3;
 }
 
 message Node {
   string   id          = 1;
   NodeKind kind        = 2;
-  common.Type     input_type  = 3;
+  repeated common.Type inputs_type  = 3;
   common.Type     output_type = 4;
   common.FunctionDescriptor function      = 5;
-  int32              replicas      = 6;
-  common.Resource           resource      = 7;
+  TaskConfig taskConfig = 6;
 
   // 根据 kind 使用对应的 detail
   oneof detail {
@@ -52,6 +51,11 @@ message Node {
     OperatorNodeDetail operator_detail = 9;
     SinkNodeDetail     sink_detail     = 10;
   }
+}
+
+message TaskConfig {
+  int32              replicas      = 6;
+  common.Resource           resource      = 7;
 }
 
 // ======================== Source 节点 ========================

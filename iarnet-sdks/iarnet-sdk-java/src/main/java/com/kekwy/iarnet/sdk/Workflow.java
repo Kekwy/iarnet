@@ -12,42 +12,42 @@ import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.OperatorKind;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.sdk.converter.SinkToNodeVisitor;
 import com.kekwy.iarnet.sdk.converter.SourceToNodeVisitor;
 import com.kekwy.iarnet.sdk.converter.WorkflowGraphBuilder;
 import com.kekwy.iarnet.sdk.function.*;
-import com.kekwy.iarnet.sdk.function.Function;
 import com.kekwy.iarnet.sdk.function.Function.PythonFunction;
 import com.kekwy.iarnet.sdk.graph.Node;
-import com.kekwy.iarnet.sdk.graph.OperatorNode;
-import com.kekwy.iarnet.sdk.graph.SinkNode;
+import com.kekwy.iarnet.sdk.graph.TaskNode;
 import com.kekwy.iarnet.sdk.graph.SourceNode;
-import com.kekwy.iarnet.sdk.sink.Sink;
 import com.kekwy.iarnet.sdk.source.Source;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
-import com.kekwy.iarnet.sdk.util.TypeExtractor;
 import com.kekwy.iarnet.sdk.util.TypeToken;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * 工作流 DSL 入口，用于创建 source、task 并执行。
  */
 public class Workflow {
 
-    private Workflow() {
+    private final String name;
+
+    public String getName() {
+        return name;
     }
 
-    public static Workflow create() {
-        return new Workflow();
+    private Workflow(String name) {
+        this.name = name;
+    }
+
+    public static Workflow create(String name) {
+        return new Workflow(name);
     }
 
     private final List<Node> nodes = new ArrayList<>();
@@ -140,52 +140,6 @@ public class Workflow {
         }
     }
 
-    // ======================== TaskContext / Task 实现 ========================
-
-    private static final class DefaultTaskContext implements TaskContext {
-        private final java.util.Map<String, Object> state = new java.util.HashMap<>();
-        private Workflow workflow;
-
-        void setWorkflow(Workflow w) {
-            this.workflow = w;
-        }
-
-        @Override
-        public Workflow getWorkflow() {
-            return workflow;
-        }
-
-        @Override
-        public Object getState(String key) {
-            return state.get(key);
-        }
-
-        @Override
-        public void setState(String key, Object value) {
-            state.put(key, value);
-        }
-    }
-
-    private static final class DefaultTask implements Task {
-        private final String name;
-        private final Consumer<TaskContext> action;
-
-        DefaultTask(String name, Consumer<TaskContext> action) {
-            this.name = name;
-            this.action = action;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public void run(TaskContext context) {
-            action.accept(context);
-        }
-    }
-
     // ======== DefaultFlow ========
 
     private record Precursor(Node node, int port) {
@@ -203,299 +157,188 @@ public class Workflow {
             this.precursors = precursors;
         }
 
-        // -------- map --------
 
         @Override
-        public <R> Flow<R> map(MapFunction<? super T, ? extends R> mapper) {
-            return this.map(mapper, 1, Resource.of(0.5, "512Mi"));
+        public <R> Flow<R> then(String name, TaskFunction<T, R> function) {
+            return then(name, function, null);
         }
 
         @Override
-        public <R> Flow<R> map(MapFunction<? super T, ? extends R> mapper, Resource resource) {
-            return this.map(mapper, 1, resource);
-        }
-
-        @Override
-        public <R> Flow<R> map(MapFunction<? super T, ? extends R> mapper, int replicas) {
-            return this.map(mapper, replicas, Resource.of(0.5, "512Mi"));
-        }
-
-        @Override
-        public <R> Flow<R> map(MapFunction<? super T, ? extends R> mapper, int replicas, Resource resource) {
-            java.lang.reflect.Type returnType = TypeExtractor.extractOutputType(mapper, MapFunction.class, 1);
-            Type outputType = returnType != null ? Types.fromType(returnType) : null;
-
-            OperatorNode node = buildOperatorNode(mapper, OperatorKind.OPERATOR_MAP, outputType, replicas, resource);
-            linkAndRegister(node);
+        public <R> Flow<R> then(String name, TaskFunction<T, R> function, ExecutionConfig config) {
+            TaskNode node = addTaskNode(name, precursors, function, config, null);
             return new DefaultFlow<>(List.of(new Precursor(node)));
         }
 
-        // -------- flatMap --------
-
         @Override
-        public <R> Flow<R> flatMap(FlatMapFunction<? super T, ? extends R> mapper) {
-            return this.flatMap(mapper, 1, Resource.of(0.5, "512Mi"));
+        public EndFlow<T> then(String name, SinkFunction<T> function) {
+            return then(name, function, null);
         }
 
         @Override
-        public <R> Flow<R> flatMap(FlatMapFunction<? super T, ? extends R> mapper, Resource resource) {
-            return this.flatMap(mapper, 1, resource);
+        public EndFlow<T> then(String name, SinkFunction<T> function, ExecutionConfig config) {
+            TaskNode node = addTaskNode(name, precursors, function, config, null);
+            return new DefaultEndFlow<>(List.of(new Precursor(node)));
         }
 
         @Override
-        public <R> Flow<R> flatMap(FlatMapFunction<? super T, ? extends R> mapper, int replicas) {
-            return this.flatMap(mapper, replicas, Resource.of(0.5, "512Mi"));
+        public <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function) {
+            return union(name, other, function, null);
         }
 
         @Override
-        public <R> Flow<R> flatMap(FlatMapFunction<? super T, ? extends R> mapper, int replicas, Resource resource) {
-            java.lang.reflect.Type returnType = TypeExtractor.extractOutputType(mapper, FlatMapFunction.class, 1);
-            Type outputType = returnType != null ? Types.fromType(returnType) : null;
+        public <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function, ExecutionConfig config) {
+            if (!(other instanceof DefaultFlow)) {
+                throw new IllegalArgumentException("union() 仅支持同一 workflow 中的 flow");
+            }
+            @SuppressWarnings("unchecked")
+            DefaultFlow<U> otherFlow = (DefaultFlow<U>) other;
+            List<Precursor> otherPrecursors = otherFlow.precursors;
 
-            OperatorNode node = buildOperatorNode(mapper, OperatorKind.OPERATOR_FLAT_MAP, outputType, replicas, resource);
-            linkAndRegister(node);
-            return new DefaultFlow<>(List.of(new Precursor(node)));
+            String nodeId = uniqueNodeId(name);
+            Type inputType = Types.NULL; // UNION 多输入，由运行时推断
+            TaskNode unionNode = TaskNode.builder()
+                    .id(nodeId)
+                    .inputType(inputType)
+                    .outputType((Type) null)
+                    .operatorKind(OperatorKind.OPERATOR_UNION)
+                    .function(buildFunctionDescriptor(function))
+                    .replicas(config != null ? config.getReplicas() : 1)
+                    .resource(config != null ? Resource.fromSpec(config.getResource()) : null)
+                    .build();
+            nodes.add(unionNode);
+            for (Precursor p : precursors) {
+                edges.add(edge(p.node().getId(), nodeId, p.port()));
+            }
+            for (Precursor p : otherPrecursors) {
+                edges.add(edge(p.node().getId(), nodeId, p.port()));
+            }
+            return new DefaultFlow<>(List.of(new Precursor(unionNode)));
         }
-
-        // -------- filter --------
 
         @Override
-        public Flow<T> filter(FilterFunction<? super T> predicate) {
-            Type outputType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
-
-            OperatorNode node = buildOperatorNode(predicate, OperatorKind.OPERATOR_FILTER, outputType, 1, Resource.of(0.5, "512Mi"));
-            linkAndRegister(node);
-            return new DefaultFlow<>(List.of(new Precursor(node)));
+        public ConditionalFlow<T> when(ConditionFunction<T> condition) {
+            return new DefaultConditionalFlow<>(precursors, condition);
         }
 
-        // -------- returns --------
 
         @Override
         public Flow<T> returns(TypeToken<T> typeHint) {
             Type resolvedType = Types.fromType(typeHint.getType());
             for (Precursor p : precursors) {
                 Node node = p.node();
-                if (node instanceof OperatorNode op && op.getOutputType() == null) {
+                if (node instanceof TaskNode op && op.getOutputType() == null) {
                     node.setOutputType(resolvedType);
                 }
             }
             return this;
         }
-
-        // -------- keyBy --------
-
-        @Override
-        public <K> KeyedFlow<T, K> keyBy(KeySelector<? super T, ? extends K> selector) {
-            if (selector == null) {
-                throw new IllegalArgumentException("key selector must not be null");
-            }
-
-            FunctionDescriptor keySelectorFd = buildFunctionDescriptor(selector);
-
-            OperatorNode keyByNode = OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .inputType(precursors.isEmpty() ? null : precursors.get(0).node().getOutputType())
-                    .outputType(precursors.isEmpty() ? null : precursors.get(0).node().getOutputType())
-                    .operatorKind(OperatorKind.OPERATOR_KEY_BY)
-                    .keySelector(keySelectorFd)
-                    .replicas(1)
-                    .resource(Resource.of(0.5, "512Mi"))
-                    .build();
-
-            precursors.forEach(p -> edges.add(edge(p.node().getId(), keyByNode.getId(), p.port())));
-            nodes.add(keyByNode);
-
-            return new DefaultKeyedFlow<>(List.of(keyByNode), selector);
-        }
-
-        // -------- branch --------
-
-        @Override
-        public BranchedFlow<T> branch(BranchFunction<? super T> predicate) {
-            if (predicate == null) {
-                throw new IllegalArgumentException("predicate must not be null");
-            }
-            Type outputType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
-
-            OperatorNode branchNode = OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .inputType(outputType)
-                    .outputType(outputType)
-                    .operatorKind(OperatorKind.OPERATOR_BRANCH)
-                    .function(buildFunctionDescriptor(predicate))
-                    .replicas(1)
-                    .resource(Resource.of(0.5, "512Mi"))
-                    .build();
-
-            precursors.forEach(p -> edges.add(edge(p.node().getId(), branchNode.getId(), p.port())));
-            nodes.add(branchNode);
-
-            return new DefaultBranchedFlow<>(branchNode);
-        }
-
-        // -------- union --------
-
-        @Override
-        public Flow<T> union(Flow<T> other) {
-            if (other == null) {
-                throw new IllegalArgumentException("other flow must not be null");
-            }
-            if (!(other instanceof DefaultFlow<?> otherFlow)) {
-                throw new IllegalArgumentException("只能与同一 Workflow 创建的 Flow 执行 union");
-            }
-
-            Type outputType = null;
-            if (!precursors.isEmpty()) {
-                outputType = precursors.get(0).node().getOutputType();
-            } else if (!otherFlow.precursors.isEmpty()) {
-                outputType = otherFlow.precursors.get(0).node().getOutputType();
-            }
-
-            OperatorNode unionNode = OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .outputType(outputType)
-                    .operatorKind(OperatorKind.OPERATOR_UNION)
-                    .replicas(1)
-                    .resource(Resource.of(0.5, "512Mi"))
-                    .build();
-
-            precursors.forEach(p -> edges.add(edge(p.node().getId(), unionNode.getId())));
-            otherFlow.precursors.forEach(p -> edges.add(edge(p.node().getId(), unionNode.getId())));
-            nodes.add(unionNode);
-
-            return new DefaultFlow<>(List.of(new Precursor(unionNode)));
-        }
-
-        // -------- after / sink --------
-
-        @Override
-        public Flow<T> after(Task task) {
-            return this;
-        }
-
-        @Override
-        public void sink(Sink<? super T> sink) {
-            SinkToNodeVisitor visitor = new SinkToNodeVisitor();
-            SinkNode sinkNode = sink.accept(visitor);
-
-            Type inputType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
-            sinkNode.setOutputType(inputType);
-
-            precursors.forEach(p -> edges.add(edge(p.node().getId(), sinkNode.getId())));
-            nodes.add(sinkNode);
-        }
-
-        // -------- internal helpers --------
-
-        private OperatorNode buildOperatorNode(
-                Function function, OperatorKind kind,
-                Type outputType, int replicas, Resource resource) {
-
-            FunctionDescriptor fd = buildFunctionDescriptor(function);
-
-            return OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .outputType(outputType)
-                    .operatorKind(kind)
-                    .function(fd)
-                    .replicas(replicas)
-                    .resource(resource)
-                    .build();
-        }
-
-        private void linkAndRegister(OperatorNode node) {
-            precursors.forEach(p -> edges.add(edge(p.node().getId(), node.getId())));
-            nodes.add(node);
-        }
     }
 
-    // ======== KeyedFlow / CoKeyedFlow 实现 ========
+    // ======== DefaultEndFlow ========
 
-    private class DefaultKeyedFlow<T, K> implements KeyedFlow<T, K> {
+    private static class DefaultEndFlow<T> implements EndFlow<T> {
+        private final List<Precursor> precursors;
 
-        private final List<Node> precursors;
-        @SuppressWarnings("unused")
-        private final KeySelector<? super T, ? extends K> keySelector;
-
-        private DefaultKeyedFlow(List<Node> precursors,
-                                 KeySelector<? super T, ? extends K> keySelector) {
+        private DefaultEndFlow(List<Precursor> precursors) {
             this.precursors = precursors;
-            this.keySelector = keySelector;
         }
 
-        @Override
-        public <ACC> Flow<ACC> fold(ACC initial, Duration timeout, FoldFunction<? super T, ACC> fn) {
-            if (initial == null || fn == null) {
-                throw new IllegalArgumentException("initial value and fold function must not be null");
-            }
-
-            java.lang.reflect.Type returnType = TypeExtractor.extractOutputType(fn, FoldFunction.class, 1);
-            Type outputType = returnType != null ? Types.fromType(returnType) : null;
-
-            OperatorNode node = OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .outputType(outputType)
-                    .operatorKind(OperatorKind.OPERATOR_FOLD)
-                    .function(buildFunctionDescriptor(fn))
-                    .foldInitialValue(initial)
-                    .replicas(1)
-                    .resource(Resource.of(0.5, "512Mi"))
-                    .build();
-
-            precursors.forEach(p -> edges.add(edge(p.getId(), node.getId())));
-            nodes.add(node);
-
-            return new DefaultFlow<>(List.of(new Precursor(node)));
-        }
-
-        @Override
-        public <R, OUT> Flow<OUT> join(KeyedFlow<R, K> other, Duration timeout, JoinFunction<? super T, ? super R, OUT> joiner) {
-            if (other == null || timeout == null || joiner == null) {
-                throw new IllegalArgumentException("other, timeout, joiner must not be null");
-            }
-            if (!(other instanceof DefaultKeyedFlow<?, ?> otherKeyed)) {
-                throw new IllegalArgumentException("只能与同一 Workflow 创建的 KeyedFlow 执行 join");
-            }
-            @SuppressWarnings("unchecked")
-            DefaultKeyedFlow<R, K> right = (DefaultKeyedFlow<R, K>) otherKeyed;
-
-            java.lang.reflect.Type returnType = TypeExtractor.extractOutputType(joiner, JoinFunction.class, 2);
-            Type outputType = returnType != null ? Types.fromType(returnType) : null;
-
-            OperatorNode joinNode = OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .outputType(outputType)
-                    .operatorKind(OperatorKind.OPERATOR_CORRELATE)
-                    .function(buildFunctionDescriptor(joiner))
-                    .timeoutMs(timeout.toMillis())
-                    .replicas(1)
-                    .resource(Resource.of(0.5, "512Mi"))
-                    .build();
-
-            precursors.forEach(p -> edges.add(edge(p.getId(), joinNode.getId())));
-            right.precursors.forEach(p -> edges.add(edge(p.getId(), joinNode.getId())));
-            nodes.add(joinNode);
-
-            return new DefaultFlow<>(List.of(new Precursor(joinNode)));
+        public List<Precursor> getPrecursors() {
+            return precursors;
         }
     }
 
-    private class DefaultBranchedFlow<T> implements BranchedFlow<T> {
-        private final OperatorNode owner;
+    // ======== DefaultConditionalFlow ========
 
-        DefaultBranchedFlow(OperatorNode owner) {
-            this.owner = owner;
+    private class DefaultConditionalFlow<T> implements ConditionalFlow<T> {
+        private final List<Precursor> precursors;
+        private final ConditionFunction<T> condition;
+
+        private DefaultConditionalFlow(List<Precursor> precursors, ConditionFunction<T> condition) {
+            this.precursors = precursors;
+            this.condition = condition;
         }
 
         @Override
-        public Flow<T> getFlow(int port) {
-            return new DefaultFlow<>(List.of(new Precursor(owner, port)));
+        public <R> Flow<R> then(String name, TaskFunction<T, R> function) {
+            return then(name, function, null);
         }
 
-    }
+        @Override
+        public <R> Flow<R> then(String name, TaskFunction<T, R> function, ExecutionConfig config) {
+            BranchFunction<T> branchFn = value -> condition.test(value) ? 0 : 1;
+            TaskNode branchNode = addBranchNode(precursors, branchFn);
+            // 仅连接 port 0（满足条件的输出）到下一节点
+            TaskNode taskNode = addTaskNode(name, List.of(new Precursor(branchNode, 0)), function, config, null);
+            return new DefaultFlow<>(List.of(new Precursor(taskNode)));
+        }
 
+        @Override
+        public EndFlow<T> then(String name, SinkFunction<T> function) {
+            return then(name, function, null);
+        }
+
+        @Override
+        public EndFlow<T> then(String name, SinkFunction<T> function, ExecutionConfig config) {
+            BranchFunction<T> branchFn = value -> condition.test(value) ? 0 : 1;
+            TaskNode branchNode = addBranchNode(precursors, branchFn);
+            TaskNode sinkNode = addTaskNode(name, List.of(new Precursor(branchNode, 0)), function, config, null);
+            return new DefaultEndFlow<>(List.of(new Precursor(sinkNode)));
+        }
+    }
 
     // ======================== 共用工具方法 ========================
+
+    private static String uniqueNodeId(String name) {
+        return name + "_" + IDUtil.genUUID();
+    }
+
+    private TaskNode addTaskNode(String name, List<Precursor> fromPrecursors,
+                                 java.io.Serializable function, ExecutionConfig config, Type outputType) {
+        String nodeId = uniqueNodeId(name);
+        Type inputType = fromPrecursors.isEmpty() ? Types.NULL
+                : fromPrecursors.get(0).node().getOutputType();
+        if (inputType == null) {
+            inputType = Types.NULL;
+        }
+        TaskNode node = TaskNode.builder()
+                .id(nodeId)
+                .inputType(inputType)
+                .outputType(outputType)
+                .operatorKind(OperatorKind.OPERATOR_MAP)
+                .function(buildFunctionDescriptor(function))
+                .replicas(config != null ? config.getReplicas() : 1)
+                .resource(config != null ? Resource.fromSpec(config.getResource()) : null)
+                .build();
+        nodes.add(node);
+        for (Precursor p : fromPrecursors) {
+            edges.add(edge(p.node().getId(), nodeId, p.port()));
+        }
+        return node;
+    }
+
+    private TaskNode addBranchNode(List<Precursor> fromPrecursors, BranchFunction<?> branchFunction) {
+        String nodeId = uniqueNodeId("branch");
+        Type inputType = fromPrecursors.isEmpty() ? Types.NULL
+                : fromPrecursors.get(0).node().getOutputType();
+        if (inputType == null) {
+            inputType = Types.NULL;
+        }
+        TaskNode node = TaskNode.builder()
+                .id(nodeId)
+                .inputType(inputType)
+                .outputType(inputType)
+                .operatorKind(OperatorKind.OPERATOR_BRANCH)
+                .function(buildFunctionDescriptor(branchFunction))
+                .replicas(1)
+                .resource(null)
+                .build();
+        nodes.add(node);
+        for (Precursor p : fromPrecursors) {
+            edges.add(edge(p.node().getId(), nodeId, p.port()));
+        }
+        return node;
+    }
 
     private static Edge edge(String fromNodeId, String toNodeId) {
         return edge(fromNodeId, toNodeId, 0);
@@ -520,11 +363,19 @@ public class Workflow {
             return b.build();
         }
 
-        Function fn = (Function) function;
-        FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
-                .setLang(fn.getLang())
-                .setFunctionIdentifier(fn.getClass().getName())
-                .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(fn)));
-        return b.build();
+        if (function instanceof Function fn) {
+            FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
+                    .setLang(fn.getLang())
+                    .setFunctionIdentifier(fn.getClass().getName())
+                    .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(fn)));
+            return b.build();
+        }
+
+        // TaskFunction, SinkFunction, UnionFunction 等仅实现 Serializable 的接口
+        return FunctionDescriptor.newBuilder()
+                .setLang(Lang.LANG_JAVA)
+                .setFunctionIdentifier(function.getClass().getName())
+                .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(function)))
+                .build();
     }
 }

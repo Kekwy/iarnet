@@ -33,7 +33,7 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.kekwy.iarnet.proto.workflow.Workflow.internal_static_iarnet_workflow_WindowSpec_descriptor;
+    return com.kekwy.iarnet.proto.workflow.WorkflowResourceSpec.internal_static_iarnet_workflow_WindowSpec_descriptor;
   }
 
   @java.lang.Override

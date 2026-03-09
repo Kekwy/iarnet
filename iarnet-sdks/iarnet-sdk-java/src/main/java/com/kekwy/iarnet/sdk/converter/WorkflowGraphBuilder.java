@@ -71,7 +71,7 @@ public class WorkflowGraphBuilder implements NodeVisitor<com.kekwy.iarnet.proto.
     }
 
     @Override
-    public com.kekwy.iarnet.proto.workflow.Node visit(OperatorNode node) {
+    public com.kekwy.iarnet.proto.workflow.Node visit(TaskNode node) {
         OperatorNodeDetail.Builder detailBuilder = OperatorNodeDetail.newBuilder()
                 .setOperatorKind(node.getOperatorKind());
 

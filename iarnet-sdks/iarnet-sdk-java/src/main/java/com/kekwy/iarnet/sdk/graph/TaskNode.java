@@ -5,6 +5,7 @@ import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.workflow.NodeKind;
 import com.kekwy.iarnet.proto.workflow.OperatorKind;
 import com.kekwy.iarnet.sdk.Resource;
+import com.kekwy.iarnet.sdk.ExecutionConfig;
 
 /**
  * 算子节点，对应 proto {@code OperatorNodeDetail}。
@@ -12,14 +13,12 @@ import com.kekwy.iarnet.sdk.Resource;
  * {@code function}、{@code replicas}、{@code resource} 已上移到 {@link Node}，
  * 本类仅保留算子特有的 {@link OperatorKind}。
  */
-public class OperatorNode extends Node {
+public class TaskNode extends Node {
 
     private final OperatorKind operatorKind;
-    private final FunctionDescriptor keySelector;
-    private final Object foldInitialValue;
-    private final long timeoutMs;
 
-    private OperatorNode(Builder builder) {
+
+    private TaskNode(Builder builder) {
         super(builder.id, builder.inputType, builder.outputType,
               builder.function, builder.replicas, builder.resource);
         this.operatorKind = builder.operatorKind;
@@ -71,7 +70,7 @@ public class OperatorNode extends Node {
         private Object foldInitialValue;
         private long timeoutMs;
         private int replicas = 1;
-        private Resource resource;
+        private ExecutionConfig.ResourceSpec resource;
 
         public Builder id(String id) {
             this.id = id;
@@ -123,8 +122,8 @@ public class OperatorNode extends Node {
             return this;
         }
 
-        public OperatorNode build() {
-            return new OperatorNode(this);
+        public TaskNode build() {
+            return new TaskNode(this);
         }
     }
 }
