@@ -5,7 +5,6 @@ import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.workflow.NodeKind;
 import com.kekwy.iarnet.proto.workflow.OperatorKind;
 import com.kekwy.iarnet.sdk.Resource;
-import com.kekwy.iarnet.sdk.Window;
 
 /**
  * 算子节点，对应 proto {@code OperatorNodeDetail}。
@@ -17,18 +16,16 @@ public class OperatorNode extends Node {
 
     private final OperatorKind operatorKind;
     private final FunctionDescriptor keySelector;
-    private final int batchSize;
     private final Object foldInitialValue;
-    private final Window window;
+    private final long timeoutMs;
 
     private OperatorNode(Builder builder) {
         super(builder.id, builder.inputType, builder.outputType,
               builder.function, builder.replicas, builder.resource);
         this.operatorKind = builder.operatorKind;
         this.keySelector = builder.keySelector;
-        this.batchSize = builder.batchSize;
         this.foldInitialValue = builder.foldInitialValue;
-        this.window = builder.window;
+        this.timeoutMs = builder.timeoutMs;
     }
 
     public OperatorKind getOperatorKind() {
@@ -40,18 +37,14 @@ public class OperatorNode extends Node {
         return keySelector;
     }
 
-    /** BATCH 专用：每批元素数量，其他算子类型返回 0 */
-    public int getBatchSize() {
-        return batchSize;
-    }
-
     /** FOLD 专用：累加器初始值，其他算子类型返回 {@code null} */
     public Object getFoldInitialValue() {
         return foldInitialValue;
     }
 
-    public Window getWindow() {
-        return window;
+    /** JOIN 专用：超时时间 (ms) */
+    public long getTimeoutMs() {
+        return timeoutMs;
     }
 
     @Override
@@ -75,9 +68,8 @@ public class OperatorNode extends Node {
         private OperatorKind operatorKind;
         private FunctionDescriptor function;
         private FunctionDescriptor keySelector;
-        private int batchSize;
         private Object foldInitialValue;
-        private Window window;
+        private long timeoutMs;
         private int replicas = 1;
         private Resource resource;
 
@@ -121,18 +113,13 @@ public class OperatorNode extends Node {
             return this;
         }
 
-        public Builder batchSize(int batchSize) {
-            this.batchSize = batchSize;
-            return this;
-        }
-
         public Builder foldInitialValue(Object foldInitialValue) {
             this.foldInitialValue = foldInitialValue;
             return this;
         }
 
-        public Builder window(Window window) {
-            this.window = window;
+        public Builder timeoutMs(long timeoutMs) {
+            this.timeoutMs = timeoutMs;
             return this;
         }
 

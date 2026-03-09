@@ -44,12 +44,6 @@ public interface Flow<T> {
     <K> KeyedFlow<T, K> keyBy(KeySelector<? super T, ? extends K> selector);
 
     /**
-     * 按数量分批，将每 size 个元素收集为一组，输出 {@code Flow<List<T>>}。
-     * 适用于批量推理（batch inference）场景。
-     */
-    Flow<java.util.List<T>> batch(int size);
-
-    /**
      * 按谓词条件分支，返回 matched / unmatched 两条子流。
      */
     BranchedFlow<T> branch(BranchFunction<? super T> predicate);

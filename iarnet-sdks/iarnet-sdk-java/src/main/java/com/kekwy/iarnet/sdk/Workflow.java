@@ -32,6 +32,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -307,31 +308,6 @@ public class Workflow {
             return new DefaultKeyedFlow<>(List.of(keyByNode), selector);
         }
 
-        // -------- batch --------
-
-        @Override
-        public Flow<java.util.List<T>> batch(int size) {
-            if (size <= 0) {
-                throw new IllegalArgumentException("batch size must be positive");
-            }
-            Type elementType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
-            Type outputType = elementType != null ? com.kekwy.iarnet.proto.Types.array(elementType) : null;
-
-            OperatorNode node = OperatorNode.builder()
-                    .id(IDUtil.genUUID())
-                    .inputType(elementType)
-                    .outputType(outputType)
-                    .operatorKind(OperatorKind.OPERATOR_BATCH)
-                    .batchSize(size)
-                    .replicas(1)
-                    .resource(Resource.of(0.5, "512Mi"))
-                    .build();
-
-            precursors.forEach(p -> edges.add(edge(p.node().getId(), node.getId(), p.port())));
-            nodes.add(node);
-            return new DefaultFlow<>(List.of(new Precursor(node)));
-        }
-
         // -------- branch --------
 
         @Override
@@ -448,7 +424,7 @@ public class Workflow {
         }
 
         @Override
-        public <ACC> Flow<ACC> fold(ACC initial, FoldFunction<? super T, ACC> fn) {
+        public <ACC> Flow<ACC> fold(ACC initial, Duration timeout, FoldFunction<? super T, ACC> fn) {
             if (initial == null || fn == null) {
                 throw new IllegalArgumentException("initial value and fold function must not be null");
             }
@@ -473,9 +449,9 @@ public class Workflow {
         }
 
         @Override
-        public <R, OUT> Flow<OUT> join(KeyedFlow<R, K> other, Window window, JoinFunction<? super T, ? super R, OUT> joiner) {
-            if (other == null || window == null || joiner == null) {
-                throw new IllegalArgumentException("other, window, joiner must not be null");
+        public <R, OUT> Flow<OUT> join(KeyedFlow<R, K> other, Duration timeout, JoinFunction<? super T, ? super R, OUT> joiner) {
+            if (other == null || timeout == null || joiner == null) {
+                throw new IllegalArgumentException("other, timeout, joiner must not be null");
             }
             if (!(other instanceof DefaultKeyedFlow<?, ?> otherKeyed)) {
                 throw new IllegalArgumentException("只能与同一 Workflow 创建的 KeyedFlow 执行 join");
@@ -491,7 +467,7 @@ public class Workflow {
                     .outputType(outputType)
                     .operatorKind(OperatorKind.OPERATOR_CORRELATE)
                     .function(buildFunctionDescriptor(joiner))
-                    .window(window)
+                    .timeoutMs(timeout.toMillis())
                     .replicas(1)
                     .resource(Resource.of(0.5, "512Mi"))
                     .build();

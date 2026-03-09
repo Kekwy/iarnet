@@ -89,29 +89,17 @@ enum OperatorKind {
   OPERATOR_KEY_BY           = 5;
   OPERATOR_CORRELATE        = 6;
   OPERATOR_FOLD             = 7;
-  OPERATOR_BATCH            = 8;
   OPERATOR_BRANCH           = 9;
-}
-
-message WindowSpec {
-  enum WindowKind {
-    WINDOW_KIND_UNSPECIFIED = 0;
-    WINDOW_KIND_INTERVAL    = 1;
-  }
-  WindowKind kind     = 1;
-  int64 lower_bound_ms = 2;
-  int64 upper_bound_ms = 3;
 }
 
 message OperatorNodeDetail {
   OperatorKind operator_kind = 1;
   // KEY_BY / CORRELATE 专用：key 提取函数
   common.FunctionDescriptor key_selector = 2;
-  // BATCH 专用：每批元素数量
-  int32 batch_size = 3;
   // FOLD 专用：累加器初始值
   common.Value fold_initial_value = 4;
-  WindowSpec window = 5;
+  // JOIN 专用：超时时间
+  int64 join_timeout_ms = 5;
 }
 
 // ======================== Sink 节点 ========================

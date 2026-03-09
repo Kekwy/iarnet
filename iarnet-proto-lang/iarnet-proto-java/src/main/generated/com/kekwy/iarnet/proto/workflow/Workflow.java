@@ -45,11 +45,6 @@ public final class Workflow {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_iarnet_workflow_FileSourceDetail_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_workflow_WindowSpec_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_workflow_WindowSpec_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_iarnet_workflow_OperatorNodeDetail_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -95,32 +90,25 @@ public final class Workflow {
       " \001(\0132!.iarnet.workflow.FileSourceDetailH" +
       "\000B\010\n\006detail\"<\n\024ConstantSourceDetail\022$\n\006v" +
       "alues\030\001 \003(\0132\024.iarnet.common.Value\"%\n\020Fil" +
-      "eSourceDetail\022\021\n\tfile_path\030\001 \001(\t\"\267\001\n\nWin" +
-      "dowSpec\0224\n\004kind\030\001 \001(\0162&.iarnet.workflow." +
-      "WindowSpec.WindowKind\022\026\n\016lower_bound_ms\030" +
-      "\002 \001(\003\022\026\n\016upper_bound_ms\030\003 \001(\003\"C\n\nWindowK" +
-      "ind\022\033\n\027WINDOW_KIND_UNSPECIFIED\020\000\022\030\n\024WIND" +
-      "OW_KIND_INTERVAL\020\001\"\366\001\n\022OperatorNodeDetai" +
-      "l\0224\n\roperator_kind\030\001 \001(\0162\035.iarnet.workfl" +
-      "ow.OperatorKind\0227\n\014key_selector\030\002 \001(\0132!." +
-      "iarnet.common.FunctionDescriptor\022\022\n\nbatc" +
-      "h_size\030\003 \001(\005\0220\n\022fold_initial_value\030\004 \001(\013" +
-      "2\024.iarnet.common.Value\022+\n\006window\030\005 \001(\0132\033" +
-      ".iarnet.workflow.WindowSpec\">\n\016SinkNodeD" +
-      "etail\022,\n\tsink_kind\030\001 \001(\0162\031.iarnet.workfl" +
-      "ow.SinkKind*I\n\010NodeKind\022\031\n\025NODE_KIND_UNS" +
-      "PECIFIED\020\000\022\n\n\006SOURCE\020\001\022\014\n\010OPERATOR\020\002\022\010\n\004" +
-      "SINK\020\003*A\n\nSourceKind\022\033\n\027SOURCE_KIND_UNSP" +
-      "ECIFIED\020\000\022\014\n\010CONSTANT\020\001\022\010\n\004FILE\020\002*\350\001\n\014Op" +
-      "eratorKind\022\035\n\031OPERATOR_KIND_UNSPECIFIED\020" +
-      "\000\022\020\n\014OPERATOR_MAP\020\001\022\025\n\021OPERATOR_FLAT_MAP" +
-      "\020\002\022\023\n\017OPERATOR_FILTER\020\003\022\022\n\016OPERATOR_UNIO" +
-      "N\020\004\022\023\n\017OPERATOR_KEY_BY\020\005\022\026\n\022OPERATOR_COR" +
-      "RELATE\020\006\022\021\n\rOPERATOR_FOLD\020\007\022\022\n\016OPERATOR_" +
-      "BATCH\020\010\022\023\n\017OPERATOR_BRANCH\020\t*0\n\010SinkKind" +
-      "\022\031\n\025SINK_KIND_UNSPECIFIED\020\000\022\t\n\005PRINT\020\001B#" +
-      "\n\037com.kekwy.iarnet.proto.workflowP\001b\006pro" +
-      "to3"
+      "eSourceDetail\022\021\n\tfile_path\030\001 \001(\t\"\316\001\n\022Ope" +
+      "ratorNodeDetail\0224\n\roperator_kind\030\001 \001(\0162\035" +
+      ".iarnet.workflow.OperatorKind\0227\n\014key_sel" +
+      "ector\030\002 \001(\0132!.iarnet.common.FunctionDesc" +
+      "riptor\0220\n\022fold_initial_value\030\004 \001(\0132\024.iar" +
+      "net.common.Value\022\027\n\017join_timeout_ms\030\005 \001(" +
+      "\003\">\n\016SinkNodeDetail\022,\n\tsink_kind\030\001 \001(\0162\031" +
+      ".iarnet.workflow.SinkKind*I\n\010NodeKind\022\031\n" +
+      "\025NODE_KIND_UNSPECIFIED\020\000\022\n\n\006SOURCE\020\001\022\014\n\010" +
+      "OPERATOR\020\002\022\010\n\004SINK\020\003*A\n\nSourceKind\022\033\n\027SO" +
+      "URCE_KIND_UNSPECIFIED\020\000\022\014\n\010CONSTANT\020\001\022\010\n" +
+      "\004FILE\020\002*\324\001\n\014OperatorKind\022\035\n\031OPERATOR_KIN" +
+      "D_UNSPECIFIED\020\000\022\020\n\014OPERATOR_MAP\020\001\022\025\n\021OPE" +
+      "RATOR_FLAT_MAP\020\002\022\023\n\017OPERATOR_FILTER\020\003\022\022\n" +
+      "\016OPERATOR_UNION\020\004\022\023\n\017OPERATOR_KEY_BY\020\005\022\026" +
+      "\n\022OPERATOR_CORRELATE\020\006\022\021\n\rOPERATOR_FOLD\020" +
+      "\007\022\023\n\017OPERATOR_BRANCH\020\t*0\n\010SinkKind\022\031\n\025SI" +
+      "NK_KIND_UNSPECIFIED\020\000\022\t\n\005PRINT\020\001B#\n\037com." +
+      "kekwy.iarnet.proto.workflowP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -165,20 +153,14 @@ public final class Workflow {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_FileSourceDetail_descriptor,
         new java.lang.String[] { "FilePath", });
-    internal_static_iarnet_workflow_WindowSpec_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_iarnet_workflow_WindowSpec_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_workflow_WindowSpec_descriptor,
-        new java.lang.String[] { "Kind", "LowerBoundMs", "UpperBoundMs", });
     internal_static_iarnet_workflow_OperatorNodeDetail_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_iarnet_workflow_OperatorNodeDetail_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_OperatorNodeDetail_descriptor,
-        new java.lang.String[] { "OperatorKind", "KeySelector", "BatchSize", "FoldInitialValue", "Window", });
+        new java.lang.String[] { "OperatorKind", "KeySelector", "FoldInitialValue", "JoinTimeoutMs", });
     internal_static_iarnet_workflow_SinkNodeDetail_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_iarnet_workflow_SinkNodeDetail_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_SinkNodeDetail_descriptor,

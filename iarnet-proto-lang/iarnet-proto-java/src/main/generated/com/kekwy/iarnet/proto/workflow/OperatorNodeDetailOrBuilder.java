@@ -47,16 +47,6 @@ public interface OperatorNodeDetailOrBuilder extends
 
   /**
    * <pre>
-   * BATCH 专用：每批元素数量
-   * </pre>
-   *
-   * <code>int32 batch_size = 3;</code>
-   * @return The batchSize.
-   */
-  int getBatchSize();
-
-  /**
-   * <pre>
    * FOLD 专用：累加器初始值
    * </pre>
    *
@@ -83,17 +73,12 @@ public interface OperatorNodeDetailOrBuilder extends
   com.kekwy.iarnet.proto.common.ValueOrBuilder getFoldInitialValueOrBuilder();
 
   /**
-   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
-   * @return Whether the window field is set.
+   * <pre>
+   * JOIN 专用：超时时间
+   * </pre>
+   *
+   * <code>int64 join_timeout_ms = 5;</code>
+   * @return The joinTimeoutMs.
    */
-  boolean hasWindow();
-  /**
-   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
-   * @return The window.
-   */
-  com.kekwy.iarnet.proto.workflow.WindowSpec getWindow();
-  /**
-   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
-   */
-  com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder getWindowOrBuilder();
+  long getJoinTimeoutMs();
 }

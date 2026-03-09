@@ -41,10 +41,6 @@ public enum OperatorKind
    */
   OPERATOR_FOLD(7),
   /**
-   * <code>OPERATOR_BATCH = 8;</code>
-   */
-  OPERATOR_BATCH(8),
-  /**
    * <code>OPERATOR_BRANCH = 9;</code>
    */
   OPERATOR_BRANCH(9),
@@ -84,10 +80,6 @@ public enum OperatorKind
    */
   public static final int OPERATOR_FOLD_VALUE = 7;
   /**
-   * <code>OPERATOR_BATCH = 8;</code>
-   */
-  public static final int OPERATOR_BATCH_VALUE = 8;
-  /**
    * <code>OPERATOR_BRANCH = 9;</code>
    */
   public static final int OPERATOR_BRANCH_VALUE = 9;
@@ -125,7 +117,6 @@ public enum OperatorKind
       case 5: return OPERATOR_KEY_BY;
       case 6: return OPERATOR_CORRELATE;
       case 7: return OPERATOR_FOLD;
-      case 8: return OPERATOR_BATCH;
       case 9: return OPERATOR_BRANCH;
       default: return null;
     }
