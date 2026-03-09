@@ -84,10 +84,15 @@ enum OperatorKind {
   OPERATOR_MAP              = 1;
   OPERATOR_FLAT_MAP         = 2;
   OPERATOR_FILTER           = 3;
+  OPERATOR_UNION            = 4;
+  OPERATOR_KEY_BY           = 5;
+  OPERATOR_CO_PROCESS       = 6;
 }
 
 message OperatorNodeDetail {
-  OperatorKind       operator_kind = 1;
+  OperatorKind operator_kind = 1;
+  // KEY_BY 专用：key 提取函数
+  common.FunctionDescriptor key_selector = 2;
 }
 
 // ======================== Sink 节点 ========================

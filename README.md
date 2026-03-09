@@ -33,6 +33,9 @@ iarnet 控制平面需要先安装 iarnet-api，如果通过 docker 部署则可
 
 与论文有关的：
 
+
+创新点：更轻量级的资源接入，actor打洞，跨域调度，跨语言执行
+
 gossip、actor
 
 资源的监听和清理
