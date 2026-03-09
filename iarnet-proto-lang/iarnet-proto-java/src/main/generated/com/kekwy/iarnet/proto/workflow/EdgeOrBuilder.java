@@ -30,4 +30,14 @@ public interface EdgeOrBuilder extends
    */
   com.google.protobuf.ByteString
       getToNodeIdBytes();
+
+  /**
+   * <pre>
+   * 0 = 主输出（默认），1 = branch 的 unmatched 输出
+   * </pre>
+   *
+   * <code>int32 from_port = 3;</code>
+   * @return The fromPort.
+   */
+  int getFromPort();
 }

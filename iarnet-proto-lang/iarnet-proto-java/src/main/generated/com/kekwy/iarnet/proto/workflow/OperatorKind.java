@@ -24,6 +24,30 @@ public enum OperatorKind
    * <code>OPERATOR_FILTER = 3;</code>
    */
   OPERATOR_FILTER(3),
+  /**
+   * <code>OPERATOR_UNION = 4;</code>
+   */
+  OPERATOR_UNION(4),
+  /**
+   * <code>OPERATOR_KEY_BY = 5;</code>
+   */
+  OPERATOR_KEY_BY(5),
+  /**
+   * <code>OPERATOR_CORRELATE = 6;</code>
+   */
+  OPERATOR_CORRELATE(6),
+  /**
+   * <code>OPERATOR_FOLD = 7;</code>
+   */
+  OPERATOR_FOLD(7),
+  /**
+   * <code>OPERATOR_BATCH = 8;</code>
+   */
+  OPERATOR_BATCH(8),
+  /**
+   * <code>OPERATOR_BRANCH = 9;</code>
+   */
+  OPERATOR_BRANCH(9),
   UNRECOGNIZED(-1),
   ;
 
@@ -43,6 +67,30 @@ public enum OperatorKind
    * <code>OPERATOR_FILTER = 3;</code>
    */
   public static final int OPERATOR_FILTER_VALUE = 3;
+  /**
+   * <code>OPERATOR_UNION = 4;</code>
+   */
+  public static final int OPERATOR_UNION_VALUE = 4;
+  /**
+   * <code>OPERATOR_KEY_BY = 5;</code>
+   */
+  public static final int OPERATOR_KEY_BY_VALUE = 5;
+  /**
+   * <code>OPERATOR_CORRELATE = 6;</code>
+   */
+  public static final int OPERATOR_CORRELATE_VALUE = 6;
+  /**
+   * <code>OPERATOR_FOLD = 7;</code>
+   */
+  public static final int OPERATOR_FOLD_VALUE = 7;
+  /**
+   * <code>OPERATOR_BATCH = 8;</code>
+   */
+  public static final int OPERATOR_BATCH_VALUE = 8;
+  /**
+   * <code>OPERATOR_BRANCH = 9;</code>
+   */
+  public static final int OPERATOR_BRANCH_VALUE = 9;
 
 
   public final int getNumber() {
@@ -73,6 +121,12 @@ public enum OperatorKind
       case 1: return OPERATOR_MAP;
       case 2: return OPERATOR_FLAT_MAP;
       case 3: return OPERATOR_FILTER;
+      case 4: return OPERATOR_UNION;
+      case 5: return OPERATOR_KEY_BY;
+      case 6: return OPERATOR_CORRELATE;
+      case 7: return OPERATOR_FOLD;
+      case 8: return OPERATOR_BATCH;
+      case 9: return OPERATOR_BRANCH;
       default: return null;
     }
   }

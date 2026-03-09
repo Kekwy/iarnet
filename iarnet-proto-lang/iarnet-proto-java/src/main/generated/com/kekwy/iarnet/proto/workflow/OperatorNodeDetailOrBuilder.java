@@ -17,4 +17,83 @@ public interface OperatorNodeDetailOrBuilder extends
    * @return The operatorKind.
    */
   com.kekwy.iarnet.proto.workflow.OperatorKind getOperatorKind();
+
+  /**
+   * <pre>
+   * KEY_BY / CORRELATE 专用：key 提取函数
+   * </pre>
+   *
+   * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+   * @return Whether the keySelector field is set.
+   */
+  boolean hasKeySelector();
+  /**
+   * <pre>
+   * KEY_BY / CORRELATE 专用：key 提取函数
+   * </pre>
+   *
+   * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+   * @return The keySelector.
+   */
+  com.kekwy.iarnet.proto.common.FunctionDescriptor getKeySelector();
+  /**
+   * <pre>
+   * KEY_BY / CORRELATE 专用：key 提取函数
+   * </pre>
+   *
+   * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+   */
+  com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getKeySelectorOrBuilder();
+
+  /**
+   * <pre>
+   * BATCH 专用：每批元素数量
+   * </pre>
+   *
+   * <code>int32 batch_size = 3;</code>
+   * @return The batchSize.
+   */
+  int getBatchSize();
+
+  /**
+   * <pre>
+   * FOLD 专用：累加器初始值
+   * </pre>
+   *
+   * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+   * @return Whether the foldInitialValue field is set.
+   */
+  boolean hasFoldInitialValue();
+  /**
+   * <pre>
+   * FOLD 专用：累加器初始值
+   * </pre>
+   *
+   * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+   * @return The foldInitialValue.
+   */
+  com.kekwy.iarnet.proto.common.Value getFoldInitialValue();
+  /**
+   * <pre>
+   * FOLD 专用：累加器初始值
+   * </pre>
+   *
+   * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+   */
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getFoldInitialValueOrBuilder();
+
+  /**
+   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+   * @return Whether the window field is set.
+   */
+  boolean hasWindow();
+  /**
+   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+   * @return The window.
+   */
+  com.kekwy.iarnet.proto.workflow.WindowSpec getWindow();
+  /**
+   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+   */
+  com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder getWindowOrBuilder();
 }

@@ -7,7 +7,5 @@ import com.kekwy.iarnet.sdk.converter.SinkVisitor;
  */
 public interface Sink<T> {
 
-    void accept(T value);
-
     <R> R accept(SinkVisitor<R> visitor);
 }

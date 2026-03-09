@@ -3,8 +3,11 @@ package com.kekwy.iarnet.sdk.converter;
 import com.kekwy.iarnet.proto.ValueCodec;
 import com.kekwy.iarnet.proto.workflow.*;
 import com.kekwy.iarnet.sdk.Resource;
+import com.kekwy.iarnet.sdk.Window;
 import com.kekwy.iarnet.sdk.graph.*;
+import com.kekwy.iarnet.sdk.graph.Node;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -77,6 +80,16 @@ public class WorkflowGraphBuilder implements NodeVisitor<com.kekwy.iarnet.proto.
         if (node.getKeySelector() != null) {
             detailBuilder.setKeySelector(node.getKeySelector());
         }
+        if (node.getBatchSize() > 0) {
+            detailBuilder.setBatchSize(node.getBatchSize());
+        }
+        if (node.getFoldInitialValue() != null) {
+            detailBuilder.setFoldInitialValue(ValueCodec.encode(node.getFoldInitialValue()));
+        }
+        WindowSpec windowSpec = toWindowSpec(node.getWindow());
+        if (windowSpec != null) {
+            detailBuilder.setWindow(windowSpec);
+        }
 
         return buildProtoNode(node)
                 .setKind(NodeKind.OPERATOR)
@@ -127,5 +140,26 @@ public class WorkflowGraphBuilder implements NodeVisitor<com.kekwy.iarnet.proto.
                 .setMemory(res.memory())
                 .setGpu(res.gpu())
                 .build();
+    }
+
+    private WindowSpec toWindowSpec(Window window) {
+        if (window == null) {
+            return null;
+        }
+        String className = window.getClass().getName();
+        if ("com.kekwy.iarnet.sdk.Windows$IntervalWindow".equals(className)) {
+            try {
+                Duration lower = (Duration) window.getClass().getMethod("lowerBound").invoke(window);
+                Duration upper = (Duration) window.getClass().getMethod("upperBound").invoke(window);
+                return WindowSpec.newBuilder()
+                        .setKind(WindowSpec.WindowKind.WINDOW_KIND_INTERVAL)
+                        .setLowerBoundMs(lower.toMillis())
+                        .setUpperBoundMs(upper.toMillis())
+                        .build();
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalArgumentException("invalid window", e);
+            }
+        }
+        throw new IllegalArgumentException("unsupported window: " + className);
     }
 }

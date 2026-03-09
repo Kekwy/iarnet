@@ -1,10 +1,6 @@
 package com.kekwy.iarnet.sdk;
 
-import com.kekwy.iarnet.sdk.function.FilterFunction;
-import com.kekwy.iarnet.sdk.function.FlatMapFunction;
-import com.kekwy.iarnet.sdk.function.MapFunction;
-import com.kekwy.iarnet.sdk.function.CombineFunction;
-import com.kekwy.iarnet.sdk.function.KeySelector;
+import com.kekwy.iarnet.sdk.function.*;
 import com.kekwy.iarnet.sdk.sink.Sink;
 import com.kekwy.iarnet.sdk.util.TypeToken;
 
@@ -43,9 +39,20 @@ public interface Flow<T> {
     Flow<T> filter(FilterFunction<? super T> predicate);
 
     /**
-     * 按 key 对当前流进行逻辑分区，返回 keyed 视图，用于后续 connect。
+     * 按 key 对当前流进行逻辑分区，返回 keyed 视图，用于后续 fold 或 join。
      */
     <K> KeyedFlow<T, K> keyBy(KeySelector<? super T, ? extends K> selector);
+
+    /**
+     * 按数量分批，将每 size 个元素收集为一组，输出 {@code Flow<List<T>>}。
+     * 适用于批量推理（batch inference）场景。
+     */
+    Flow<java.util.List<T>> batch(int size);
+
+    /**
+     * 按谓词条件分支，返回 matched / unmatched 两条子流。
+     */
+    BranchedFlow<T> branch(BranchFunction<? super T> predicate);
 
     /**
      * 显式声明当前流的输出类型，用于 lambda 返回泛型类型时自动推断失败的场景。
@@ -55,27 +62,6 @@ public interface Flow<T> {
      * }</pre>
      */
     Flow<T> returns(TypeToken<T> typeHint);
-
-    /**
-     * 在单个算子中完成 Fork-Join 风格的对齐合并：
-     * <ul>
-     *     <li>先对同一条输入记录应用 {@code left} 产生单值结果</li>
-     *     <li>再应用 {@code right} 产生 0..N 条右侧结果</li>
-     *     <li>最后使用 {@code combiner} 将二者合并为一个输出元素</li>
-     * </ul>
-     *
-     * @param left     左侧一对一映射函数
-     * @param right    右侧一对多映射函数
-     * @param combiner 将左值与右侧结果列表合并为最终输出的函数
-     * @param <L>      左侧中间结果类型
-     * @param <R>      右侧中间结果类型
-     * @param <OUT>    输出元素类型
-     * @return 合并后的新流
-     */
-    <L, R, OUT> Flow<OUT> forkJoin(
-            MapFunction<? super T, ? extends L> left,
-            FlatMapFunction<? super T, ? extends R> right,
-            CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner);
 
     /**
      * 将当前流与另一条相同元素类型的流进行无对齐合流（Union）。

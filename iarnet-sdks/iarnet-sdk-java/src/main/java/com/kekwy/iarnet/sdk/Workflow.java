@@ -56,7 +56,7 @@ public class Workflow {
         SourceToNodeVisitor visitor = new SourceToNodeVisitor();
         SourceNode node = source.accept(visitor);
         nodes.add(node);
-        return new DefaultFlow<>(List.of(node));
+        return new DefaultFlow<>(List.of(new Precursor(node)));
     }
 
     public List<Node> getNodes() {
@@ -187,40 +187,18 @@ public class Workflow {
 
     // ======== DefaultFlow ========
 
-    private static final class ForkJoinCombinedFunction<T, L, R, OUT> implements MapFunction<T, OUT> {
-
-        private final MapFunction<? super T, ? extends L> left;
-        private final FlatMapFunction<? super T, ? extends R> right;
-        private final CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner;
-
-        private ForkJoinCombinedFunction(
-                MapFunction<? super T, ? extends L> left,
-                FlatMapFunction<? super T, ? extends R> right,
-                CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner) {
-            this.left = left;
-            this.right = right;
-            this.combiner = combiner;
-        }
-
-        @Override
-        public OUT apply(T value) {
-            L l = left.apply(value);
-            Iterable<? extends R> rightsIterable = right.apply(value);
-            java.util.List<R> rights = new java.util.ArrayList<>();
-            if (rightsIterable != null) {
-                for (R r : rightsIterable) {
-                    rights.add(r);
-                }
-            }
-            return combiner.apply(l, rights);
+    private record Precursor(Node node, int port) {
+        Precursor(Node node) {
+            this(node, 0);
         }
     }
 
     private class DefaultFlow<T> implements Flow<T> {
 
-        private final List<Node> precursors;
+        // TODO: 什么场景下存在多个前驱
+        private final List<Precursor> precursors;
 
-        private DefaultFlow(List<Node> precursors) {
+        private DefaultFlow(List<Precursor> precursors) {
             this.precursors = precursors;
         }
 
@@ -248,7 +226,7 @@ public class Workflow {
 
             OperatorNode node = buildOperatorNode(mapper, OperatorKind.OPERATOR_MAP, outputType, replicas, resource);
             linkAndRegister(node);
-            return new DefaultFlow<>(List.of(node));
+            return new DefaultFlow<>(List.of(new Precursor(node)));
         }
 
         // -------- flatMap --------
@@ -275,18 +253,18 @@ public class Workflow {
 
             OperatorNode node = buildOperatorNode(mapper, OperatorKind.OPERATOR_FLAT_MAP, outputType, replicas, resource);
             linkAndRegister(node);
-            return new DefaultFlow<>(List.of(node));
+            return new DefaultFlow<>(List.of(new Precursor(node)));
         }
 
         // -------- filter --------
 
         @Override
         public Flow<T> filter(FilterFunction<? super T> predicate) {
-            Type outputType = precursors.isEmpty() ? null : precursors.get(0).getOutputType();
+            Type outputType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
 
             OperatorNode node = buildOperatorNode(predicate, OperatorKind.OPERATOR_FILTER, outputType, 1, Resource.of(0.5, "512Mi"));
             linkAndRegister(node);
-            return new DefaultFlow<>(List.of(node));
+            return new DefaultFlow<>(List.of(new Precursor(node)));
         }
 
         // -------- returns --------
@@ -294,7 +272,8 @@ public class Workflow {
         @Override
         public Flow<T> returns(TypeToken<T> typeHint) {
             Type resolvedType = Types.fromType(typeHint.getType());
-            for (Node node : precursors) {
+            for (Precursor p : precursors) {
+                Node node = p.node();
                 if (node instanceof OperatorNode op && op.getOutputType() == null) {
                     node.setOutputType(resolvedType);
                 }
@@ -314,34 +293,68 @@ public class Workflow {
 
             OperatorNode keyByNode = OperatorNode.builder()
                     .id(IDUtil.genUUID())
-                    .inputType(precursors.isEmpty() ? null : precursors.get(0).getOutputType())
-                    .outputType(precursors.isEmpty() ? null : precursors.get(0).getOutputType())
+                    .inputType(precursors.isEmpty() ? null : precursors.get(0).node().getOutputType())
+                    .outputType(precursors.isEmpty() ? null : precursors.get(0).node().getOutputType())
                     .operatorKind(OperatorKind.OPERATOR_KEY_BY)
                     .keySelector(keySelectorFd)
                     .replicas(1)
                     .resource(Resource.of(0.5, "512Mi"))
                     .build();
 
-            precursors.forEach(p -> edges.add(edge(p.getId(), keyByNode.getId())));
+            precursors.forEach(p -> edges.add(edge(p.node().getId(), keyByNode.getId(), p.port())));
             nodes.add(keyByNode);
 
             return new DefaultKeyedFlow<>(List.of(keyByNode), selector);
         }
 
-        // -------- forkJoin --------
+        // -------- batch --------
 
         @Override
-        public <L, R, OUT> Flow<OUT> forkJoin(
-                MapFunction<? super T, ? extends L> left,
-                FlatMapFunction<? super T, ? extends R> right,
-                CombineFunction<? super L, ? super java.util.List<R>, ? extends OUT> combiner) {
-
-            if (left == null || right == null || combiner == null) {
-                throw new IllegalArgumentException("left/right/combiner must not be null");
+        public Flow<java.util.List<T>> batch(int size) {
+            if (size <= 0) {
+                throw new IllegalArgumentException("batch size must be positive");
             }
+            Type elementType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
+            Type outputType = elementType != null ? com.kekwy.iarnet.proto.Types.array(elementType) : null;
 
-            MapFunction<T, OUT> combined = new ForkJoinCombinedFunction<>(left, right, combiner);
-            return this.map(combined);
+            OperatorNode node = OperatorNode.builder()
+                    .id(IDUtil.genUUID())
+                    .inputType(elementType)
+                    .outputType(outputType)
+                    .operatorKind(OperatorKind.OPERATOR_BATCH)
+                    .batchSize(size)
+                    .replicas(1)
+                    .resource(Resource.of(0.5, "512Mi"))
+                    .build();
+
+            precursors.forEach(p -> edges.add(edge(p.node().getId(), node.getId(), p.port())));
+            nodes.add(node);
+            return new DefaultFlow<>(List.of(new Precursor(node)));
+        }
+
+        // -------- branch --------
+
+        @Override
+        public BranchedFlow<T> branch(BranchFunction<? super T> predicate) {
+            if (predicate == null) {
+                throw new IllegalArgumentException("predicate must not be null");
+            }
+            Type outputType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
+
+            OperatorNode branchNode = OperatorNode.builder()
+                    .id(IDUtil.genUUID())
+                    .inputType(outputType)
+                    .outputType(outputType)
+                    .operatorKind(OperatorKind.OPERATOR_BRANCH)
+                    .function(buildFunctionDescriptor(predicate))
+                    .replicas(1)
+                    .resource(Resource.of(0.5, "512Mi"))
+                    .build();
+
+            precursors.forEach(p -> edges.add(edge(p.node().getId(), branchNode.getId(), p.port())));
+            nodes.add(branchNode);
+
+            return new DefaultBranchedFlow<>(branchNode);
         }
 
         // -------- union --------
@@ -357,9 +370,9 @@ public class Workflow {
 
             Type outputType = null;
             if (!precursors.isEmpty()) {
-                outputType = precursors.get(0).getOutputType();
+                outputType = precursors.get(0).node().getOutputType();
             } else if (!otherFlow.precursors.isEmpty()) {
-                outputType = otherFlow.precursors.get(0).getOutputType();
+                outputType = otherFlow.precursors.get(0).node().getOutputType();
             }
 
             OperatorNode unionNode = OperatorNode.builder()
@@ -370,11 +383,11 @@ public class Workflow {
                     .resource(Resource.of(0.5, "512Mi"))
                     .build();
 
-            precursors.forEach(p -> edges.add(edge(p.getId(), unionNode.getId())));
-            otherFlow.precursors.forEach(p -> edges.add(edge(p.getId(), unionNode.getId())));
+            precursors.forEach(p -> edges.add(edge(p.node().getId(), unionNode.getId())));
+            otherFlow.precursors.forEach(p -> edges.add(edge(p.node().getId(), unionNode.getId())));
             nodes.add(unionNode);
 
-            return new DefaultFlow<>(List.of(unionNode));
+            return new DefaultFlow<>(List.of(new Precursor(unionNode)));
         }
 
         // -------- after / sink --------
@@ -389,10 +402,10 @@ public class Workflow {
             SinkToNodeVisitor visitor = new SinkToNodeVisitor();
             SinkNode sinkNode = sink.accept(visitor);
 
-            Type inputType = precursors.isEmpty() ? null : precursors.get(0).getOutputType();
+            Type inputType = precursors.isEmpty() ? null : precursors.get(0).node().getOutputType();
             sinkNode.setOutputType(inputType);
 
-            precursors.forEach(p -> edges.add(edge(p.getId(), sinkNode.getId())));
+            precursors.forEach(p -> edges.add(edge(p.node().getId(), sinkNode.getId())));
             nodes.add(sinkNode);
         }
 
@@ -415,7 +428,7 @@ public class Workflow {
         }
 
         private void linkAndRegister(OperatorNode node) {
-            precursors.forEach(p -> edges.add(edge(p.getId(), node.getId())));
+            precursors.forEach(p -> edges.add(edge(p.node().getId(), node.getId())));
             nodes.add(node);
         }
     }
@@ -435,65 +448,88 @@ public class Workflow {
         }
 
         @Override
-        public <R> CoKeyedFlow<T, R, K> connect(KeyedFlow<R, K> other) {
-            if (other == null) {
-                throw new IllegalArgumentException("other keyed flow must not be null");
-            }
-            if (!(other instanceof DefaultKeyedFlow<?, ?> otherKeyed)) {
-                throw new IllegalArgumentException("只能连接由同一 Workflow 创建的 KeyedFlow");
-            }
-            @SuppressWarnings("unchecked")
-            DefaultKeyedFlow<R, K> right = (DefaultKeyedFlow<R, K>) otherKeyed;
-            return new DefaultCoKeyedFlow<>(this, right);
-        }
-    }
-
-    private class DefaultCoKeyedFlow<L, R, K> implements CoKeyedFlow<L, R, K> {
-
-        private final DefaultKeyedFlow<L, K> left;
-        private final DefaultKeyedFlow<R, K> right;
-
-        private DefaultCoKeyedFlow(DefaultKeyedFlow<L, K> left,
-                                   DefaultKeyedFlow<R, K> right) {
-            this.left = left;
-            this.right = right;
-        }
-
-        @Override
-        public <OUT> Flow<OUT> process(CoProcessFunction<L, R, OUT> fn) {
-            if (fn == null) {
-                throw new IllegalArgumentException("CoProcessFunction must not be null");
+        public <ACC> Flow<ACC> fold(ACC initial, FoldFunction<? super T, ACC> fn) {
+            if (initial == null || fn == null) {
+                throw new IllegalArgumentException("initial value and fold function must not be null");
             }
 
-            java.lang.reflect.Type returnType =
-                    TypeExtractor.extractOutputType(fn, CoProcessFunction.class, 2);
+            java.lang.reflect.Type returnType = TypeExtractor.extractOutputType(fn, FoldFunction.class, 1);
             Type outputType = returnType != null ? Types.fromType(returnType) : null;
-
-            FunctionDescriptor fd = buildFunctionDescriptor(fn);
 
             OperatorNode node = OperatorNode.builder()
                     .id(IDUtil.genUUID())
                     .outputType(outputType)
-                    .operatorKind(OperatorKind.OPERATOR_CO_PROCESS)
-                    .function(fd)
+                    .operatorKind(OperatorKind.OPERATOR_FOLD)
+                    .function(buildFunctionDescriptor(fn))
+                    .foldInitialValue(initial)
                     .replicas(1)
                     .resource(Resource.of(0.5, "512Mi"))
                     .build();
 
-            left.precursors.forEach(p -> edges.add(edge(p.getId(), node.getId())));
-            right.precursors.forEach(p -> edges.add(edge(p.getId(), node.getId())));
+            precursors.forEach(p -> edges.add(edge(p.getId(), node.getId())));
             nodes.add(node);
 
-            return new DefaultFlow<>(List.of(node));
+            return new DefaultFlow<>(List.of(new Precursor(node)));
+        }
+
+        @Override
+        public <R, OUT> Flow<OUT> join(KeyedFlow<R, K> other, Window window, JoinFunction<? super T, ? super R, OUT> joiner) {
+            if (other == null || window == null || joiner == null) {
+                throw new IllegalArgumentException("other, window, joiner must not be null");
+            }
+            if (!(other instanceof DefaultKeyedFlow<?, ?> otherKeyed)) {
+                throw new IllegalArgumentException("只能与同一 Workflow 创建的 KeyedFlow 执行 join");
+            }
+            @SuppressWarnings("unchecked")
+            DefaultKeyedFlow<R, K> right = (DefaultKeyedFlow<R, K>) otherKeyed;
+
+            java.lang.reflect.Type returnType = TypeExtractor.extractOutputType(joiner, JoinFunction.class, 2);
+            Type outputType = returnType != null ? Types.fromType(returnType) : null;
+
+            OperatorNode joinNode = OperatorNode.builder()
+                    .id(IDUtil.genUUID())
+                    .outputType(outputType)
+                    .operatorKind(OperatorKind.OPERATOR_CORRELATE)
+                    .function(buildFunctionDescriptor(joiner))
+                    .window(window)
+                    .replicas(1)
+                    .resource(Resource.of(0.5, "512Mi"))
+                    .build();
+
+            precursors.forEach(p -> edges.add(edge(p.getId(), joinNode.getId())));
+            right.precursors.forEach(p -> edges.add(edge(p.getId(), joinNode.getId())));
+            nodes.add(joinNode);
+
+            return new DefaultFlow<>(List.of(new Precursor(joinNode)));
         }
     }
+
+    private class DefaultBranchedFlow<T> implements BranchedFlow<T> {
+        private final OperatorNode owner;
+
+        DefaultBranchedFlow(OperatorNode owner) {
+            this.owner = owner;
+        }
+
+        @Override
+        public Flow<T> getFlow(int port) {
+            return new DefaultFlow<>(List.of(new Precursor(owner, port)));
+        }
+
+    }
+
 
     // ======================== 共用工具方法 ========================
 
     private static Edge edge(String fromNodeId, String toNodeId) {
+        return edge(fromNodeId, toNodeId, 0);
+    }
+
+    private static Edge edge(String fromNodeId, String toNodeId, int fromPort) {
         return Edge.newBuilder()
                 .setFromNodeId(fromNodeId)
                 .setToNodeId(toNodeId)
+                .setFromPort(fromPort)
                 .build();
     }
 

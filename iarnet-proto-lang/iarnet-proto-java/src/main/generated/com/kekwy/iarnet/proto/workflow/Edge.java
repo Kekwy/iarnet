@@ -123,6 +123,21 @@ private static final long serialVersionUID = 0L;
     }
   }
 
+  public static final int FROM_PORT_FIELD_NUMBER = 3;
+  private int fromPort_ = 0;
+  /**
+   * <pre>
+   * 0 = 主输出（默认），1 = branch 的 unmatched 输出
+   * </pre>
+   *
+   * <code>int32 from_port = 3;</code>
+   * @return The fromPort.
+   */
+  @java.lang.Override
+  public int getFromPort() {
+    return fromPort_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -143,6 +158,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(toNodeId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, toNodeId_);
     }
+    if (fromPort_ != 0) {
+      output.writeInt32(3, fromPort_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -157,6 +175,10 @@ private static final long serialVersionUID = 0L;
     }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(toNodeId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, toNodeId_);
+    }
+    if (fromPort_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, fromPort_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -177,6 +199,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getFromNodeId())) return false;
     if (!getToNodeId()
         .equals(other.getToNodeId())) return false;
+    if (getFromPort()
+        != other.getFromPort()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -192,6 +216,8 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getFromNodeId().hashCode();
     hash = (37 * hash) + TO_NODE_ID_FIELD_NUMBER;
     hash = (53 * hash) + getToNodeId().hashCode();
+    hash = (37 * hash) + FROM_PORT_FIELD_NUMBER;
+    hash = (53 * hash) + getFromPort();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -323,6 +349,7 @@ private static final long serialVersionUID = 0L;
       bitField0_ = 0;
       fromNodeId_ = "";
       toNodeId_ = "";
+      fromPort_ = 0;
       return this;
     }
 
@@ -361,6 +388,9 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
         result.toNodeId_ = toNodeId_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.fromPort_ = fromPort_;
       }
     }
 
@@ -418,6 +448,9 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000002;
         onChanged();
       }
+      if (other.getFromPort() != 0) {
+        setFromPort(other.getFromPort());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -454,6 +487,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000002;
               break;
             } // case 18
+            case 24: {
+              fromPort_ = input.readInt32();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 24
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -611,6 +649,50 @@ private static final long serialVersionUID = 0L;
       checkByteStringIsUtf8(value);
       toNodeId_ = value;
       bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+
+    private int fromPort_ ;
+    /**
+     * <pre>
+     * 0 = 主输出（默认），1 = branch 的 unmatched 输出
+     * </pre>
+     *
+     * <code>int32 from_port = 3;</code>
+     * @return The fromPort.
+     */
+    @java.lang.Override
+    public int getFromPort() {
+      return fromPort_;
+    }
+    /**
+     * <pre>
+     * 0 = 主输出（默认），1 = branch 的 unmatched 输出
+     * </pre>
+     *
+     * <code>int32 from_port = 3;</code>
+     * @param value The fromPort to set.
+     * @return This builder for chaining.
+     */
+    public Builder setFromPort(int value) {
+      
+      fromPort_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 0 = 主输出（默认），1 = branch 的 unmatched 输出
+     * </pre>
+     *
+     * <code>int32 from_port = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearFromPort() {
+      bitField0_ = (bitField0_ & ~0x00000004);
+      fromPort_ = 0;
       onChanged();
       return this;
     }

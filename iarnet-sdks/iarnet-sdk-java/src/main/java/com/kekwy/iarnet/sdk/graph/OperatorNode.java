@@ -5,6 +5,7 @@ import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.workflow.NodeKind;
 import com.kekwy.iarnet.proto.workflow.OperatorKind;
 import com.kekwy.iarnet.sdk.Resource;
+import com.kekwy.iarnet.sdk.Window;
 
 /**
  * 算子节点，对应 proto {@code OperatorNodeDetail}。
@@ -16,21 +17,41 @@ public class OperatorNode extends Node {
 
     private final OperatorKind operatorKind;
     private final FunctionDescriptor keySelector;
+    private final int batchSize;
+    private final Object foldInitialValue;
+    private final Window window;
 
     private OperatorNode(Builder builder) {
         super(builder.id, builder.inputType, builder.outputType,
               builder.function, builder.replicas, builder.resource);
         this.operatorKind = builder.operatorKind;
         this.keySelector = builder.keySelector;
+        this.batchSize = builder.batchSize;
+        this.foldInitialValue = builder.foldInitialValue;
+        this.window = builder.window;
     }
 
     public OperatorKind getOperatorKind() {
         return operatorKind;
     }
 
-    /** KEY_BY 专用：key 提取函数描述符，其他算子类型返回 {@code null} */
+    /** KEY_BY / CORRELATE 专用：key 提取函数描述符，其他算子类型返回 {@code null} */
     public FunctionDescriptor getKeySelector() {
         return keySelector;
+    }
+
+    /** BATCH 专用：每批元素数量，其他算子类型返回 0 */
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    /** FOLD 专用：累加器初始值，其他算子类型返回 {@code null} */
+    public Object getFoldInitialValue() {
+        return foldInitialValue;
+    }
+
+    public Window getWindow() {
+        return window;
     }
 
     @Override
@@ -54,6 +75,9 @@ public class OperatorNode extends Node {
         private OperatorKind operatorKind;
         private FunctionDescriptor function;
         private FunctionDescriptor keySelector;
+        private int batchSize;
+        private Object foldInitialValue;
+        private Window window;
         private int replicas = 1;
         private Resource resource;
 
@@ -94,6 +118,21 @@ public class OperatorNode extends Node {
 
         public Builder keySelector(FunctionDescriptor keySelector) {
             this.keySelector = keySelector;
+            return this;
+        }
+
+        public Builder batchSize(int batchSize) {
+            this.batchSize = batchSize;
+            return this;
+        }
+
+        public Builder foldInitialValue(Object foldInitialValue) {
+            this.foldInitialValue = foldInitialValue;
+            return this;
+        }
+
+        public Builder window(Window window) {
+            this.window = window;
             return this;
         }
 

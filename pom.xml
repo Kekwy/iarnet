@@ -16,7 +16,6 @@
         <module>iarnet-control-plane</module>
         <module>iarnet-resource</module>
         <module>iarnet-common</module>
-        <module>iarnet-proto</module>
         <module>iarnet-adapter</module>
         <module>iarnet-cli</module>
     </modules>

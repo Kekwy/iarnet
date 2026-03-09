@@ -25,6 +25,7 @@ message WorkflowGraph {
 message Edge {
   string from_node_id = 1;
   string to_node_id   = 2;
+  int32  from_port    = 3;  // 0 = 主输出（默认），1 = branch 的 unmatched 输出
 }
 
 // ======================== 节点 ========================
@@ -86,13 +87,31 @@ enum OperatorKind {
   OPERATOR_FILTER           = 3;
   OPERATOR_UNION            = 4;
   OPERATOR_KEY_BY           = 5;
-  OPERATOR_CO_PROCESS       = 6;
+  OPERATOR_CORRELATE        = 6;
+  OPERATOR_FOLD             = 7;
+  OPERATOR_BATCH            = 8;
+  OPERATOR_BRANCH           = 9;
+}
+
+message WindowSpec {
+  enum WindowKind {
+    WINDOW_KIND_UNSPECIFIED = 0;
+    WINDOW_KIND_INTERVAL    = 1;
+  }
+  WindowKind kind     = 1;
+  int64 lower_bound_ms = 2;
+  int64 upper_bound_ms = 3;
 }
 
 message OperatorNodeDetail {
   OperatorKind operator_kind = 1;
-  // KEY_BY 专用：key 提取函数
+  // KEY_BY / CORRELATE 专用：key 提取函数
   common.FunctionDescriptor key_selector = 2;
+  // BATCH 专用：每批元素数量
+  int32 batch_size = 3;
+  // FOLD 专用：累加器初始值
+  common.Value fold_initial_value = 4;
+  WindowSpec window = 5;
 }
 
 // ======================== Sink 节点 ========================

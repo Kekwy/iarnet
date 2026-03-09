@@ -62,6 +62,123 @@ private static final long serialVersionUID = 0L;
     return result == null ? com.kekwy.iarnet.proto.workflow.OperatorKind.UNRECOGNIZED : result;
   }
 
+  public static final int KEY_SELECTOR_FIELD_NUMBER = 2;
+  private com.kekwy.iarnet.proto.common.FunctionDescriptor keySelector_;
+  /**
+   * <pre>
+   * KEY_BY / CORRELATE 专用：key 提取函数
+   * </pre>
+   *
+   * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+   * @return Whether the keySelector field is set.
+   */
+  @java.lang.Override
+  public boolean hasKeySelector() {
+    return keySelector_ != null;
+  }
+  /**
+   * <pre>
+   * KEY_BY / CORRELATE 专用：key 提取函数
+   * </pre>
+   *
+   * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+   * @return The keySelector.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.FunctionDescriptor getKeySelector() {
+    return keySelector_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : keySelector_;
+  }
+  /**
+   * <pre>
+   * KEY_BY / CORRELATE 专用：key 提取函数
+   * </pre>
+   *
+   * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getKeySelectorOrBuilder() {
+    return keySelector_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : keySelector_;
+  }
+
+  public static final int BATCH_SIZE_FIELD_NUMBER = 3;
+  private int batchSize_ = 0;
+  /**
+   * <pre>
+   * BATCH 专用：每批元素数量
+   * </pre>
+   *
+   * <code>int32 batch_size = 3;</code>
+   * @return The batchSize.
+   */
+  @java.lang.Override
+  public int getBatchSize() {
+    return batchSize_;
+  }
+
+  public static final int FOLD_INITIAL_VALUE_FIELD_NUMBER = 4;
+  private com.kekwy.iarnet.proto.common.Value foldInitialValue_;
+  /**
+   * <pre>
+   * FOLD 专用：累加器初始值
+   * </pre>
+   *
+   * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+   * @return Whether the foldInitialValue field is set.
+   */
+  @java.lang.Override
+  public boolean hasFoldInitialValue() {
+    return foldInitialValue_ != null;
+  }
+  /**
+   * <pre>
+   * FOLD 专用：累加器初始值
+   * </pre>
+   *
+   * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+   * @return The foldInitialValue.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.Value getFoldInitialValue() {
+    return foldInitialValue_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : foldInitialValue_;
+  }
+  /**
+   * <pre>
+   * FOLD 专用：累加器初始值
+   * </pre>
+   *
+   * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.common.ValueOrBuilder getFoldInitialValueOrBuilder() {
+    return foldInitialValue_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : foldInitialValue_;
+  }
+
+  public static final int WINDOW_FIELD_NUMBER = 5;
+  private com.kekwy.iarnet.proto.workflow.WindowSpec window_;
+  /**
+   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+   * @return Whether the window field is set.
+   */
+  @java.lang.Override
+  public boolean hasWindow() {
+    return window_ != null;
+  }
+  /**
+   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+   * @return The window.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.workflow.WindowSpec getWindow() {
+    return window_ == null ? com.kekwy.iarnet.proto.workflow.WindowSpec.getDefaultInstance() : window_;
+  }
+  /**
+   * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder getWindowOrBuilder() {
+    return window_ == null ? com.kekwy.iarnet.proto.workflow.WindowSpec.getDefaultInstance() : window_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -79,6 +196,18 @@ private static final long serialVersionUID = 0L;
     if (operatorKind_ != com.kekwy.iarnet.proto.workflow.OperatorKind.OPERATOR_KIND_UNSPECIFIED.getNumber()) {
       output.writeEnum(1, operatorKind_);
     }
+    if (keySelector_ != null) {
+      output.writeMessage(2, getKeySelector());
+    }
+    if (batchSize_ != 0) {
+      output.writeInt32(3, batchSize_);
+    }
+    if (foldInitialValue_ != null) {
+      output.writeMessage(4, getFoldInitialValue());
+    }
+    if (window_ != null) {
+      output.writeMessage(5, getWindow());
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -91,6 +220,22 @@ private static final long serialVersionUID = 0L;
     if (operatorKind_ != com.kekwy.iarnet.proto.workflow.OperatorKind.OPERATOR_KIND_UNSPECIFIED.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(1, operatorKind_);
+    }
+    if (keySelector_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(2, getKeySelector());
+    }
+    if (batchSize_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, batchSize_);
+    }
+    if (foldInitialValue_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(4, getFoldInitialValue());
+    }
+    if (window_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(5, getWindow());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -108,6 +253,23 @@ private static final long serialVersionUID = 0L;
     com.kekwy.iarnet.proto.workflow.OperatorNodeDetail other = (com.kekwy.iarnet.proto.workflow.OperatorNodeDetail) obj;
 
     if (operatorKind_ != other.operatorKind_) return false;
+    if (hasKeySelector() != other.hasKeySelector()) return false;
+    if (hasKeySelector()) {
+      if (!getKeySelector()
+          .equals(other.getKeySelector())) return false;
+    }
+    if (getBatchSize()
+        != other.getBatchSize()) return false;
+    if (hasFoldInitialValue() != other.hasFoldInitialValue()) return false;
+    if (hasFoldInitialValue()) {
+      if (!getFoldInitialValue()
+          .equals(other.getFoldInitialValue())) return false;
+    }
+    if (hasWindow() != other.hasWindow()) return false;
+    if (hasWindow()) {
+      if (!getWindow()
+          .equals(other.getWindow())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -121,6 +283,20 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + OPERATOR_KIND_FIELD_NUMBER;
     hash = (53 * hash) + operatorKind_;
+    if (hasKeySelector()) {
+      hash = (37 * hash) + KEY_SELECTOR_FIELD_NUMBER;
+      hash = (53 * hash) + getKeySelector().hashCode();
+    }
+    hash = (37 * hash) + BATCH_SIZE_FIELD_NUMBER;
+    hash = (53 * hash) + getBatchSize();
+    if (hasFoldInitialValue()) {
+      hash = (37 * hash) + FOLD_INITIAL_VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + getFoldInitialValue().hashCode();
+    }
+    if (hasWindow()) {
+      hash = (37 * hash) + WINDOW_FIELD_NUMBER;
+      hash = (53 * hash) + getWindow().hashCode();
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -251,6 +427,22 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       operatorKind_ = 0;
+      keySelector_ = null;
+      if (keySelectorBuilder_ != null) {
+        keySelectorBuilder_.dispose();
+        keySelectorBuilder_ = null;
+      }
+      batchSize_ = 0;
+      foldInitialValue_ = null;
+      if (foldInitialValueBuilder_ != null) {
+        foldInitialValueBuilder_.dispose();
+        foldInitialValueBuilder_ = null;
+      }
+      window_ = null;
+      if (windowBuilder_ != null) {
+        windowBuilder_.dispose();
+        windowBuilder_ = null;
+      }
       return this;
     }
 
@@ -286,6 +478,24 @@ private static final long serialVersionUID = 0L;
       int from_bitField0_ = bitField0_;
       if (((from_bitField0_ & 0x00000001) != 0)) {
         result.operatorKind_ = operatorKind_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.keySelector_ = keySelectorBuilder_ == null
+            ? keySelector_
+            : keySelectorBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.batchSize_ = batchSize_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.foldInitialValue_ = foldInitialValueBuilder_ == null
+            ? foldInitialValue_
+            : foldInitialValueBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.window_ = windowBuilder_ == null
+            ? window_
+            : windowBuilder_.build();
       }
     }
 
@@ -336,6 +546,18 @@ private static final long serialVersionUID = 0L;
       if (other.operatorKind_ != 0) {
         setOperatorKindValue(other.getOperatorKindValue());
       }
+      if (other.hasKeySelector()) {
+        mergeKeySelector(other.getKeySelector());
+      }
+      if (other.getBatchSize() != 0) {
+        setBatchSize(other.getBatchSize());
+      }
+      if (other.hasFoldInitialValue()) {
+        mergeFoldInitialValue(other.getFoldInitialValue());
+      }
+      if (other.hasWindow()) {
+        mergeWindow(other.getWindow());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -367,6 +589,32 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000001;
               break;
             } // case 8
+            case 18: {
+              input.readMessage(
+                  getKeySelectorFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
+            case 24: {
+              batchSize_ = input.readInt32();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 24
+            case 34: {
+              input.readMessage(
+                  getFoldInitialValueFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 34
+            case 42: {
+              input.readMessage(
+                  getWindowFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000010;
+              break;
+            } // case 42
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -435,6 +683,479 @@ private static final long serialVersionUID = 0L;
       operatorKind_ = 0;
       onChanged();
       return this;
+    }
+
+    private com.kekwy.iarnet.proto.common.FunctionDescriptor keySelector_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> keySelectorBuilder_;
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     * @return Whether the keySelector field is set.
+     */
+    public boolean hasKeySelector() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     * @return The keySelector.
+     */
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor getKeySelector() {
+      if (keySelectorBuilder_ == null) {
+        return keySelector_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : keySelector_;
+      } else {
+        return keySelectorBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    public Builder setKeySelector(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
+      if (keySelectorBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        keySelector_ = value;
+      } else {
+        keySelectorBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    public Builder setKeySelector(
+        com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder builderForValue) {
+      if (keySelectorBuilder_ == null) {
+        keySelector_ = builderForValue.build();
+      } else {
+        keySelectorBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    public Builder mergeKeySelector(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
+      if (keySelectorBuilder_ == null) {
+        if (((bitField0_ & 0x00000002) != 0) &&
+          keySelector_ != null &&
+          keySelector_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
+          getKeySelectorBuilder().mergeFrom(value);
+        } else {
+          keySelector_ = value;
+        }
+      } else {
+        keySelectorBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    public Builder clearKeySelector() {
+      bitField0_ = (bitField0_ & ~0x00000002);
+      keySelector_ = null;
+      if (keySelectorBuilder_ != null) {
+        keySelectorBuilder_.dispose();
+        keySelectorBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getKeySelectorBuilder() {
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return getKeySelectorFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getKeySelectorOrBuilder() {
+      if (keySelectorBuilder_ != null) {
+        return keySelectorBuilder_.getMessageOrBuilder();
+      } else {
+        return keySelector_ == null ?
+            com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : keySelector_;
+      }
+    }
+    /**
+     * <pre>
+     * KEY_BY / CORRELATE 专用：key 提取函数
+     * </pre>
+     *
+     * <code>.iarnet.common.FunctionDescriptor key_selector = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> 
+        getKeySelectorFieldBuilder() {
+      if (keySelectorBuilder_ == null) {
+        keySelectorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder>(
+                getKeySelector(),
+                getParentForChildren(),
+                isClean());
+        keySelector_ = null;
+      }
+      return keySelectorBuilder_;
+    }
+
+    private int batchSize_ ;
+    /**
+     * <pre>
+     * BATCH 专用：每批元素数量
+     * </pre>
+     *
+     * <code>int32 batch_size = 3;</code>
+     * @return The batchSize.
+     */
+    @java.lang.Override
+    public int getBatchSize() {
+      return batchSize_;
+    }
+    /**
+     * <pre>
+     * BATCH 专用：每批元素数量
+     * </pre>
+     *
+     * <code>int32 batch_size = 3;</code>
+     * @param value The batchSize to set.
+     * @return This builder for chaining.
+     */
+    public Builder setBatchSize(int value) {
+      
+      batchSize_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * BATCH 专用：每批元素数量
+     * </pre>
+     *
+     * <code>int32 batch_size = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearBatchSize() {
+      bitField0_ = (bitField0_ & ~0x00000004);
+      batchSize_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private com.kekwy.iarnet.proto.common.Value foldInitialValue_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> foldInitialValueBuilder_;
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     * @return Whether the foldInitialValue field is set.
+     */
+    public boolean hasFoldInitialValue() {
+      return ((bitField0_ & 0x00000008) != 0);
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     * @return The foldInitialValue.
+     */
+    public com.kekwy.iarnet.proto.common.Value getFoldInitialValue() {
+      if (foldInitialValueBuilder_ == null) {
+        return foldInitialValue_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : foldInitialValue_;
+      } else {
+        return foldInitialValueBuilder_.getMessage();
+      }
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    public Builder setFoldInitialValue(com.kekwy.iarnet.proto.common.Value value) {
+      if (foldInitialValueBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        foldInitialValue_ = value;
+      } else {
+        foldInitialValueBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    public Builder setFoldInitialValue(
+        com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
+      if (foldInitialValueBuilder_ == null) {
+        foldInitialValue_ = builderForValue.build();
+      } else {
+        foldInitialValueBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    public Builder mergeFoldInitialValue(com.kekwy.iarnet.proto.common.Value value) {
+      if (foldInitialValueBuilder_ == null) {
+        if (((bitField0_ & 0x00000008) != 0) &&
+          foldInitialValue_ != null &&
+          foldInitialValue_ != com.kekwy.iarnet.proto.common.Value.getDefaultInstance()) {
+          getFoldInitialValueBuilder().mergeFrom(value);
+        } else {
+          foldInitialValue_ = value;
+        }
+      } else {
+        foldInitialValueBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    public Builder clearFoldInitialValue() {
+      bitField0_ = (bitField0_ & ~0x00000008);
+      foldInitialValue_ = null;
+      if (foldInitialValueBuilder_ != null) {
+        foldInitialValueBuilder_.dispose();
+        foldInitialValueBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    public com.kekwy.iarnet.proto.common.Value.Builder getFoldInitialValueBuilder() {
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return getFoldInitialValueFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    public com.kekwy.iarnet.proto.common.ValueOrBuilder getFoldInitialValueOrBuilder() {
+      if (foldInitialValueBuilder_ != null) {
+        return foldInitialValueBuilder_.getMessageOrBuilder();
+      } else {
+        return foldInitialValue_ == null ?
+            com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : foldInitialValue_;
+      }
+    }
+    /**
+     * <pre>
+     * FOLD 专用：累加器初始值
+     * </pre>
+     *
+     * <code>.iarnet.common.Value fold_initial_value = 4;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> 
+        getFoldInitialValueFieldBuilder() {
+      if (foldInitialValueBuilder_ == null) {
+        foldInitialValueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder>(
+                getFoldInitialValue(),
+                getParentForChildren(),
+                isClean());
+        foldInitialValue_ = null;
+      }
+      return foldInitialValueBuilder_;
+    }
+
+    private com.kekwy.iarnet.proto.workflow.WindowSpec window_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.workflow.WindowSpec, com.kekwy.iarnet.proto.workflow.WindowSpec.Builder, com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder> windowBuilder_;
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     * @return Whether the window field is set.
+     */
+    public boolean hasWindow() {
+      return ((bitField0_ & 0x00000010) != 0);
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     * @return The window.
+     */
+    public com.kekwy.iarnet.proto.workflow.WindowSpec getWindow() {
+      if (windowBuilder_ == null) {
+        return window_ == null ? com.kekwy.iarnet.proto.workflow.WindowSpec.getDefaultInstance() : window_;
+      } else {
+        return windowBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    public Builder setWindow(com.kekwy.iarnet.proto.workflow.WindowSpec value) {
+      if (windowBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        window_ = value;
+      } else {
+        windowBuilder_.setMessage(value);
+      }
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    public Builder setWindow(
+        com.kekwy.iarnet.proto.workflow.WindowSpec.Builder builderForValue) {
+      if (windowBuilder_ == null) {
+        window_ = builderForValue.build();
+      } else {
+        windowBuilder_.setMessage(builderForValue.build());
+      }
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    public Builder mergeWindow(com.kekwy.iarnet.proto.workflow.WindowSpec value) {
+      if (windowBuilder_ == null) {
+        if (((bitField0_ & 0x00000010) != 0) &&
+          window_ != null &&
+          window_ != com.kekwy.iarnet.proto.workflow.WindowSpec.getDefaultInstance()) {
+          getWindowBuilder().mergeFrom(value);
+        } else {
+          window_ = value;
+        }
+      } else {
+        windowBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    public Builder clearWindow() {
+      bitField0_ = (bitField0_ & ~0x00000010);
+      window_ = null;
+      if (windowBuilder_ != null) {
+        windowBuilder_.dispose();
+        windowBuilder_ = null;
+      }
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WindowSpec.Builder getWindowBuilder() {
+      bitField0_ |= 0x00000010;
+      onChanged();
+      return getWindowFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder getWindowOrBuilder() {
+      if (windowBuilder_ != null) {
+        return windowBuilder_.getMessageOrBuilder();
+      } else {
+        return window_ == null ?
+            com.kekwy.iarnet.proto.workflow.WindowSpec.getDefaultInstance() : window_;
+      }
+    }
+    /**
+     * <code>.iarnet.workflow.WindowSpec window = 5;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.workflow.WindowSpec, com.kekwy.iarnet.proto.workflow.WindowSpec.Builder, com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder> 
+        getWindowFieldBuilder() {
+      if (windowBuilder_ == null) {
+        windowBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.workflow.WindowSpec, com.kekwy.iarnet.proto.workflow.WindowSpec.Builder, com.kekwy.iarnet.proto.workflow.WindowSpecOrBuilder>(
+                getWindow(),
+                getParentForChildren(),
+                isClean());
+        window_ = null;
+      }
+      return windowBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
