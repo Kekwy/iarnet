@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-PROTO_DIR="${ROOT_DIR}/iarnet-proto/proto"
-GO_OUT="${ROOT_DIR}/iarnet-proto-lang/iarnet-proto-go/gen"
+PROTO_DIR="${ROOT_DIR}/iarnet-protos/proto"
+GO_OUT="${ROOT_DIR}/iarnet-protos/iarnet-proto-go/gen"
 
 if ! command -v protoc >/dev/null 2>&1; then
   echo "Error: protoc is not installed or not in PATH."

@@ -4,9 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-JAVA_OUT="${ROOT_DIR}/iarnet-proto-lang/iarnet-proto-java/src/main/generated"
-PY_OUT="${ROOT_DIR}/iarnet-proto-lang/iarnet-proto-python/gen"
-GO_OUT="${ROOT_DIR}/iarnet-proto-lang/iarnet-proto-go/gen"
+JAVA_OUT="${ROOT_DIR}/iarnet-protos/iarnet-proto-java/src/main/generated"
+PY_OUT="${ROOT_DIR}/iarnet-protos/iarnet-proto-python/gen"
+GO_OUT="${ROOT_DIR}/iarnet-protos/iarnet-proto-go/gen"
 
 clean_dir() {
   local dir="$1"

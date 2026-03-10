@@ -17,6 +17,7 @@
         <module>iarnet-resource</module>
         <module>iarnet-common</module>
         <module>iarnet-adapter</module>
+        <module>iarnet-workflow</module>
         <module>iarnet-cli</module>
     </modules>
 

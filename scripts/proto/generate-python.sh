@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-PROTO_DIR="${ROOT_DIR}/iarnet-proto/proto"
-PY_OUT="${ROOT_DIR}/iarnet-proto-lang/iarnet-proto-python/gen"
+PROTO_DIR="${ROOT_DIR}/iarnet-protos/proto"
+PY_OUT="${ROOT_DIR}/iarnet-protos/iarnet-proto-python/gen"
 
 if ! command -v python >/dev/null 2>&1; then
   echo "Error: python is not installed or not in PATH."

@@ -70,7 +70,7 @@ message Value {
     string string_value = 7;
     ArrayValue array_value = 8;
     MapValue map_value = 9;
-    StructValue object_value = 10;
+    StructValue struct_value = 10;
     NullValue null_value = 11;
   }
 }
