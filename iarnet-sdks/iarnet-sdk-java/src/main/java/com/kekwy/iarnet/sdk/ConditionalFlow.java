@@ -3,6 +3,7 @@ package com.kekwy.iarnet.sdk;
 import com.kekwy.iarnet.sdk.function.OutputFunction;
 import com.kekwy.iarnet.sdk.function.TaskFunction;
 
+@SuppressWarnings("UnusedReturnValue")
 public interface ConditionalFlow<T> {
 
     <R> Flow<R> then(String name, TaskFunction<T, R> function);

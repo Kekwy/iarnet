@@ -12,7 +12,14 @@ import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.proto.workflow.NodeConfig;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.sdk.function.*;
+import com.kekwy.iarnet.sdk.function.ConditionFunction;
+import com.kekwy.iarnet.sdk.function.Function;
+import com.kekwy.iarnet.sdk.function.GoTaskFunction;
+import com.kekwy.iarnet.sdk.function.InputFunction;
+import com.kekwy.iarnet.sdk.function.OutputFunction;
+import com.kekwy.iarnet.sdk.function.PythonTaskFunction;
+import com.kekwy.iarnet.sdk.function.TaskFunction;
+import com.kekwy.iarnet.sdk.function.UnionFunction;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
 import com.kekwy.iarnet.sdk.util.TypeExtractor;
@@ -66,7 +73,7 @@ public class Workflow {
     public WorkflowGraph buildGraph(String applicationId) {
         List<Node> finalizedNodes = finalizeNodesWithTypes();
         return WorkflowGraph.newBuilder()
-                .setWorkflowId(com.kekwy.iarnet.sdk.util.IDUtil.genUUID())
+                .setWorkflowId(IDUtil.genUUIDWith("wf"))
                 .setApplicationId(applicationId)
                 .setName(name)
                 .addAllNodes(finalizedNodes)
@@ -297,7 +304,7 @@ public class Workflow {
     // ======================== 共用工具方法 ========================
 
     private static String uniqueNodeId(String name) {
-        return name + "_" + IDUtil.genUUID();
+        return name + "-" + IDUtil.genUUID();
     }
 
     private Node addNode(String name, Node precursor,
@@ -376,7 +383,11 @@ public class Workflow {
             return null;
         }
         java.lang.reflect.Type extracted = null;
-        if (function instanceof InputFunction<?> fn) {
+        if (function instanceof PythonTaskFunction<?, ?> fn && fn.getOutputTypeHint() != null) {
+            extracted = fn.getOutputTypeHint();
+        } else if (function instanceof GoTaskFunction<?, ?> fn && fn.getOutputTypeHint() != null) {
+            extracted = fn.getOutputTypeHint();
+        } else if (function instanceof InputFunction<?> fn) {
             extracted = TypeExtractor.extractOutputType(fn, InputFunction.class, 0);
         } else if (function instanceof TaskFunction<?, ?> fn) {
             extracted = TypeExtractor.extractOutputType(fn, TaskFunction.class, 1);

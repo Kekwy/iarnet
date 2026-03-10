@@ -8,4 +8,8 @@ public class IDUtil {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
+    public static String genUUIDWith(String prefix) {
+        return prefix + "-" + UUID.randomUUID().toString().replace("-", "");
+    }
+
 }
