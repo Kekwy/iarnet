@@ -1,5 +1,7 @@
 package com.kekwy.iarnet.sdk.util;
 
+import com.kekwy.iarnet.sdk.exception.IarnetSerializationException;
+
 import java.io.*;
 
 /**
@@ -17,7 +19,7 @@ public final class SerializationUtil {
             oos.flush();
             return bos.toByteArray();
         } catch (IOException e) {
-            throw new IllegalStateException(
+            throw new IarnetSerializationException(
                     "Failed to serialize function: " + obj.getClass().getName()
                             + ". All captured variables must be Serializable.", e);
         }
@@ -31,7 +33,7 @@ public final class SerializationUtil {
                      : new ObjectInputStream(bis)) {
             return (T) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            throw new IllegalStateException("Failed to deserialize function.", e);
+            throw new IarnetSerializationException("Failed to deserialize function.", e);
         }
     }
 

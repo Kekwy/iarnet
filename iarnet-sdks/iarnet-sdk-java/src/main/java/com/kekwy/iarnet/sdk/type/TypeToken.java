@@ -1,5 +1,7 @@
 package com.kekwy.iarnet.sdk.type;
 
+import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -19,7 +21,7 @@ public abstract class TypeToken<T> {
     protected TypeToken() {
         Type superClass = getClass().getGenericSuperclass();
         if (!(superClass instanceof ParameterizedType)) {
-            throw new IllegalStateException(
+            throw new IarnetValidationException(
                     "TypeToken must be created with type parameter, e.g. new TypeToken<List<String>>() {}");
         }
         this.type = ((ParameterizedType) superClass).getActualTypeArguments()[0];

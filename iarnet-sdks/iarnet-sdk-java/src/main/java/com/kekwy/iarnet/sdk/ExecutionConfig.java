@@ -1,6 +1,7 @@
 package com.kekwy.iarnet.sdk;
 
 import com.kekwy.iarnet.proto.common.ResourceSpec;
+import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
 
 public class ExecutionConfig {
 
@@ -77,7 +78,7 @@ public class ExecutionConfig {
 
     public ExecutionConfig replicas(int replicas) {
         if (replicas <= 0) {
-            throw new IllegalArgumentException("replicas must be greater than 0");
+            throw new IarnetValidationException("replicas must be greater than 0");
         }
         this.replicas = replicas;
         return this;

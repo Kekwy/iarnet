@@ -16,6 +16,10 @@ import com.kekwy.iarnet.sdk.function.*;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
 import com.kekwy.iarnet.sdk.util.TypeExtractor;
+import com.kekwy.iarnet.sdk.exception.IarnetCommunicationException;
+import com.kekwy.iarnet.sdk.exception.IarnetConfigurationException;
+import com.kekwy.iarnet.sdk.exception.IarnetSubmissionException;
+import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
 import com.kekwy.iarnet.sdk.type.TypeToken;
 
 import java.util.HashMap;
@@ -53,7 +57,7 @@ public class Workflow {
     public WorkflowGraph buildGraph() {
         String applicationId = System.getenv(ENV_APP_ID);
         if (applicationId == null || applicationId.isBlank()) {
-            throw new IllegalStateException(
+            throw new IarnetConfigurationException(
                     "环境变量 " + ENV_APP_ID + " 未设置，无法确定 application ID");
         }
         return buildGraph(applicationId);
@@ -89,7 +93,7 @@ public class Workflow {
                 }
                 java.lang.reflect.Type hint = nodeOutputTypeHints.get(node.getId());
                 if (hint == null) {
-                    throw new IllegalStateException(
+                    throw new IarnetValidationException(
                             "无法推断节点 " + node.getId() + " 的输出类型，请对该 flow 调用 .returns(new TypeToken<YourType>() {}) 提供类型提示");
                 }
                 FunctionDescriptor patched = fd.toBuilder()
@@ -113,11 +117,16 @@ public class Workflow {
 
         String portStr = System.getenv(ENV_GRPC_PORT);
         if (portStr == null || portStr.isBlank()) {
-            throw new IllegalStateException(
+            throw new IarnetConfigurationException(
                     "环境变量 " + ENV_GRPC_PORT + " 未设置，无法连接 control-plane gRPC 服务");
         }
-        int port = Integer.parseInt(portStr);
-
+        int port;
+        try {
+            port = Integer.parseInt(portStr);
+        } catch (NumberFormatException e) {
+            throw new IarnetConfigurationException(
+                    "环境变量 " + ENV_GRPC_PORT + " 格式无效，期望整数: " + portStr, e);
+        }
         submit(graph, DEFAULT_GRPC_HOST, port);
     }
 
@@ -141,11 +150,11 @@ public class Workflow {
                 System.out.println("[Workflow] 提交成功: submissionId=" + response.getSubmissionId()
                         + ", message=" + response.getMessage());
             } else {
-                throw new RuntimeException(
+                throw new IarnetSubmissionException(
                         "工作流提交被拒绝: " + response.getMessage());
             }
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException(
+            throw new IarnetCommunicationException(
                     "gRPC 调用失败: " + e.getStatus(), e);
         } finally {
             try {
@@ -223,7 +232,7 @@ public class Workflow {
         @Override
         public <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function, ExecutionConfig config) {
             if (!(other instanceof DefaultFlow<U> otherFlow)) {
-                throw new IllegalArgumentException("union() 仅支持同一 workflow 中的 flow");
+                throw new IarnetValidationException("union() 仅支持同一 workflow 中的 flow");
             }
             return new DefaultFlow<>(addUnionNode(name, precursor, otherFlow.precursor, function, config));
         }
@@ -373,8 +382,6 @@ public class Workflow {
             extracted = TypeExtractor.extractOutputType(fn, TaskFunction.class, 1);
         } else if (function instanceof UnionFunction<?, ?, ?> fn) {
             extracted = TypeExtractor.extractOutputType(fn, UnionFunction.class, 2);
-//        } else if (function instanceof PythonFunction pf) {
-//            extracted = pf.getReturnType();
         }
         if (extracted != null && extracted != Object.class) {
             return com.kekwy.iarnet.proto.Types.fromType(extracted);
@@ -394,14 +401,17 @@ public class Workflow {
     private static FunctionDescriptor buildFunctionDescriptor(Function function,
                                                               List<Type> inputTypes, Type outputType, String nodeId) {
 
-        if (function.getLang() == Lang.LANG_GO || function.getLang() == Lang.LANG_UNSPECIFIED) {
-            throw new IllegalArgumentException("不支持的函数语言: " + function.getLang());
+        if (function.getLang() == Lang.LANG_UNSPECIFIED) {
+            throw new IarnetValidationException("不支持的函数语言: " + function.getLang());
         }
 
         FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
                 .setLang(function.getLang());
 
         if (function instanceof PythonTaskFunction<?, ?> fn) {
+            b.setFunctionIdentifier(fn.getFunctionIdentifier())
+                    .setSourcePath(fn.getSourcePath());
+        } else if (function instanceof GoTaskFunction<?, ?> fn) {
             b.setFunctionIdentifier(fn.getFunctionIdentifier())
                     .setSourcePath(fn.getSourcePath());
         } else if (function.getLang() == Lang.LANG_JAVA) {
