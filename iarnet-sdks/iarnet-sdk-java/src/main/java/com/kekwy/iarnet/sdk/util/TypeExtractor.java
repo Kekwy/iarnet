@@ -16,7 +16,6 @@ import java.util.Optional;
  * 从函数对象中提取输出类型的工具类。
  * <p>
  * 支持接口：{@link InputFunction}、{@link TaskFunction}、{@link UnionFunction}。
- * <p>
  * 推断优先级：
  * <ol>
  *   <li>具名类 / 匿名内部类：通过 {@code getGenericInterfaces()} / {@code getGenericSuperclass()} 提取泛型参数</li>
@@ -27,6 +26,7 @@ import java.util.Optional;
 public final class TypeExtractor {
 
     private TypeExtractor() {
+        // 工具类，禁止实例化
     }
 
     /**

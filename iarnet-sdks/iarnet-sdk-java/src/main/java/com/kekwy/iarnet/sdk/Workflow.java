@@ -8,10 +8,15 @@ import com.kekwy.iarnet.proto.api.WorkflowServiceGrpc;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.Type;
+import com.kekwy.iarnet.proto.common.TypeKind;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.proto.workflow.NodeConfig;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
+import com.kekwy.iarnet.sdk.exception.IarnetCommunicationException;
+import com.kekwy.iarnet.sdk.exception.IarnetConfigurationException;
+import com.kekwy.iarnet.sdk.exception.IarnetSubmissionException;
+import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
 import com.kekwy.iarnet.sdk.function.ConditionFunction;
 import com.kekwy.iarnet.sdk.function.Function;
 import com.kekwy.iarnet.sdk.function.GoTaskFunction;
@@ -20,47 +25,115 @@ import com.kekwy.iarnet.sdk.function.OutputFunction;
 import com.kekwy.iarnet.sdk.function.PythonTaskFunction;
 import com.kekwy.iarnet.sdk.function.TaskFunction;
 import com.kekwy.iarnet.sdk.function.UnionFunction;
+import com.kekwy.iarnet.sdk.type.TypeToken;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
 import com.kekwy.iarnet.sdk.util.TypeExtractor;
-import com.kekwy.iarnet.sdk.exception.IarnetCommunicationException;
-import com.kekwy.iarnet.sdk.exception.IarnetConfigurationException;
-import com.kekwy.iarnet.sdk.exception.IarnetSubmissionException;
-import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
-import com.kekwy.iarnet.sdk.type.TypeToken;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- * 工作流 DSL 入口，用于创建 source、task 并执行。
+ * 工作流 DSL 入口。
+ * <p>
+ * 通过 {@link #create(String)} 创建实例，{@link #input(String, InputFunction)} 定义 Source，
+ * 返回的 {@link Flow} 可链式追加任务、条件分支、合并与输出。{@link #buildGraph()} 构建图结构，
+ * {@link #execute()} 或 {@link #submit(WorkflowGraph, String, int)} 提交至 control-plane。
+ * <p>
+ * 典型用法：
+ * <pre>{@code
+ * Workflow w = Workflow.create("example");
+ * w.input("src", Inputs.of(1, 2, 3))
+ *  .then("double", x -> x * 2)
+ *  .then("sink", Outputs.println());
+ * w.execute();  // 需设置 IARNET_APP_ID、IARNET_GRPC_PORT
+ * }</pre>
  */
 public class Workflow {
 
+    private static final Logger LOG = Logger.getLogger(Workflow.class.getName());
+
+    private static final String ENV_APP_ID = "IARNET_APP_ID";
+    private static final String ENV_GRPC_PORT = "IARNET_GRPC_PORT";
+    private static final String DEFAULT_GRPC_HOST = "localhost";
+
     private final String name;
 
-    public String getName() {
-        return name;
-    }
+    private final List<Node> nodes = new ArrayList<>();
+    private final List<Edge> edges = new ArrayList<>();
+
+    /**
+     * 节点 ID -> 用户通过 returns() 传入的输出类型提示，用于类型擦除时兜底。
+     */
+    private final Map<String, java.lang.reflect.Type> nodeOutputTypeHints = new HashMap<>();
 
     private Workflow(String name) {
         this.name = name;
     }
 
+    // ======================== 工厂与入口 ========================
+
+    /**
+     * 创建指定名称的工作流。
+     *
+     * @param name 工作流名称
+     * @return 新 Workflow 实例
+     */
+    public static Workflow create(String name) {
+        return new Workflow(name);
+    }
+
+    /** 工作流名称。 */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * 定义输入源（Source）节点。
+     *
+     * @param name     节点名
+     * @param function 输入函数，按序产出元素
+     * @param <T>      输出元素类型
+     * @return Flow，可继续链式 then / union / when
+     */
+    public <T> Flow<T> input(String name, InputFunction<T> function) {
+        return input(name, function, null);
+    }
+
+    /**
+     * 定义输入源节点，并指定执行配置。
+     *
+     * @param name     节点名
+     * @param function 输入函数
+     * @param config   副本数、资源等配置
+     * @param <T>      输出元素类型
+     * @return Flow
+     */
+    public <T> Flow<T> input(String name, InputFunction<T> function, ExecutionConfig config) {
+        Node node = addNode(name, null, function, config);
+        return new DefaultFlow<>(node);
+    }
+
     // ======================== 构建 WorkflowGraph ========================
 
-    private static final String ENV_APP_ID = "IARNET_APP_ID";
-
+    /**
+     * 从环境变量 {@value #ENV_APP_ID} 读取 application ID 并构建图。
+     *
+     * @return WorkflowGraph
+     * @throws IarnetConfigurationException 若环境变量未设置
+     * @throws IarnetValidationException     若存在节点输出类型无法推断
+     */
     public WorkflowGraph buildGraph() {
         String applicationId = System.getenv(ENV_APP_ID);
         if (applicationId == null || applicationId.isBlank()) {
@@ -70,20 +143,32 @@ public class Workflow {
         return buildGraph(applicationId);
     }
 
+    /**
+     * 使用指定 application ID 构建图。
+     *
+     * @param applicationId 应用 ID
+     * @return WorkflowGraph
+     * @throws IarnetValidationException 若存在节点输出类型无法推断
+     */
     public WorkflowGraph buildGraph(String applicationId) {
         List<Node> finalizedNodes = finalizeNodesWithTypes();
-        return WorkflowGraph.newBuilder()
+        WorkflowGraph graph = WorkflowGraph.newBuilder()
                 .setWorkflowId(IDUtil.genUUIDWith("wf"))
                 .setApplicationId(applicationId)
                 .setName(name)
                 .addAllNodes(finalizedNodes)
                 .addAllEdges(edges)
                 .build();
+        LOG.log(Level.FINE, "Workflow graph built: name={0}, nodes={1}, edges={2}",
+                new Object[]{name, finalizedNodes.size(), edges.size()});
+        return graph;
     }
 
     /**
-     * 在 buildGraph 前补齐所有节点的 output_type：若反射推断失败，从 returns() 的提示中获取；
-     * 若仍无法获取则抛错。Sink 节点（无出边）无需 output_type，跳过。
+     * 补齐所有有出边节点的 output_type。
+     * <p>
+     * 若反射推断失败，则从 returns() 的提示中获取；若仍无法获取则抛出
+     * {@link IarnetValidationException}。Sink 节点（无出边）无需 output_type，跳过。
      */
     private List<Node> finalizeNodesWithTypes() {
         Set<String> hasOutgoing = new HashSet<>();
@@ -93,7 +178,7 @@ public class Workflow {
         List<Node> result = new ArrayList<>();
         for (Node node : nodes) {
             FunctionDescriptor fd = node.getFunction();
-            if (!fd.hasOutputType() || fd.getOutputType().getKind() == com.kekwy.iarnet.proto.common.TypeKind.TYPE_KIND_UNSPECIFIED) {
+            if (!fd.hasOutputType() || fd.getOutputType().getKind() == TypeKind.TYPE_KIND_UNSPECIFIED) {
                 if (!hasOutgoing.contains(node.getId())) {
                     result.add(node);
                     continue;
@@ -116,9 +201,13 @@ public class Workflow {
 
     // ======================== gRPC 提交 ========================
 
-    private static final String ENV_GRPC_PORT = "IARNET_GRPC_PORT";
-    private static final String DEFAULT_GRPC_HOST = "localhost";
-
+    /**
+     * 构建图并从环境变量 {@value #ENV_GRPC_PORT} 读取端口，提交至 localhost。
+     *
+     * @throws IarnetConfigurationException 若环境变量未设置或格式无效
+     * @throws IarnetSubmissionException    若服务端拒绝提交
+     * @throws IarnetCommunicationException 若 gRPC 调用失败
+     */
     public void execute() {
         WorkflowGraph graph = buildGraph();
 
@@ -134,9 +223,19 @@ public class Workflow {
             throw new IarnetConfigurationException(
                     "环境变量 " + ENV_GRPC_PORT + " 格式无效，期望整数: " + portStr, e);
         }
+        LOG.log(Level.FINE, "Executing workflow: {0}, host={1}, port={2}", new Object[]{name, DEFAULT_GRPC_HOST, port});
         submit(graph, DEFAULT_GRPC_HOST, port);
     }
 
+    /**
+     * 将工作流图提交至 control-plane gRPC 服务。
+     *
+     * @param graph 工作流图
+     * @param host  control-plane 地址
+     * @param port  gRPC 端口
+     * @throws IarnetSubmissionException    若服务端拒绝
+     * @throws IarnetCommunicationException 若 gRPC 调用失败
+     */
     public static void submit(WorkflowGraph graph, String host, int port) {
         ManagedChannel channel = ManagedChannelBuilder
                 .forAddress(host, port)
@@ -154,8 +253,8 @@ public class Workflow {
             SubmitWorkflowResponse response = stub.submitWorkflow(request);
 
             if (response.getStatus() == SubmissionStatus.ACCEPTED) {
-                System.out.println("[Workflow] 提交成功: submissionId=" + response.getSubmissionId()
-                        + ", message=" + response.getMessage());
+                LOG.log(Level.INFO, "Workflow submitted successfully: submissionId={0}, message={1}",
+                        new Object[]{response.getSubmissionId(), response.getMessage()});
             } else {
                 throw new IarnetSubmissionException(
                         "工作流提交被拒绝: " + response.getMessage());
@@ -171,27 +270,6 @@ public class Workflow {
                 channel.shutdownNow();
             }
         }
-    }
-
-    public static Workflow create(String name) {
-        return new Workflow(name);
-    }
-
-    private final List<Node> nodes = new ArrayList<>();
-    private final List<Edge> edges = new ArrayList<>();
-
-    /**
-     * 节点 ID -> 用户通过 returns() 传入的输出类型提示，用于类型擦除时兜底
-     */
-    private final Map<String, java.lang.reflect.Type> nodeOutputTypeHints = new HashMap<>();
-
-    public <T> Flow<T> input(String name, InputFunction<T> function) {
-        return input(name, function, null);
-    }
-
-    public <T> Flow<T> input(String name, InputFunction<T> function, ExecutionConfig config) {
-        Node node = addNode(name, null, function, config);
-        return new DefaultFlow<>(node);
     }
 
     // ======== DefaultFlow ========
@@ -301,12 +379,14 @@ public class Workflow {
         }
     }
 
-    // ======================== 共用工具方法 ========================
+    // ======================== 内部工具方法 ========================
 
+    /** 生成带名称前缀的唯一节点 ID。 */
     private static String uniqueNodeId(String name) {
         return name + "-" + IDUtil.genUUID();
     }
 
+    /** 添加普通节点（任务或输出），并建立与前驱的边。 */
     private Node addNode(String name, Node precursor,
                          Function function, ExecutionConfig config) {
         return addNode(name, precursor, function, config, null);
@@ -333,6 +413,7 @@ public class Workflow {
         return node;
     }
 
+    /** 添加合并节点，连接两个前驱。 */
     private Node addUnionNode(String name, Node precursor1, Node precursor2,
                               UnionFunction<?, ?, ?> function, ExecutionConfig config) {
         String nodeId = uniqueNodeId(name);
@@ -352,6 +433,7 @@ public class Workflow {
         return node;
     }
 
+    /** 构建边，可选附带条件函数。 */
     private static Edge buildEdge(String fromNodeId, String toNodeId,
                                   ConditionFunction<?> conditionFunction, Type conditionInputType) {
         FunctionDescriptor conditionFn = conditionFunction != null
@@ -364,6 +446,7 @@ public class Workflow {
                 .build();
     }
 
+    /** 将 ExecutionConfig 转为 proto NodeConfig。 */
     private static NodeConfig buildNodeConfig(ExecutionConfig config) {
         if (config == null) {
             config = ExecutionConfig.of();
@@ -375,8 +458,13 @@ public class Workflow {
     }
 
     /**
-     * 解析节点输出类型：优先从函数泛型反射推断，失败则用 returns() 提示，仍无则抛错。
+     * 解析节点输出类型。
+     * <p>
+     * 优先级：Python/Go 的 outputTypeHint > TypeExtractor 反射 > returns() 提示。
      * OutputFunction 无输出，返回 null。
+     *
+     * @param nodeId 节点 ID，用于查找 returns() 提示
+     * @return proto Type，无法解析时返回 null（由 finalizeNodesWithTypes 检查）
      */
     private Type resolveOutputType(Function function, String nodeId) {
         if (function instanceof OutputFunction) {
@@ -404,6 +492,7 @@ public class Workflow {
         return null; // 交由 finalizeNodesWithTypes 检查并抛错
     }
 
+    /** 构建 FunctionDescriptor，支持 Java 序列化、Python、Go 三种形式。 */
     private static FunctionDescriptor buildFunctionDescriptor(Function function,
                                                               Type inputType, Type outputType, String nodeId) {
         return buildFunctionDescriptor(function, inputType != null ? List.of(inputType) : List.of(), outputType, nodeId);
@@ -437,13 +526,9 @@ public class Workflow {
             b.setOutputType(outputType);
         }
         return b.build();
-
-
     }
 
-    /**
-     * 构建边的条件函数的 FunctionDescriptor（input 来自前驱输出，output 为 boolean）。
-     */
+    /** 构建边的条件函数描述符（input 来自前驱输出，output 为 boolean）。 */
     private static FunctionDescriptor buildFunctionDescriptorForCondition(ConditionFunction<?> condition, Type inputType) {
         FunctionDescriptor.Builder b = FunctionDescriptor.newBuilder()
                 .setLang(condition.getLang())
