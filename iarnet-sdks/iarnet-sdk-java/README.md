@@ -1,6 +1,6 @@
-# iarnet-sdk-java
+# IARNet SDK（Java 实现）
 
-Iarnet Java SDK，提供面向数据流的工作流 DSL，用于描述、构建并提交分布式计算工作流至 Iarnet control-plane。
+IARNet SDK（Java 实现）提供一套面向工作流编排的 Java DSL，支持用户描述、构建并提交分布式计算工作流至 IARNet control-plane。
 
 ## 环境要求
 
