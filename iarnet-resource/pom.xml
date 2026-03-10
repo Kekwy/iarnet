@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-proto</artifactId>
+            <artifactId>iarnet-proto-java</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>

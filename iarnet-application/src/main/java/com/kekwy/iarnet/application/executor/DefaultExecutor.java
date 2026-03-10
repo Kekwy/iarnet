@@ -3,7 +3,7 @@ package com.kekwy.iarnet.application.executor;
 import com.kekwy.iarnet.application.artifact.ArtifactUrlProvider;
 import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.service.WorkspaceService;
-import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.common.model.ID;
 import com.kekwy.iarnet.proto.ir.Node;
 import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 import com.kekwy.iarnet.resource.model.ActorDeployment;

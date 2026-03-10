@@ -2,10 +2,10 @@ package com.kekwy.iarnet.application.service;
 
 import com.kekwy.iarnet.application.model.ApplicationInfoEntity;
 import com.kekwy.iarnet.application.repository.ApplicationInfoRepository;
-import com.kekwy.iarnet.enums.AppStatus;
-import com.kekwy.iarnet.model.ApplicationInfo;
-import com.kekwy.iarnet.model.ID;
-import com.kekwy.iarnet.util.IDUtil;
+import com.kekwy.iarnet.common.enums.AppStatus;
+import com.kekwy.iarnet.common.model.ApplicationInfo;
+import com.kekwy.iarnet.common.model.ID;
+import com.kekwy.iarnet.common.util.IDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

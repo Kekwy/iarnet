@@ -195,7 +195,7 @@ class WorkflowBuildGraphTest {
         void pythonTask() {
             Workflow w = Workflow.create("python-demo");
             w.input("src", Inputs.of("data"))
-                    .then("py-transform", Tasks.pythonTask("transform", "/path/to/script", new TypeToken<String>() {
+                    .then("py-transform", Tasks.pythonTask("transform", new TypeToken<String>() {
                     }))
                     .then("sink", s -> {
                     });
@@ -207,7 +207,6 @@ class WorkflowBuildGraphTest {
                     .findFirst()
                     .orElseThrow();
             assertEquals("transform", pyNode.getFunction().getFunctionIdentifier());
-            assertEquals("/path/to/script", pyNode.getFunction().getSourcePath());
         }
 
         @Test
@@ -215,7 +214,7 @@ class WorkflowBuildGraphTest {
         void goTask() {
             Workflow w = Workflow.create("go-demo");
             w.input("src", Inputs.of(1))
-                    .then("go-process", Tasks.goTask("Process", "", new TypeToken<Integer>() {
+                    .then("go-process", Tasks.goTask("Process", new TypeToken<Integer>() {
                     }))
                     .then("sink", x -> {
                     });

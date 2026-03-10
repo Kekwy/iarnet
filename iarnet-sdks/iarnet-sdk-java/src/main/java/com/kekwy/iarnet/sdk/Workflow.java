@@ -1,10 +1,10 @@
 package com.kekwy.iarnet.sdk;
 
 import com.google.protobuf.ByteString;
-import com.kekwy.iarnet.proto.api.SubmissionStatus;
-import com.kekwy.iarnet.proto.api.SubmitWorkflowRequest;
-import com.kekwy.iarnet.proto.api.SubmitWorkflowResponse;
-import com.kekwy.iarnet.proto.api.WorkflowServiceGrpc;
+import com.kekwy.iarnet.proto.workflow.SubmissionStatus;
+import com.kekwy.iarnet.proto.workflow.SubmitWorkflowRequest;
+import com.kekwy.iarnet.proto.workflow.SubmitWorkflowResponse;
+import com.kekwy.iarnet.proto.workflow.WorkflowServiceGrpc;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.Type;
@@ -33,7 +33,14 @@ import com.kekwy.iarnet.sdk.util.TypeExtractor;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +73,16 @@ public class Workflow {
 
     private static final String ENV_APP_ID = "IARNET_APP_ID";
     private static final String ENV_GRPC_PORT = "IARNET_GRPC_PORT";
+    private static final String ENV_EXTERNAL_SOURCE_DIR = "IARNET_EXTERNAL_SOURCE_DIR";
     private static final String DEFAULT_GRPC_HOST = "localhost";
+
+    /** 约定：外部 Python 函数源码目录（相对于项目根） */
+    private static final String CONVENTION_PYTHON_DIR = "resource/function/python";
+    /** 约定：外部 Go 函数源码目录（相对于项目根） */
+    private static final String CONVENTION_GO_DIR = "resource/function/go";
+
+    /** 已导出的语言，避免重复复制。 */
+    private static final Set<Lang> exportedLangs = new HashSet<>();
 
     private final String name;
 
@@ -149,9 +165,14 @@ public class Workflow {
      * @param applicationId 应用 ID
      * @return WorkflowGraph
      * @throws IarnetValidationException 若存在节点输出类型无法推断
+     * @throws IarnetConfigurationException 若使用 Python/Go 但 ENV_EXTERNAL_SOURCE_DIR 未设置
      */
     public WorkflowGraph buildGraph(String applicationId) {
         List<Node> finalizedNodes = finalizeNodesWithTypes();
+        Set<Lang> externalLangs = collectExternalLangs(finalizedNodes);
+        if (!externalLangs.isEmpty()) {
+            ensureExternalSourcesExported(externalLangs);
+        }
         WorkflowGraph graph = WorkflowGraph.newBuilder()
                 .setWorkflowId(IDUtil.genUUIDWith("wf"))
                 .setApplicationId(applicationId)
@@ -433,6 +454,81 @@ public class Workflow {
         return node;
     }
 
+    /** 收集工作流中使用的需外部源码的语言（Python、Go）。 */
+    private static Set<Lang> collectExternalLangs(List<Node> nodes) {
+        Set<Lang> result = new HashSet<>();
+        for (Node node : nodes) {
+            Lang lang = node.getFunction().getLang();
+            if (lang == Lang.LANG_PYTHON || lang == Lang.LANG_GO) {
+                result.add(lang);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 将约定目录 resource/function/{lang}/ 的内容复制到 ENV_EXTERNAL_SOURCE_DIR/{lang}/。
+     * 每种语言只复制一次（进程内去重）。
+     */
+    private static void ensureExternalSourcesExported(Set<Lang> languages) {
+        String baseDir = System.getenv(ENV_EXTERNAL_SOURCE_DIR);
+        if (baseDir == null || baseDir.isBlank()) {
+            throw new IarnetConfigurationException(
+                    "环境变量 " + ENV_EXTERNAL_SOURCE_DIR + " 未设置，使用 Python/Go 外部函数时必须设置");
+        }
+        Path targetRoot = Path.of(baseDir);
+        Path projectRoot = Path.of(System.getProperty("user.dir", "."));
+
+        for (Lang lang : languages) {
+            if (exportedLangs.contains(lang)) {
+                continue;
+            }
+            String conventionDir = lang == Lang.LANG_PYTHON ? CONVENTION_PYTHON_DIR : CONVENTION_GO_DIR;
+            String langSubdir = lang == Lang.LANG_PYTHON ? "python" : "go";
+            Path source = projectRoot.resolve(conventionDir);
+            Path target = targetRoot.resolve(langSubdir);
+
+            if (!Files.isDirectory(source)) {
+                LOG.log(Level.WARNING, "约定目录不存在，跳过导出: {0}", source.toAbsolutePath());
+                continue;
+            }
+            try {
+                Files.createDirectories(target);
+                copyDirectory(source, target);
+                exportedLangs.add(lang);
+                LOG.log(Level.FINE, "已导出外部源码: {0} -> {1}", new Object[]{source, target});
+            } catch (IOException e) {
+                throw new IarnetConfigurationException("导出外部源码失败: " + source + " -> " + target, e);
+            }
+        }
+    }
+
+    private static void copyDirectory(Path source, Path target) throws IOException {
+        Files.walkFileTree(source, new SimpleFileVisitor<>() {
+
+            @NotNull
+            @Override
+            public FileVisitResult preVisitDirectory(@NotNull Path dir, @NotNull BasicFileAttributes attrs) throws IOException {
+                Path rel = source.relativize(dir);
+                Path dest = target.resolve(rel);
+                if (!rel.toString().isEmpty()) {
+                    Files.createDirectories(dest);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @NotNull
+            @Override
+            public FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+                Path rel = source.relativize(file);
+                Path dest = target.resolve(rel);
+                Files.createDirectories(dest.getParent());
+                Files.copy(file, dest, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
     /** 构建边，可选附带条件函数。 */
     private static Edge buildEdge(String fromNodeId, String toNodeId,
                                   ConditionFunction<?> conditionFunction, Type conditionInputType) {
@@ -509,11 +605,9 @@ public class Workflow {
                 .setLang(function.getLang());
 
         if (function instanceof PythonTaskFunction<?, ?> fn) {
-            b.setFunctionIdentifier(fn.getFunctionIdentifier())
-                    .setSourcePath(fn.getSourcePath());
+            b.setFunctionIdentifier(fn.getFunctionIdentifier());
         } else if (function instanceof GoTaskFunction<?, ?> fn) {
-            b.setFunctionIdentifier(fn.getFunctionIdentifier())
-                    .setSourcePath(fn.getSourcePath());
+            b.setFunctionIdentifier(fn.getFunctionIdentifier());
         } else if (function.getLang() == Lang.LANG_JAVA) {
             b.setFunctionIdentifier(function.getClass().getName())
                     .setSerializedFunction(ByteString.copyFrom(SerializationUtil.serialize(function)));

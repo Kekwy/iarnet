@@ -1,12 +1,10 @@
 package com.kekwy.iarnet.config;
 
-import com.kekwy.iarnet.enums.Lang;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter

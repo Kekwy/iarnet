@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.application.launcher;
 
 import com.kekwy.iarnet.application.model.Workspace;
-import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.common.model.ID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.FileSystemUtils;
 

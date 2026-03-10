@@ -9,6 +9,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings({"unchecked", "DataFlowIssue"})
 class ValueCodecTest {
 
     /* ================================================================
@@ -247,7 +248,7 @@ class ValueCodecTest {
             input.put("age", 30);
 
             Value v = ValueCodec.encode(input, type);
-            assertEquals(Value.KindCase.OBJECT_VALUE, v.getKindCase());
+            assertEquals(Value.KindCase.STRUCT_VALUE, v.getKindCase());
 
             Map<String, Object> decoded = (Map<String, Object>) ValueCodec.decode(v);
             assertEquals("Alice", decoded.get("name"));
@@ -352,7 +353,7 @@ class ValueCodecTest {
         void pojoEncodeAndDecodeAsMap() {
             Person p = new Person("Alice", 25);
             Value v = ValueCodec.encode(p);
-            assertEquals(Value.KindCase.OBJECT_VALUE, v.getKindCase());
+            assertEquals(Value.KindCase.STRUCT_VALUE, v.getKindCase());
 
             Map<String, Object> decoded = (Map<String, Object>) ValueCodec.decode(v);
             assertEquals("Alice", decoded.get("name"));
@@ -388,7 +389,7 @@ class ValueCodecTest {
             Employee emp = new Employee("Alice", 30,
                     new Address("Beijing", "100000"));
             Value v = ValueCodec.encode(emp);
-            assertEquals(Value.KindCase.OBJECT_VALUE, v.getKindCase());
+            assertEquals(Value.KindCase.STRUCT_VALUE, v.getKindCase());
 
             Map<String, Object> decoded = (Map<String, Object>) ValueCodec.decode(v);
             assertEquals("Alice", decoded.get("name"));

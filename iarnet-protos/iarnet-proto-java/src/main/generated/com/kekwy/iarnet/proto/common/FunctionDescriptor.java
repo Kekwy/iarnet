@@ -20,7 +20,6 @@ private static final long serialVersionUID = 0L;
     inputsType_ = java.util.Collections.emptyList();
     functionIdentifier_ = "";
     serializedFunction_ = com.google.protobuf.ByteString.EMPTY;
-    sourcePath_ = "";
   }
 
   @java.lang.Override
@@ -202,59 +201,6 @@ private static final long serialVersionUID = 0L;
     return serializedFunction_;
   }
 
-  public static final int SOURCE_PATH_FIELD_NUMBER = 6;
-  @SuppressWarnings("serial")
-  private volatile java.lang.Object sourcePath_ = "";
-  /**
-   * <pre>
-   * 函数代码所在的工件路径（可选）
-   * Java:   java maven 项目根目录
-   * Python: 源码目录路径（requirements.txt 须位于同目录下）
-   * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-   * </pre>
-   *
-   * <code>string source_path = 6;</code>
-   * @return The sourcePath.
-   */
-  @java.lang.Override
-  public java.lang.String getSourcePath() {
-    java.lang.Object ref = sourcePath_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      sourcePath_ = s;
-      return s;
-    }
-  }
-  /**
-   * <pre>
-   * 函数代码所在的工件路径（可选）
-   * Java:   java maven 项目根目录
-   * Python: 源码目录路径（requirements.txt 须位于同目录下）
-   * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-   * </pre>
-   *
-   * <code>string source_path = 6;</code>
-   * @return The bytes for sourcePath.
-   */
-  @java.lang.Override
-  public com.google.protobuf.ByteString
-      getSourcePathBytes() {
-    java.lang.Object ref = sourcePath_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      sourcePath_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
-  }
-
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -284,9 +230,6 @@ private static final long serialVersionUID = 0L;
     if (!serializedFunction_.isEmpty()) {
       output.writeBytes(5, serializedFunction_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sourcePath_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, sourcePath_);
-    }
     getUnknownFields().writeTo(output);
   }
 
@@ -315,9 +258,6 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeBytesSize(5, serializedFunction_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sourcePath_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, sourcePath_);
-    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -345,8 +285,6 @@ private static final long serialVersionUID = 0L;
         .equals(other.getFunctionIdentifier())) return false;
     if (!getSerializedFunction()
         .equals(other.getSerializedFunction())) return false;
-    if (!getSourcePath()
-        .equals(other.getSourcePath())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -372,8 +310,6 @@ private static final long serialVersionUID = 0L;
     hash = (53 * hash) + getFunctionIdentifier().hashCode();
     hash = (37 * hash) + SERIALIZED_FUNCTION_FIELD_NUMBER;
     hash = (53 * hash) + getSerializedFunction().hashCode();
-    hash = (37 * hash) + SOURCE_PATH_FIELD_NUMBER;
-    hash = (53 * hash) + getSourcePath().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -518,7 +454,6 @@ private static final long serialVersionUID = 0L;
       }
       functionIdentifier_ = "";
       serializedFunction_ = com.google.protobuf.ByteString.EMPTY;
-      sourcePath_ = "";
       return this;
     }
 
@@ -578,9 +513,6 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00000010) != 0)) {
         result.serializedFunction_ = serializedFunction_;
-      }
-      if (((from_bitField0_ & 0x00000020) != 0)) {
-        result.sourcePath_ = sourcePath_;
       }
     }
 
@@ -668,11 +600,6 @@ private static final long serialVersionUID = 0L;
       if (other.getSerializedFunction() != com.google.protobuf.ByteString.EMPTY) {
         setSerializedFunction(other.getSerializedFunction());
       }
-      if (!other.getSourcePath().isEmpty()) {
-        sourcePath_ = other.sourcePath_;
-        bitField0_ |= 0x00000020;
-        onChanged();
-      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -734,11 +661,6 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000010;
               break;
             } // case 42
-            case 50: {
-              sourcePath_ = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000020;
-              break;
-            } // case 50
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1319,113 +1241,6 @@ private static final long serialVersionUID = 0L;
     public Builder clearSerializedFunction() {
       bitField0_ = (bitField0_ & ~0x00000010);
       serializedFunction_ = getDefaultInstance().getSerializedFunction();
-      onChanged();
-      return this;
-    }
-
-    private java.lang.Object sourcePath_ = "";
-    /**
-     * <pre>
-     * 函数代码所在的工件路径（可选）
-     * Java:   java maven 项目根目录
-     * Python: 源码目录路径（requirements.txt 须位于同目录下）
-     * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-     * </pre>
-     *
-     * <code>string source_path = 6;</code>
-     * @return The sourcePath.
-     */
-    public java.lang.String getSourcePath() {
-      java.lang.Object ref = sourcePath_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        sourcePath_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
-    }
-    /**
-     * <pre>
-     * 函数代码所在的工件路径（可选）
-     * Java:   java maven 项目根目录
-     * Python: 源码目录路径（requirements.txt 须位于同目录下）
-     * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-     * </pre>
-     *
-     * <code>string source_path = 6;</code>
-     * @return The bytes for sourcePath.
-     */
-    public com.google.protobuf.ByteString
-        getSourcePathBytes() {
-      java.lang.Object ref = sourcePath_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        sourcePath_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <pre>
-     * 函数代码所在的工件路径（可选）
-     * Java:   java maven 项目根目录
-     * Python: 源码目录路径（requirements.txt 须位于同目录下）
-     * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-     * </pre>
-     *
-     * <code>string source_path = 6;</code>
-     * @param value The sourcePath to set.
-     * @return This builder for chaining.
-     */
-    public Builder setSourcePath(
-        java.lang.String value) {
-      if (value == null) { throw new NullPointerException(); }
-      sourcePath_ = value;
-      bitField0_ |= 0x00000020;
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 函数代码所在的工件路径（可选）
-     * Java:   java maven 项目根目录
-     * Python: 源码目录路径（requirements.txt 须位于同目录下）
-     * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-     * </pre>
-     *
-     * <code>string source_path = 6;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearSourcePath() {
-      sourcePath_ = getDefaultInstance().getSourcePath();
-      bitField0_ = (bitField0_ & ~0x00000020);
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 函数代码所在的工件路径（可选）
-     * Java:   java maven 项目根目录
-     * Python: 源码目录路径（requirements.txt 须位于同目录下）
-     * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-     * </pre>
-     *
-     * <code>string source_path = 6;</code>
-     * @param value The bytes for sourcePath to set.
-     * @return This builder for chaining.
-     */
-    public Builder setSourcePathBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) { throw new NullPointerException(); }
-      checkByteStringIsUtf8(value);
-      sourcePath_ = value;
-      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }

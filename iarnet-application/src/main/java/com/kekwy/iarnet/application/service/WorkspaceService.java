@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.application.service;
 
 import com.kekwy.iarnet.application.model.Workspace;
-import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.common.model.ID;
 
 /**
  * Workspace 服务，负责为应用管理工作空间目录及 Git 仓库。

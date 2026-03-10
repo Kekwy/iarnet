@@ -121,19 +121,19 @@ public interface ValueOrBuilder extends
   com.kekwy.iarnet.proto.common.MapValueOrBuilder getMapValueOrBuilder();
 
   /**
-   * <code>.iarnet.common.StructValue object_value = 10;</code>
-   * @return Whether the objectValue field is set.
+   * <code>.iarnet.common.StructValue struct_value = 10;</code>
+   * @return Whether the structValue field is set.
    */
-  boolean hasObjectValue();
+  boolean hasStructValue();
   /**
-   * <code>.iarnet.common.StructValue object_value = 10;</code>
-   * @return The objectValue.
+   * <code>.iarnet.common.StructValue struct_value = 10;</code>
+   * @return The structValue.
    */
-  com.kekwy.iarnet.proto.common.StructValue getObjectValue();
+  com.kekwy.iarnet.proto.common.StructValue getStructValue();
   /**
-   * <code>.iarnet.common.StructValue object_value = 10;</code>
+   * <code>.iarnet.common.StructValue struct_value = 10;</code>
    */
-  com.kekwy.iarnet.proto.common.StructValueOrBuilder getObjectValueOrBuilder();
+  com.kekwy.iarnet.proto.common.StructValueOrBuilder getStructValueOrBuilder();
 
   /**
    * <code>.iarnet.common.NullValue null_value = 11;</code>

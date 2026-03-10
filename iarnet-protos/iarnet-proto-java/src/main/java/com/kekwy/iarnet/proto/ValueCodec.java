@@ -70,7 +70,7 @@ public final class ValueCodec {
             case TYPE_KIND_NULL    -> b.setNullValue(NullValue.getDefaultInstance());
             case TYPE_KIND_ARRAY   -> b.setArrayValue(encodeArray((List<?>) value, type));
             case TYPE_KIND_MAP     -> b.setMapValue(encodeMap((Map<?, ?>) value, type));
-            case TYPE_KIND_STRUCT  -> b.setObjectValue(encodeStruct(value, type));
+            case TYPE_KIND_STRUCT  -> b.setStructValue(encodeStruct(value, type));
             default -> throw new IllegalArgumentException(
                     "Unsupported TypeKind: " + type.getKind());
         }
@@ -162,7 +162,7 @@ public final class ValueCodec {
             case NULL_VALUE   -> null;
             case ARRAY_VALUE  -> decodeArray(val.getArrayValue());
             case MAP_VALUE    -> decodeMap(val.getMapValue());
-            case OBJECT_VALUE -> decodeStruct(val.getObjectValue());
+            case STRUCT_VALUE -> decodeStruct(val.getStructValue());
             case KIND_NOT_SET -> null;
         };
     }
@@ -184,7 +184,7 @@ public final class ValueCodec {
         if (clazz.isInstance(decoded)) {
             return clazz.cast(decoded);
         }
-        if (val.getKindCase() == Value.KindCase.OBJECT_VALUE
+        if (val.getKindCase() == Value.KindCase.STRUCT_VALUE
                 && decoded instanceof Map) {
             return mapToPojo((Map<String, Object>) decoded, clazz);
         }

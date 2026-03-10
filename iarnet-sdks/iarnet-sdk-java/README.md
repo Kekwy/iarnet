@@ -80,25 +80,25 @@ export IARNET_GRPC_PORT=9090
 - **`Inputs.of(T... items)`** — 从内存数组构造输入源
 - **`Outputs.println()`** — 打印到 stdout 的 Sink
 - **`Outputs.noop()`** — 空操作 Sink
-- **`Tasks.pythonTask(identifier, sourcePath)`** — Python 任务描述符
-- **`Tasks.goTask(identifier, sourcePath)`** — Go 任务描述符
+- **`Tasks.pythonTask(identifier)`** — Python 任务描述符，源码约定位于 `resource/function/python/`
+- **`Tasks.goTask(identifier)`** — Go 任务描述符，源码约定位于 `resource/function/go/`
 
 ### 跨语言任务
 
-通过 `Tasks` 创建 Python / Go 任务描述符，DSL 阶段仅做描述，实际执行由运行时调度至对应语言的 worker：
+通过 `Tasks` 创建 Python / Go 任务描述符，DSL 阶段仅做描述，实际执行由运行时调度至对应语言的 worker。外部函数源码须按约定放置于 `resource/function/python/` 或 `resource/function/go/` 目录：
 
 ```java
 // Python 任务
 Flow<DecodedFrame> decoded = cam.then(
     "decode",
-    Tasks.<VideoFrame, DecodedFrame>pythonTask("decode_frame", "function/decode_frame.py"),
+    Tasks.<VideoFrame, DecodedFrame>pythonTask("decode_frame"),
     edgeConfig
 );
 
 // Go 任务（带输出类型提示）
 Flow<Result> result = input.then(
     "process",
-    Tasks.<Input, Result>goTask("Process", "cmd/main.go", new TypeToken<Result>() {})
+    Tasks.<Input, Result>goTask("Process", new TypeToken<Result>() {})
 );
 ```
 

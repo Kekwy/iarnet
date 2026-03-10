@@ -29,16 +29,15 @@ public final class Function {
   static {
     java.lang.String[] descriptorData = {
       "\n\034iarnet/common/function.proto\022\riarnet.c" +
-      "ommon\032\030iarnet/common/type.proto\"\332\001\n\022Func" +
+      "ommon\032\030iarnet/common/type.proto\"\305\001\n\022Func" +
       "tionDescriptor\022!\n\004lang\030\001 \001(\0162\023.iarnet.co" +
       "mmon.Lang\022(\n\013inputs_type\030\002 \003(\0132\023.iarnet." +
       "common.Type\022(\n\013output_type\030\003 \001(\0132\023.iarne" +
       "t.common.Type\022\033\n\023function_identifier\030\004 \001" +
-      "(\t\022\033\n\023serialized_function\030\005 \001(\014\022\023\n\013sourc" +
-      "e_path\030\006 \001(\t*I\n\004Lang\022\024\n\020LANG_UNSPECIFIED" +
-      "\020\000\022\r\n\tLANG_JAVA\020\001\022\017\n\013LANG_PYTHON\020\002\022\013\n\007LA" +
-      "NG_GO\020\003B!\n\035com.kekwy.iarnet.proto.common" +
-      "P\001b\006proto3"
+      "(\t\022\033\n\023serialized_function\030\005 \001(\014*I\n\004Lang\022" +
+      "\024\n\020LANG_UNSPECIFIED\020\000\022\r\n\tLANG_JAVA\020\001\022\017\n\013" +
+      "LANG_PYTHON\020\002\022\013\n\007LANG_GO\020\003B!\n\035com.kekwy." +
+      "iarnet.proto.commonP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -50,7 +49,7 @@ public final class Function {
     internal_static_iarnet_common_FunctionDescriptor_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_common_FunctionDescriptor_descriptor,
-        new java.lang.String[] { "Lang", "InputsType", "OutputType", "FunctionIdentifier", "SerializedFunction", "SourcePath", });
+        new java.lang.String[] { "Lang", "InputsType", "OutputType", "FunctionIdentifier", "SerializedFunction", });
     com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor();
   }
 

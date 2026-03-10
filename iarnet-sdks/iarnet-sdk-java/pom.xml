@@ -55,6 +55,14 @@
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.jetbrains/annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>26.0.2</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -72,9 +80,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
                 <configuration>
-                    <argLine>-Diarnet.test.print.graph=false</argLine>
+                    <argLine>-Diarnet.test.print.graph=true</argLine>
+                    <environmentVariables>
+                        <IARNET_EXTERNAL_SOURCE_DIR>${java.io.tmpdir}/iarnet-external-test</IARNET_EXTERNAL_SOURCE_DIR>
+                    </environmentVariables>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,6 +1,6 @@
 package com.kekwy.iarnet.application.model;
 
-import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.common.model.ID;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

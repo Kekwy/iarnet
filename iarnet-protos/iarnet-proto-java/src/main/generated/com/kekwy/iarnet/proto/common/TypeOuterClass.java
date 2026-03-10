@@ -103,7 +103,7 @@ public final class TypeOuterClass {
       "(\001H\000\022\024\n\nbool_value\030\006 \001(\010H\000\022\026\n\014string_val" +
       "ue\030\007 \001(\tH\000\0220\n\013array_value\030\010 \001(\0132\031.iarnet" +
       ".common.ArrayValueH\000\022,\n\tmap_value\030\t \001(\0132" +
-      "\027.iarnet.common.MapValueH\000\0222\n\014object_val" +
+      "\027.iarnet.common.MapValueH\000\0222\n\014struct_val" +
       "ue\030\n \001(\0132\032.iarnet.common.StructValueH\000\022." +
       "\n\nnull_value\030\013 \001(\0132\030.iarnet.common.NullV" +
       "alueH\000B\006\n\004kind\"4\n\nArrayValue\022&\n\010elements" +
@@ -168,7 +168,7 @@ public final class TypeOuterClass {
     internal_static_iarnet_common_Value_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_common_Value_descriptor,
-        new java.lang.String[] { "BytesValue", "Int32Value", "Int64Value", "FloatValue", "DoubleValue", "BoolValue", "StringValue", "ArrayValue", "MapValue", "ObjectValue", "NullValue", "Kind", });
+        new java.lang.String[] { "BytesValue", "Int32Value", "Int64Value", "FloatValue", "DoubleValue", "BoolValue", "StringValue", "ArrayValue", "MapValue", "StructValue", "NullValue", "Kind", });
     internal_static_iarnet_common_ArrayValue_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_iarnet_common_ArrayValue_fieldAccessorTable = new

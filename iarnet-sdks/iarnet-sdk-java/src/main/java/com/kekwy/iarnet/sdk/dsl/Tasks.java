@@ -16,14 +16,14 @@ import java.util.logging.Logger;
  * <p>
  * 典型用法（与 {@link com.kekwy.iarnet.sdk.Workflow} 配合）：
  * <pre>{@code
- * // Python 任务：指定函数名和源码路径
+ * // Python 任务：约定源码位于 resource/function/python/
  * w.input("src", Inputs.of(frame))
- *  .then("decode", Tasks.pythonTask("decode_frame", "function/decode_frame.py"))
+ *  .then("decode", Tasks.pythonTask("decode_frame"))
  *  .then("sink", Outputs.println());
  *
- * // Go 任务：带输出类型提示（lambda 无法反射推断时使用）
+ * // Go 任务：约定源码位于 resource/function/go/，带输出类型提示
  * w.input("src", ...)
- *  .then("process", Tasks.goTask("Process", "cmd/main.go", new TypeToken<Result>() {}))
+ *  .then("process", Tasks.goTask("Process", new TypeToken<Result>() {}))
  *  .then("sink", ...);
  * }</pre>
  */
@@ -38,7 +38,7 @@ public final class Tasks {
     // ======================== Python Task ========================
 
     /**
-     * 创建 Python 任务，使用默认源码路径（空串，由运行时解析）。
+     * 创建 Python 任务。源码约定位于 {@code resource/function/python/}。
      *
      * @param functionIdentifier Python 中可调用的函数标识，如 {@code module.func_name}
      * @param <I>                输入类型
@@ -46,27 +46,13 @@ public final class Tasks {
      * @return 对应的 TaskFunction
      */
     public static <I, O> TaskFunction<I, O> pythonTask(String functionIdentifier) {
-        LOG.log(Level.FINE, "Python task created: functionIdentifier={0}, sourcePath=<default>", functionIdentifier);
-        return new PythonTaskFunction<>(functionIdentifier, "");
-    }
-
-    /**
-     * 创建 Python 任务，指定函数标识与源码路径。
-     *
-     * @param functionIdentifier Python 中可调用的函数标识
-     * @param sourcePath         源码文件或目录路径，供运行时加载
-     * @param <I>                输入类型
-     * @param <O>                输出类型
-     * @return 对应的 TaskFunction
-     */
-    public static <I, O> TaskFunction<I, O> pythonTask(String functionIdentifier, String sourcePath) {
-        LOG.log(Level.FINE, "Python task created: functionIdentifier={0}, sourcePath={1}",
-                new Object[]{functionIdentifier, sourcePath});
-        return new PythonTaskFunction<>(functionIdentifier, sourcePath);
+        LOG.log(Level.FINE, "Python task created: functionIdentifier={0}", functionIdentifier);
+        return new PythonTaskFunction<>(functionIdentifier);
     }
 
     /**
      * 创建带输出类型提示的 Python 任务，无需在 flow 上额外调用 {@code .returns(TypeToken)}。
+     * 源码约定位于 {@code resource/function/python/}。
      *
      * @param functionIdentifier Python 中可调用的函数标识
      * @param outputType         输出类型的 TypeToken，如 {@code new TypeToken<List<Frame>>() {}}
@@ -77,29 +63,13 @@ public final class Tasks {
     public static <I, O> TaskFunction<I, O> pythonTask(String functionIdentifier, TypeToken<O> outputType) {
         LOG.log(Level.FINE, "Python task created: functionIdentifier={0}, outputType={1}",
                 new Object[]{functionIdentifier, outputType.getType()});
-        return new PythonTaskFunction<>(functionIdentifier, "", outputType.getType());
-    }
-
-    /**
-     * 创建带输出类型提示的 Python 任务，指定函数标识与源码路径。
-     *
-     * @param functionIdentifier Python 中可调用的函数标识
-     * @param sourcePath         源码文件或目录路径
-     * @param outputType         输出类型的 TypeToken
-     * @param <I>                输入类型
-     * @param <O>                输出类型
-     * @return 对应的 TaskFunction
-     */
-    public static <I, O> TaskFunction<I, O> pythonTask(String functionIdentifier, String sourcePath, TypeToken<O> outputType) {
-        LOG.log(Level.FINE, "Python task created: functionIdentifier={0}, sourcePath={1}, outputType={2}",
-                new Object[]{functionIdentifier, sourcePath, outputType.getType()});
-        return new PythonTaskFunction<>(functionIdentifier, sourcePath, outputType.getType());
+        return new PythonTaskFunction<>(functionIdentifier, outputType.getType());
     }
 
     // ======================== Go Task ========================
 
     /**
-     * 创建 Go 任务，使用默认源码路径（空串）。
+     * 创建 Go 任务。源码约定位于 {@code resource/function/go/}。
      *
      * @param functionIdentifier Go 中可导出的函数名
      * @param <I>                输入类型
@@ -107,27 +77,13 @@ public final class Tasks {
      * @return 对应的 TaskFunction
      */
     public static <I, O> TaskFunction<I, O> goTask(String functionIdentifier) {
-        LOG.log(Level.FINE, "Go task created: functionIdentifier={0}, sourcePath=<default>", functionIdentifier);
-        return new GoTaskFunction<>(functionIdentifier, "");
-    }
-
-    /**
-     * 创建 Go 任务，指定函数标识与源码路径。
-     *
-     * @param functionIdentifier Go 中可导出的函数名
-     * @param sourcePath         源码文件或包路径
-     * @param <I>                输入类型
-     * @param <O>                输出类型
-     * @return 对应的 TaskFunction
-     */
-    public static <I, O> TaskFunction<I, O> goTask(String functionIdentifier, String sourcePath) {
-        LOG.log(Level.FINE, "Go task created: functionIdentifier={0}, sourcePath={1}",
-                new Object[]{functionIdentifier, sourcePath});
-        return new GoTaskFunction<>(functionIdentifier, sourcePath);
+        LOG.log(Level.FINE, "Go task created: functionIdentifier={0}", functionIdentifier);
+        return new GoTaskFunction<>(functionIdentifier);
     }
 
     /**
      * 创建带输出类型提示的 Go 任务，无需在 flow 上额外调用 {@code .returns(TypeToken)}。
+     * 源码约定位于 {@code resource/function/go/}。
      *
      * @param functionIdentifier Go 中可导出的函数名
      * @param outputType         输出类型的 TypeToken
@@ -138,22 +94,6 @@ public final class Tasks {
     public static <I, O> TaskFunction<I, O> goTask(String functionIdentifier, TypeToken<O> outputType) {
         LOG.log(Level.FINE, "Go task created: functionIdentifier={0}, outputType={1}",
                 new Object[]{functionIdentifier, outputType.getType()});
-        return new GoTaskFunction<>(functionIdentifier, "", outputType.getType());
-    }
-
-    /**
-     * 创建带输出类型提示的 Go 任务，指定函数标识与源码路径。
-     *
-     * @param functionIdentifier Go 中可导出的函数名
-     * @param sourcePath         源码文件或包路径
-     * @param outputType         输出类型的 TypeToken
-     * @param <I>                输入类型
-     * @param <O>                输出类型
-     * @return 对应的 TaskFunction
-     */
-    public static <I, O> TaskFunction<I, O> goTask(String functionIdentifier, String sourcePath, TypeToken<O> outputType) {
-        LOG.log(Level.FINE, "Go task created: functionIdentifier={0}, sourcePath={1}, outputType={2}",
-                new Object[]{functionIdentifier, sourcePath, outputType.getType()});
-        return new GoTaskFunction<>(functionIdentifier, sourcePath, outputType.getType());
+        return new GoTaskFunction<>(functionIdentifier, outputType.getType());
     }
 }

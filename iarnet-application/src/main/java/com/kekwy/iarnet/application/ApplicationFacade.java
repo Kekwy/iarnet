@@ -1,8 +1,8 @@
 package com.kekwy.iarnet.application;
 
 import com.google.protobuf.ByteString;
-import com.kekwy.iarnet.model.ApplicationInfo;
-import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.common.model.ApplicationInfo;
+import com.kekwy.iarnet.common.model.ID;
 import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 
 import java.util.List;

@@ -6,7 +6,7 @@ import com.kekwy.iarnet.application.launcher.PythonLauncher;
 import com.kekwy.iarnet.application.model.ApplicationInfoEntity;
 import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.repository.ApplicationInfoRepository;
-import com.kekwy.iarnet.enums.AppStatus;
+import com.kekwy.iarnet.common.enums.AppStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

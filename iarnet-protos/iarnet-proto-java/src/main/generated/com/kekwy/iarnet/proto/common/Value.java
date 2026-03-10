@@ -57,7 +57,7 @@ private static final long serialVersionUID = 0L;
     STRING_VALUE(7),
     ARRAY_VALUE(8),
     MAP_VALUE(9),
-    OBJECT_VALUE(10),
+    STRUCT_VALUE(10),
     NULL_VALUE(11),
     KIND_NOT_SET(0);
     private final int value;
@@ -85,7 +85,7 @@ private static final long serialVersionUID = 0L;
         case 7: return STRING_VALUE;
         case 8: return ARRAY_VALUE;
         case 9: return MAP_VALUE;
-        case 10: return OBJECT_VALUE;
+        case 10: return STRUCT_VALUE;
         case 11: return NULL_VALUE;
         case 0: return KIND_NOT_SET;
         default: return null;
@@ -342,31 +342,31 @@ private static final long serialVersionUID = 0L;
     return com.kekwy.iarnet.proto.common.MapValue.getDefaultInstance();
   }
 
-  public static final int OBJECT_VALUE_FIELD_NUMBER = 10;
+  public static final int STRUCT_VALUE_FIELD_NUMBER = 10;
   /**
-   * <code>.iarnet.common.StructValue object_value = 10;</code>
-   * @return Whether the objectValue field is set.
+   * <code>.iarnet.common.StructValue struct_value = 10;</code>
+   * @return Whether the structValue field is set.
    */
   @java.lang.Override
-  public boolean hasObjectValue() {
+  public boolean hasStructValue() {
     return kindCase_ == 10;
   }
   /**
-   * <code>.iarnet.common.StructValue object_value = 10;</code>
-   * @return The objectValue.
+   * <code>.iarnet.common.StructValue struct_value = 10;</code>
+   * @return The structValue.
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.StructValue getObjectValue() {
+  public com.kekwy.iarnet.proto.common.StructValue getStructValue() {
     if (kindCase_ == 10) {
        return (com.kekwy.iarnet.proto.common.StructValue) kind_;
     }
     return com.kekwy.iarnet.proto.common.StructValue.getDefaultInstance();
   }
   /**
-   * <code>.iarnet.common.StructValue object_value = 10;</code>
+   * <code>.iarnet.common.StructValue struct_value = 10;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.StructValueOrBuilder getObjectValueOrBuilder() {
+  public com.kekwy.iarnet.proto.common.StructValueOrBuilder getStructValueOrBuilder() {
     if (kindCase_ == 10) {
        return (com.kekwy.iarnet.proto.common.StructValue) kind_;
     }
@@ -571,8 +571,8 @@ private static final long serialVersionUID = 0L;
             .equals(other.getMapValue())) return false;
         break;
       case 10:
-        if (!getObjectValue()
-            .equals(other.getObjectValue())) return false;
+        if (!getStructValue()
+            .equals(other.getStructValue())) return false;
         break;
       case 11:
         if (!getNullValue()
@@ -634,8 +634,8 @@ private static final long serialVersionUID = 0L;
         hash = (53 * hash) + getMapValue().hashCode();
         break;
       case 10:
-        hash = (37 * hash) + OBJECT_VALUE_FIELD_NUMBER;
-        hash = (53 * hash) + getObjectValue().hashCode();
+        hash = (37 * hash) + STRUCT_VALUE_FIELD_NUMBER;
+        hash = (53 * hash) + getStructValue().hashCode();
         break;
       case 11:
         hash = (37 * hash) + NULL_VALUE_FIELD_NUMBER;
@@ -779,8 +779,8 @@ private static final long serialVersionUID = 0L;
       if (mapValueBuilder_ != null) {
         mapValueBuilder_.clear();
       }
-      if (objectValueBuilder_ != null) {
-        objectValueBuilder_.clear();
+      if (structValueBuilder_ != null) {
+        structValueBuilder_.clear();
       }
       if (nullValueBuilder_ != null) {
         nullValueBuilder_.clear();
@@ -835,8 +835,8 @@ private static final long serialVersionUID = 0L;
         result.kind_ = mapValueBuilder_.build();
       }
       if (kindCase_ == 10 &&
-          objectValueBuilder_ != null) {
-        result.kind_ = objectValueBuilder_.build();
+          structValueBuilder_ != null) {
+        result.kind_ = structValueBuilder_.build();
       }
       if (kindCase_ == 11 &&
           nullValueBuilder_ != null) {
@@ -927,8 +927,8 @@ private static final long serialVersionUID = 0L;
           mergeMapValue(other.getMapValue());
           break;
         }
-        case OBJECT_VALUE: {
-          mergeObjectValue(other.getObjectValue());
+        case STRUCT_VALUE: {
+          mergeStructValue(other.getStructValue());
           break;
         }
         case NULL_VALUE: {
@@ -1017,7 +1017,7 @@ private static final long serialVersionUID = 0L;
             } // case 74
             case 82: {
               input.readMessage(
-                  getObjectValueFieldBuilder().getBuilder(),
+                  getStructValueFieldBuilder().getBuilder(),
                   extensionRegistry);
               kindCase_ = 10;
               break;
@@ -1691,68 +1691,68 @@ private static final long serialVersionUID = 0L;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.StructValue, com.kekwy.iarnet.proto.common.StructValue.Builder, com.kekwy.iarnet.proto.common.StructValueOrBuilder> objectValueBuilder_;
+        com.kekwy.iarnet.proto.common.StructValue, com.kekwy.iarnet.proto.common.StructValue.Builder, com.kekwy.iarnet.proto.common.StructValueOrBuilder> structValueBuilder_;
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
-     * @return Whether the objectValue field is set.
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
+     * @return Whether the structValue field is set.
      */
     @java.lang.Override
-    public boolean hasObjectValue() {
+    public boolean hasStructValue() {
       return kindCase_ == 10;
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
-     * @return The objectValue.
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
+     * @return The structValue.
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.common.StructValue getObjectValue() {
-      if (objectValueBuilder_ == null) {
+    public com.kekwy.iarnet.proto.common.StructValue getStructValue() {
+      if (structValueBuilder_ == null) {
         if (kindCase_ == 10) {
           return (com.kekwy.iarnet.proto.common.StructValue) kind_;
         }
         return com.kekwy.iarnet.proto.common.StructValue.getDefaultInstance();
       } else {
         if (kindCase_ == 10) {
-          return objectValueBuilder_.getMessage();
+          return structValueBuilder_.getMessage();
         }
         return com.kekwy.iarnet.proto.common.StructValue.getDefaultInstance();
       }
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
-    public Builder setObjectValue(com.kekwy.iarnet.proto.common.StructValue value) {
-      if (objectValueBuilder_ == null) {
+    public Builder setStructValue(com.kekwy.iarnet.proto.common.StructValue value) {
+      if (structValueBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
         kind_ = value;
         onChanged();
       } else {
-        objectValueBuilder_.setMessage(value);
+        structValueBuilder_.setMessage(value);
       }
       kindCase_ = 10;
       return this;
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
-    public Builder setObjectValue(
+    public Builder setStructValue(
         com.kekwy.iarnet.proto.common.StructValue.Builder builderForValue) {
-      if (objectValueBuilder_ == null) {
+      if (structValueBuilder_ == null) {
         kind_ = builderForValue.build();
         onChanged();
       } else {
-        objectValueBuilder_.setMessage(builderForValue.build());
+        structValueBuilder_.setMessage(builderForValue.build());
       }
       kindCase_ = 10;
       return this;
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
-    public Builder mergeObjectValue(com.kekwy.iarnet.proto.common.StructValue value) {
-      if (objectValueBuilder_ == null) {
+    public Builder mergeStructValue(com.kekwy.iarnet.proto.common.StructValue value) {
+      if (structValueBuilder_ == null) {
         if (kindCase_ == 10 &&
             kind_ != com.kekwy.iarnet.proto.common.StructValue.getDefaultInstance()) {
           kind_ = com.kekwy.iarnet.proto.common.StructValue.newBuilder((com.kekwy.iarnet.proto.common.StructValue) kind_)
@@ -1763,19 +1763,19 @@ private static final long serialVersionUID = 0L;
         onChanged();
       } else {
         if (kindCase_ == 10) {
-          objectValueBuilder_.mergeFrom(value);
+          structValueBuilder_.mergeFrom(value);
         } else {
-          objectValueBuilder_.setMessage(value);
+          structValueBuilder_.setMessage(value);
         }
       }
       kindCase_ = 10;
       return this;
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
-    public Builder clearObjectValue() {
-      if (objectValueBuilder_ == null) {
+    public Builder clearStructValue() {
+      if (structValueBuilder_ == null) {
         if (kindCase_ == 10) {
           kindCase_ = 0;
           kind_ = null;
@@ -1786,23 +1786,23 @@ private static final long serialVersionUID = 0L;
           kindCase_ = 0;
           kind_ = null;
         }
-        objectValueBuilder_.clear();
+        structValueBuilder_.clear();
       }
       return this;
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
-    public com.kekwy.iarnet.proto.common.StructValue.Builder getObjectValueBuilder() {
-      return getObjectValueFieldBuilder().getBuilder();
+    public com.kekwy.iarnet.proto.common.StructValue.Builder getStructValueBuilder() {
+      return getStructValueFieldBuilder().getBuilder();
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
     @java.lang.Override
-    public com.kekwy.iarnet.proto.common.StructValueOrBuilder getObjectValueOrBuilder() {
-      if ((kindCase_ == 10) && (objectValueBuilder_ != null)) {
-        return objectValueBuilder_.getMessageOrBuilder();
+    public com.kekwy.iarnet.proto.common.StructValueOrBuilder getStructValueOrBuilder() {
+      if ((kindCase_ == 10) && (structValueBuilder_ != null)) {
+        return structValueBuilder_.getMessageOrBuilder();
       } else {
         if (kindCase_ == 10) {
           return (com.kekwy.iarnet.proto.common.StructValue) kind_;
@@ -1811,16 +1811,16 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>.iarnet.common.StructValue object_value = 10;</code>
+     * <code>.iarnet.common.StructValue struct_value = 10;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.StructValue, com.kekwy.iarnet.proto.common.StructValue.Builder, com.kekwy.iarnet.proto.common.StructValueOrBuilder> 
-        getObjectValueFieldBuilder() {
-      if (objectValueBuilder_ == null) {
+        getStructValueFieldBuilder() {
+      if (structValueBuilder_ == null) {
         if (!(kindCase_ == 10)) {
           kind_ = com.kekwy.iarnet.proto.common.StructValue.getDefaultInstance();
         }
-        objectValueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+        structValueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
             com.kekwy.iarnet.proto.common.StructValue, com.kekwy.iarnet.proto.common.StructValue.Builder, com.kekwy.iarnet.proto.common.StructValueOrBuilder>(
                 (com.kekwy.iarnet.proto.common.StructValue) kind_,
                 getParentForChildren(),
@@ -1829,7 +1829,7 @@ private static final long serialVersionUID = 0L;
       }
       kindCase_ = 10;
       onChanged();
-      return objectValueBuilder_;
+      return structValueBuilder_;
     }
 
     private com.google.protobuf.SingleFieldBuilderV3<

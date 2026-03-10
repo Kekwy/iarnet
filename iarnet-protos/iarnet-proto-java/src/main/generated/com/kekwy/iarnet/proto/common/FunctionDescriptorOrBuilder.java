@@ -93,30 +93,4 @@ public interface FunctionDescriptorOrBuilder extends
    * @return The serializedFunction.
    */
   com.google.protobuf.ByteString getSerializedFunction();
-
-  /**
-   * <pre>
-   * 函数代码所在的工件路径（可选）
-   * Java:   java maven 项目根目录
-   * Python: 源码目录路径（requirements.txt 须位于同目录下）
-   * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-   * </pre>
-   *
-   * <code>string source_path = 6;</code>
-   * @return The sourcePath.
-   */
-  java.lang.String getSourcePath();
-  /**
-   * <pre>
-   * 函数代码所在的工件路径（可选）
-   * Java:   java maven 项目根目录
-   * Python: 源码目录路径（requirements.txt 须位于同目录下）
-   * 当函数来自提交方自身运行时（如 Java DSL 的 Java 函数）可省略
-   * </pre>
-   *
-   * <code>string source_path = 6;</code>
-   * @return The bytes for sourcePath.
-   */
-  com.google.protobuf.ByteString
-      getSourcePathBytes();
 }

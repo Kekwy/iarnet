@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.application.service;
 
-import com.kekwy.iarnet.model.ApplicationInfo;
-import com.kekwy.iarnet.model.ID;
+import com.kekwy.iarnet.common.model.ApplicationInfo;
+import com.kekwy.iarnet.common.model.ID;
 
 import java.util.List;
 import java.util.Map;
