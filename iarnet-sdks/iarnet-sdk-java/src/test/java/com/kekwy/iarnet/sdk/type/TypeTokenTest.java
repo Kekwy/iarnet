@@ -1,5 +1,7 @@
 package com.kekwy.iarnet.sdk.type;
 
+import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -320,7 +322,7 @@ class TypeTokenTest {
         @Test
         @DisplayName("裸类型 new TypeToken() {} 应抛出异常")
         void rawTypeThrows() {
-            IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
+            IarnetValidationException e = assertThrows(IarnetValidationException.class, () -> {
                 new TypeToken() {
                 };
             });
@@ -330,7 +332,7 @@ class TypeTokenTest {
         @Test
         @DisplayName("非匿名子类裸类型继承应抛出异常")
         void concreteSubclassRawTypeThrows() {
-            IllegalStateException e = assertThrows(IllegalStateException.class, RawTypeTokenSubclass::new);
+            IarnetValidationException e = assertThrows(IarnetValidationException.class, RawTypeTokenSubclass::new);
             assertTrue(e.getMessage().contains("TypeToken must be created with type parameter"));
         }
     }

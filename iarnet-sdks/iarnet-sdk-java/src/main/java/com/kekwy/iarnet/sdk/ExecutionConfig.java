@@ -2,6 +2,7 @@ package com.kekwy.iarnet.sdk;
 
 import com.kekwy.iarnet.proto.common.ResourceSpec;
 import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
+import com.kekwy.iarnet.sdk.function.TaskFunction;
 
 /**
  * 节点执行配置。
