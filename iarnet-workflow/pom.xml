@@ -49,5 +49,13 @@
             <artifactId>hibernate-community-dialects</artifactId>
             <version>6.4.4.Final</version>
         </dependency>
+
+
+        <!-- ========== MinIO / OSS ========== -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.11</version>
+        </dependency>
     </dependencies>
 </project>

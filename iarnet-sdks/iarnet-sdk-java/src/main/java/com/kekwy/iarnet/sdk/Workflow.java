@@ -73,7 +73,7 @@ public class Workflow {
 
     private static final String ENV_APP_ID = "IARNET_APP_ID";
     private static final String ENV_GRPC_PORT = "IARNET_GRPC_PORT";
-    private static final String ENV_EXTERNAL_SOURCE_DIR = "IARNET_EXTERNAL_SOURCE_DIR";
+    private static final String ENV_EXTERNAL_SOURCE_BASE_DIR = "IARNET_EXTERNAL_SOURCE_BASE_DIR";
     private static final String DEFAULT_GRPC_HOST = "localhost";
 
     /** 约定：外部 Python 函数源码目录（相对于项目根） */
@@ -295,12 +295,6 @@ public class Workflow {
 
     // ======== DefaultFlow ========
 
-    private record Precursor(Node node, int port) {
-        Precursor(Node node) {
-            this(node, 0);
-        }
-    }
-
     private class DefaultFlow<T> implements Flow<T> {
 
         private final Node precursor;
@@ -471,10 +465,10 @@ public class Workflow {
      * 每种语言只复制一次（进程内去重）。
      */
     private static void ensureExternalSourcesExported(Set<Lang> languages) {
-        String baseDir = System.getenv(ENV_EXTERNAL_SOURCE_DIR);
+        String baseDir = System.getenv(ENV_EXTERNAL_SOURCE_BASE_DIR);
         if (baseDir == null || baseDir.isBlank()) {
             throw new IarnetConfigurationException(
-                    "环境变量 " + ENV_EXTERNAL_SOURCE_DIR + " 未设置，使用 Python/Go 外部函数时必须设置");
+                    "环境变量 " + ENV_EXTERNAL_SOURCE_BASE_DIR + " 未设置，使用 Python/Go 外部函数时必须设置");
         }
         Path targetRoot = Path.of(baseDir);
         Path projectRoot = Path.of(System.getProperty("user.dir", "."));
