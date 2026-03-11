@@ -3,8 +3,8 @@ package com.kekwy.iarnet.common;
 public interface Constants {
 
     String ARTIFACT_FILENAME_JAVA = "artifact-java.jar";
-    String ARTIFACT_FILENAME_PYTHON = "python-artifact.tar.xz";
-    String ARTIFACT_FILENAME_GO = "go-artifact.bin";
+    String ARTIFACT_FILENAME_PYTHON = "artifact-python.tar.xz";
+    String ARTIFACT_FILENAME_GO = "artifact-go.bin";
 
     String SOURCE_DIR_JAVA = "src-java";
     String SOURCE_DIR_PYTHON = "src-python";
