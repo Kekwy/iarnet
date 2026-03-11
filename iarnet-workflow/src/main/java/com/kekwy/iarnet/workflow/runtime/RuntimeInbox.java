@@ -5,12 +5,12 @@ import com.kekwy.iarnet.resource.MessageInbox;
 
 public class RuntimeInbox implements MessageInbox<ActorMessageEnvelope> {
     @Override
-    public ActorMessageEnvelope receive() {
+    public ActorMessageEnvelope get() {
         return null;
     }
 
     @Override
-    public void send(ActorMessageEnvelope message) {
+    public void put(ActorMessageEnvelope message) {
 
     }
 }

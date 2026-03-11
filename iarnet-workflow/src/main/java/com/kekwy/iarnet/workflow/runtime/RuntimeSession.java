@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RuntimeSession implements ActorMessageHandler {
 
-    private final RuntimeInbox runtimeInbox;
     private final RuntimeGraph runtimeGraph;
 
 
@@ -17,4 +16,7 @@ public class RuntimeSession implements ActorMessageHandler {
 
     }
 
+    public void start() {
+
+    }
 }

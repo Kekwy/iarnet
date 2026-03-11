@@ -1,10 +1,10 @@
 package com.kekwy.iarnet.resource.service;
 
-import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
+import com.kekwy.iarnet.resource.ActorLifeCycleListener;
 import com.kekwy.iarnet.resource.ActorMessageEnvelope;
+import com.kekwy.iarnet.resource.ActorMessageInbox;
 import com.kekwy.iarnet.resource.DeploymentCallback;
-import com.kekwy.iarnet.resource.DeploymentGraph;
 import com.kekwy.iarnet.resource.DeploymentPlanGraph;
 import com.kekwy.iarnet.resource.MessageInbox;
 import com.kekwy.iarnet.resource.model.PhysicalWorkflowGraph;
@@ -30,7 +30,7 @@ public interface SchedulerService {
                                  Map<String, String> nodeArtifactUrls);
 
     void deploy(DeploymentPlanGraph deploymentPlanGraph,
-                MessageInbox<ActorMessageEnvelope> inbox,
+                ActorMessageInbox inbox,
                 DeploymentCallback callback);
 
 }

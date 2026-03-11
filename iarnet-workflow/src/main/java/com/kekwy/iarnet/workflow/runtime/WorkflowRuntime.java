@@ -7,14 +7,16 @@ import com.kekwy.iarnet.proto.common.ResourceSpec;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.resource.ActorEdge;
+import com.kekwy.iarnet.resource.ActorInstanceRef;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.resource.ActorSpec;
 import com.kekwy.iarnet.resource.ActorMessageEnvelope;
+import com.kekwy.iarnet.resource.ActorMessageInbox;
+import com.kekwy.iarnet.resource.ActorSpec;
 import com.kekwy.iarnet.resource.DeploymentCallback;
-import com.kekwy.iarnet.resource.DeploymentGraph;
 import com.kekwy.iarnet.resource.DeploymentPlanGraph;
-import com.kekwy.iarnet.resource.InstanceGraph;
+import com.kekwy.iarnet.resource.InstanceRefGraph;
 import com.kekwy.iarnet.resource.service.SchedulerService;
+import com.kekwy.iarnet.workflow.RuntimeNode;
 import com.kekwy.iarnet.workflow.port.ArtifactUrlProvider;
 import com.kekwy.iarnet.workflow.util.ArtifactBuilder;
 import jakarta.annotation.PreDestroy;
@@ -29,14 +31,16 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
@@ -48,12 +52,31 @@ public class WorkflowRuntime {
     private final SchedulerService schedulerService;
     private final ArtifactUrlProvider artifactUrlProvider;
 
-    private final RuntimeInbox inbox = new RuntimeInbox();
+    private final ActorMessageInbox actorMessageInbox = new ActorMessageInbox() {
+
+        private final BlockingQueue<ActorMessageEnvelope> queue = new LinkedBlockingQueue<>();
+
+        @Override
+        public ActorMessageEnvelope get() {
+            try {
+                return queue.poll(100, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return null;
+            }
+        }
+
+        @Override
+        public void put(ActorMessageEnvelope message) {
+            queue.add(message);
+        }
+    };
 
     // 后续取决于时间看看是否能引入并发处理工作流提交请求，并考虑全平台线程安全
     private final BlockingQueue<SubmitRequest> queue = new LinkedBlockingQueue<>();
     private volatile boolean running = true;
     private Thread workerThread;
+    private Thread inboxDispatcherThread;
 
     // TODO: 提供一些监测工作流运行情况的端点
 
@@ -77,7 +100,10 @@ public class WorkflowRuntime {
         workerThread = new Thread(this::pollLoop, "workflow-executor");
         workerThread.setDaemon(true);
         workerThread.start();
-        log.info("工作流执行线程已启动");
+        inboxDispatcherThread = new Thread(this::inboxDispatcherLoop, "inbox-dispatcher");
+        inboxDispatcherThread.setDaemon(true);
+        inboxDispatcherThread.start();
+        log.info("工作流执行线程与 inbox 分发线程已启动");
     }
 
     @PreDestroy
@@ -85,6 +111,9 @@ public class WorkflowRuntime {
         running = false;
         if (workerThread != null) {
             workerThread.interrupt();
+        }
+        if (inboxDispatcherThread != null) {
+            inboxDispatcherThread.interrupt();
         }
         log.info("工作流执行线程已停止，剩余未处理: {}", queue.size());
     }
@@ -103,15 +132,33 @@ public class WorkflowRuntime {
         }
     }
 
+    private void inboxDispatcherLoop() {
+        while (running) {
+            try {
+                ActorMessageEnvelope envelope = actorMessageInbox.get();
+                if (envelope == null) {
+                    continue;
+                }
+                RuntimeSession session = runtimeSessions.get(envelope.workflowId());
+                if (session != null) {
+                    session.handleActorMessage(envelope.nodeId(), envelope.actorId(), envelope.message());
+                } else {
+                    log.warn("收到未知 workflow 的消息，已丢弃: workflowId={}, actorId={}",
+                            envelope.workflowId(), envelope.actorId());
+                }
+            } catch (Exception e) {
+                log.error("分发 inbox 消息时发生异常", e);
+            }
+        }
+    }
+
     private void handleWorkflow(SubmitRequest request) {
 
         WorkflowGraph workflowGraph = request.workflowGraph();
         String workflowId = workflowGraph.getWorkflowId();
         String applicationId = workflowGraph.getApplicationId();
 
-        Map<String, RuntimeSession> wfIdRuntionSessionMap = runtimeSessions.getOrDefault(applicationId, new ConcurrentHashMap<>());
-
-        if (wfIdRuntionSessionMap.containsKey(workflowId)) {
+        if (runtimeSessions.containsKey(workflowId)) {
             throw new RuntimeException("重复提交的工作流");
         }
 
@@ -147,35 +194,26 @@ public class WorkflowRuntime {
 
         DeploymentPlanGraph deploymentPlanGraph = buildDeploymentPlanGraph(workflowGraph, langArtifactUrlMap);
 
+
         // 部署的时候就需要为每个actor传入一个 handler
-        schedulerService.deploy(deploymentPlanGraph, inbox, new DeploymentCallback() {
-
+        schedulerService.deploy(deploymentPlanGraph, actorMessageInbox, new DeploymentCallback() {
             @Override
-            public void onSuccess(InstanceGraph instanceGraph) {
-
+            public void onSuccess(InstanceRefGraph instanceRefGraph) {
+                RuntimeGraph runtimeGraph = buildRuntimeGraph(workflowGraph, instanceRefGraph);
+                RuntimeSession session = new RuntimeSession(runtimeGraph);
+                runtimeSessions.put(workflowId, session);
+                session.start();
             }
 
             @Override
             public void onFailure(Exception e) {
-
+                throw new RuntimeException(e);
             }
         });
 
-        // TODO: 完成部署，输出一些日志信息
-
-        // TODO: 运行时图是否真的需要？？建议是先不要这么过度设计
-        // 今天下午的目标是吧 outpost 和 fabric 模块的所有基础功能全部调通，并且预留好拓展点（资源发现、跨域调度、ICE信道初始化），然后让cursor把代码整理好。
-        // 明天就是把上述核心功能搞定并调通（周四）
-        // 后天是找论文优化调度算法，引入恢复机制（周五）
-        // 完成论文实验部分之前的所有草稿（周六）
-        // 进行第一次修改+补图片（来不及可以先放放），（周天）
-        // 找老师确认论文（周一，3.16号）应该不至于需要大改，方向上应该基本没问题，相当于是上学期 iarnet 项目的 plus 版（希望。。。）
-
-        // 创建 runtime session，负责与workflow中的各个actor收发消息
-
     }
 
-    private final ConcurrentMap<String, ConcurrentMap<String, RuntimeSession>> runtimeSessions = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, RuntimeSession> runtimeSessions = new ConcurrentHashMap<>();
 
     private static @NonNull Path getSourceDir(Lang lang, Path externalSourceBaseDir) {
         Path sourceDir;
@@ -199,6 +237,62 @@ public class WorkflowRuntime {
         return artifactPath;
     }
 
+
+    private static RuntimeGraph buildRuntimeGraph(WorkflowGraph workflowGraph, InstanceRefGraph instanceRefGraph) {
+        // actorId 格式: "actor-" + nodeId + "-" + replicaIndex
+        Map<String, List<ActorInstanceRef>> refsByNodeId = new HashMap<>();
+        for (ActorInstanceRef ref : instanceRefGraph.actorInstanceRefs()) {
+            String nodeId = extractNodeIdFromActorId(ref.getActorId());
+            refsByNodeId.computeIfAbsent(nodeId, k -> new ArrayList<>()).add(ref);
+        }
+
+        Set<String> hasIncoming = new HashSet<>();
+        Set<String> hasOutgoing = new HashSet<>();
+        for (Edge edge : workflowGraph.getEdgesList()) {
+            hasOutgoing.add(edge.getFromNodeId());
+            hasIncoming.add(edge.getToNodeId());
+        }
+
+        List<RuntimeNode> inputNodes = new ArrayList<>();
+        List<RuntimeNode> outputNodes = new ArrayList<>();
+        List<RuntimeNode> taskNodes = new ArrayList<>();
+
+        for (Node node : workflowGraph.getNodesList()) {
+            String nodeId = node.getId();
+            List<ActorInstanceRef> refs = refsByNodeId.getOrDefault(nodeId, List.of());
+            RuntimeNode runtimeNode = new RuntimeNode(nodeId, node.getName(), refs);
+
+            boolean isInput = !hasIncoming.contains(nodeId);
+            boolean isOutput = !hasOutgoing.contains(nodeId);
+
+            if (isInput) {
+                inputNodes.add(runtimeNode);
+            }
+            if (isOutput) {
+                outputNodes.add(runtimeNode);
+            }
+            if (!isInput && !isOutput) {
+                taskNodes.add(runtimeNode);
+            }
+        }
+
+        return new RuntimeGraph(inputNodes, outputNodes, taskNodes);
+    }
+
+    /**
+     * 从 actorId（格式 "actor-{nodeId}-{replicaIndex}"）中解析出 nodeId。
+     */
+    private static String extractNodeIdFromActorId(String actorId) {
+        if (actorId == null || !actorId.startsWith("actor-")) {
+            return actorId;
+        }
+        int prefixLen = "actor-".length();
+        int lastHyphen = actorId.lastIndexOf('-');
+        if (lastHyphen <= prefixLen) {
+            return actorId.substring(prefixLen);
+        }
+        return actorId.substring(prefixLen, lastHyphen);
+    }
 
     private static DeploymentPlanGraph buildDeploymentPlanGraph(WorkflowGraph workflowGraph,
                                                                 Map<Lang, String> langArtifactUrlMap) {
@@ -258,10 +352,6 @@ public class WorkflowRuntime {
                 .setCpu(0.5)
                 .setMemory("256Mi")
                 .build();
-    }
-
-    private static RuntimeGraph buildRuntimeGraph(WorkflowGraph workflowGraph, DeploymentGraph deploymentGraph) {
-        return new RuntimeGraph();
     }
 
 
