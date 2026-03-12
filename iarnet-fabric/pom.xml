@@ -13,7 +13,7 @@
 
     <artifactId>iarnet-fabric</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-resource</name>
+    <name>iarnet-fabric</name>
     <description>iarnet 资源层 / Web 入口</description>
 
     <dependencies>

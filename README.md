@@ -25,6 +25,10 @@ iarnet 控制平面需要先安装 iarnet-api，如果通过 docker 部署则可
 
 与论文无关的：
 
+从下发 applicationId 改为下发 workflowId
+
+后续是否需要建立两端消息类型不同的双向流
+
 有空的话可以考虑支持有状态任务，在任务中显式地对结果进行分片。
 
 改用 grpc starter

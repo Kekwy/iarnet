@@ -9,13 +9,13 @@ import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.resource.ActorEdge;
 import com.kekwy.iarnet.resource.ActorInstanceRef;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.resource.ActorMessageEnvelope;
+import com.kekwy.iarnet.resource.ActorMessage;
 import com.kekwy.iarnet.resource.ActorMessageInbox;
 import com.kekwy.iarnet.resource.ActorSpec;
 import com.kekwy.iarnet.resource.DeploymentCallback;
 import com.kekwy.iarnet.resource.DeploymentPlanGraph;
 import com.kekwy.iarnet.resource.InstanceRefGraph;
-import com.kekwy.iarnet.resource.service.SchedulerService;
+import com.kekwy.iarnet.resource.service.DeploymentService;
 import com.kekwy.iarnet.workflow.RuntimeNode;
 import com.kekwy.iarnet.workflow.port.ArtifactUrlProvider;
 import com.kekwy.iarnet.workflow.util.ArtifactBuilder;
@@ -49,15 +49,15 @@ public class WorkflowRuntime {
 
     private static final Logger log = LoggerFactory.getLogger(WorkflowRuntime.class);
 
-    private final SchedulerService schedulerService;
+    private final DeploymentService deploymentService;
     private final ArtifactUrlProvider artifactUrlProvider;
 
     private final ActorMessageInbox actorMessageInbox = new ActorMessageInbox() {
 
-        private final BlockingQueue<ActorMessageEnvelope> queue = new LinkedBlockingQueue<>();
+        private final BlockingQueue<ActorMessage> queue = new LinkedBlockingQueue<>();
 
         @Override
-        public ActorMessageEnvelope get() {
+        public ActorMessage get() {
             try {
                 return queue.poll(100, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
@@ -67,7 +67,7 @@ public class WorkflowRuntime {
         }
 
         @Override
-        public void put(ActorMessageEnvelope message) {
+        public void put(ActorMessage message) {
             queue.add(message);
         }
     };
@@ -135,16 +135,17 @@ public class WorkflowRuntime {
     private void inboxDispatcherLoop() {
         while (running) {
             try {
-                ActorMessageEnvelope envelope = actorMessageInbox.get();
+                ActorMessage envelope = actorMessageInbox.get();
                 if (envelope == null) {
                     continue;
                 }
-                RuntimeSession session = runtimeSessions.get(envelope.workflowId());
+                // TODO: 需要显式约束 deploymentId = workflowId
+                RuntimeSession session = runtimeSessions.get(envelope.deploymentId());
                 if (session != null) {
-                    session.handleActorMessage(envelope.nodeId(), envelope.actorId(), envelope.message());
+                    session.handleActorMessage(envelope.actorId(), envelope.message());
                 } else {
-                    log.warn("收到未知 workflow 的消息，已丢弃: workflowId={}, actorId={}",
-                            envelope.workflowId(), envelope.actorId());
+                    log.warn("收到未知 workflow 的消息，已丢弃: deploymentId={}, actorId={}",
+                            envelope.deploymentId(), envelope.actorId());
                 }
             } catch (Exception e) {
                 log.error("分发 inbox 消息时发生异常", e);
@@ -196,7 +197,7 @@ public class WorkflowRuntime {
 
 
         // 部署的时候就需要为每个actor传入一个 handler
-        schedulerService.deploy(deploymentPlanGraph, actorMessageInbox, new DeploymentCallback() {
+        deploymentService.deploy(deploymentPlanGraph, actorMessageInbox, new DeploymentCallback() {
             @Override
             public void onSuccess(InstanceRefGraph instanceRefGraph) {
                 RuntimeGraph runtimeGraph = buildRuntimeGraph(workflowGraph, instanceRefGraph);

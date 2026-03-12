@@ -1,8 +1,11 @@
 package com.kekwy.iarnet.resource;
 
-import com.kekwy.iarnet.proto.actor.ActorMessage;
+import com.kekwy.iarnet.proto.actor.ActorEnvelope;
+import com.kekwy.iarnet.resource.actor.ActorRegistry;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -11,13 +14,19 @@ import java.util.List;
 public class ActorInstanceRef {
 
     private final String actorId;
-    private String outpostId; // TODO: 支持运行时动态装载和卸载
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private ActorRegistry actorRegistry;
 
     private List<ActorInstanceRef> precursors;
     private List<ActorInstanceRef> successors;
 
-    public void send(ActorMessage message) {
-
+    public void send(ActorEnvelope message) {
+        if (actorRegistry == null) {
+            throw new IllegalStateException("ActorRegistry 未设置: actorId=" + actorId);
+        }
+        actorRegistry.sendToActor(actorId, message);
     }
 
 }

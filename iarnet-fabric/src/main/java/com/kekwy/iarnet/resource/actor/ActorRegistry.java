@@ -1,45 +1,37 @@
 package com.kekwy.iarnet.resource.actor;
 
-import com.kekwy.iarnet.proto.actor.ActorDirective;
-import com.kekwy.iarnet.proto.actor.ActorReadyReport;
-import com.kekwy.iarnet.proto.actor.ActorReport;
-import io.grpc.stub.StreamObserver;
+import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 
 import java.util.List;
 
 /**
- * Actor 控制通道注册表：维护所有已建立 ControlChannel 的 Actor 连接。
+ * Actor 注册表：维护所有已上报 ready 的 Actor 会话信息。
  * <p>
  * 由 control-plane 持有，供 gRPC 服务、调度器等组件使用。
  */
 public interface ActorRegistry {
 
     /**
-     * Actor 建立 ControlChannel 时调用，完成注册并创建 {@link ActorConnection}。
-     *
-     * @param actorId          Actor 唯一标识
-     * @param ready            首条消息中的 ActorReadyReport
-     * @param directiveSender 用于向该 Actor 推送 ActorDirective 的流
+     * Actor 上报 ready 时调用。
      */
-    void onActorConnected(String actorId, ActorReadyReport ready,
-                          StreamObserver<ActorDirective> directiveSender);
+    void onActorReady(String actorId);
 
     /**
-     * Actor 控制通道断开时调用。
+     * Actor 间数据通道连通时调用（由 gRPC 服务层转发 ActorChannelStatus）。
+     */
+    void onChannelConnected(String srcActorId, String dstActorId);
+
+    /**
+     * Actor 连接断开时调用。
      */
     void onActorDisconnected(String actorId);
 
     /**
-     * 处理 Actor 上报的消息（心跳、状态变更、指标等）。
-     */
-    void handleReport(String actorId, ActorReport report);
-
-    /**
-     * 向指定 Actor 发送指令（fire-and-forget）。
+     * 向指定 Actor 发送消息。
      *
      * @throws IllegalStateException 若该 Actor 无活跃连接
      */
-    void sendDirective(String actorId, ActorDirective directive);
+    void sendToActor(String actorId, ActorEnvelope envelope);
 
     /**
      * 获取指定 Actor 的会话信息，未注册则返回 null。
@@ -47,9 +39,9 @@ public interface ActorRegistry {
     ActorSession getSession(String actorId);
 
     /**
-     * 查询指定工作流下所有在线 Actor 的会话列表。
+     * 列出所有在线 Actor 会话。
      */
-    List<ActorSession> listActorsByWorkflow(String workflowId);
+    List<ActorSession> listSessions();
 
     /**
      * 注册 Actor 生命周期事件监听器。

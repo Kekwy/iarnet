@@ -1,6 +1,7 @@
 package com.kekwy.iarnet.rpc;
 
 import com.kekwy.iarnet.config.GrpcServerProperties;
+import com.kekwy.iarnet.resource.provider.ProviderRegistryGrpcService;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -42,14 +43,14 @@ public class GrpcServerLifecycle implements SmartLifecycle {
         int port = properties.getPort();
         ServerBuilder<?> builder = ServerBuilder.forPort(port);
         for (BindableService service : grpcServices) {
-            if (service instanceof AdapterRegistryGrpcService adapterService) {
-                // 为 AdapterRegistryGrpcService 附加 adapter-id 解析拦截器
+            if (service instanceof ProviderRegistryGrpcService providerService) {
                 var def = ServerInterceptors.intercept(
-                        adapterService,
-                        new AdapterRegistryGrpcService.AdapterIdInterceptor()
+                        providerService,
+                        new ProviderRegistryGrpcService.ProviderIdInterceptor()
                 );
                 builder.addService(def);
-                log.info("注册 gRPC 服务: {}", def.getServiceDescriptor().getName());
+                log.info("注册 gRPC 服务（含 ProviderIdInterceptor）: {}",
+                        def.getServiceDescriptor().getName());
             } else {
                 builder.addService(service);
                 log.info("注册 gRPC 服务: {}", service.bindService().getServiceDescriptor().getName());

@@ -1,9 +1,11 @@
 package com.kekwy.iarnet.workflow.runtime;
 
 import com.kekwy.iarnet.workflow.RuntimeNode;
+import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 public class RuntimeGraph {
 
     private final List<RuntimeNode> inputNodes;
@@ -16,15 +18,4 @@ public class RuntimeGraph {
         this.taskNodes = taskNodes != null ? List.copyOf(taskNodes) : List.of();
     }
 
-    public List<RuntimeNode> getInputNodes() {
-        return inputNodes;
-    }
-
-    public List<RuntimeNode> getOutputNodes() {
-        return outputNodes;
-    }
-
-    public List<RuntimeNode> getTaskNodes() {
-        return taskNodes;
-    }
 }

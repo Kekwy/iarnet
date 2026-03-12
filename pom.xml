@@ -16,7 +16,7 @@
         <module>iarnet-server</module>
         <module>iarnet-fabric</module>
         <module>iarnet-common</module>
-        <module>iarnet-outpost</module>
+        <module>iarnet-provider</module>
         <module>iarnet-workflow</module>
         <module>iarnet-cli</module>
     </modules>

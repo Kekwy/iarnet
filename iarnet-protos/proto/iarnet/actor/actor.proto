@@ -5,6 +5,13 @@ package iarnet.actor;
 option java_package = "com.kekwy.iarnet.proto.actor";
 option java_multiple_files = true;
 
-message ActorMessage {
-
+message ActorEnvelope {
+  oneof payload {
+    StartInputCommand start_input_command = 1;  // 命令 input Actor 开始产生输入
+  }
 }
+
+// 命令 input Actor 开始产生输入
+message StartInputCommand {
+}
+

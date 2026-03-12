@@ -15,10 +15,15 @@ public final class Actor {
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_iarnet_actor_ActorMessage_descriptor;
+    internal_static_iarnet_actor_ActorEnvelope_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_iarnet_actor_ActorMessage_fieldAccessorTable;
+      internal_static_iarnet_actor_ActorEnvelope_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_iarnet_actor_StartInputCommand_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_iarnet_actor_StartInputCommand_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -29,18 +34,26 @@ public final class Actor {
   static {
     java.lang.String[] descriptorData = {
       "\n\030iarnet/actor/actor.proto\022\014iarnet.actor" +
-      "\"\016\n\014ActorMessageB \n\034com.kekwy.iarnet.pro" +
-      "to.actorP\001b\006proto3"
+      "\"Z\n\rActorEnvelope\022>\n\023start_input_command" +
+      "\030\001 \001(\0132\037.iarnet.actor.StartInputCommandH" +
+      "\000B\t\n\007payload\"\023\n\021StartInputCommandB \n\034com" +
+      ".kekwy.iarnet.proto.actorP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         });
-    internal_static_iarnet_actor_ActorMessage_descriptor =
+    internal_static_iarnet_actor_ActorEnvelope_descriptor =
       getDescriptor().getMessageTypes().get(0);
-    internal_static_iarnet_actor_ActorMessage_fieldAccessorTable = new
+    internal_static_iarnet_actor_ActorEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_iarnet_actor_ActorMessage_descriptor,
+        internal_static_iarnet_actor_ActorEnvelope_descriptor,
+        new java.lang.String[] { "StartInputCommand", "Payload", });
+    internal_static_iarnet_actor_StartInputCommand_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_iarnet_actor_StartInputCommand_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_iarnet_actor_StartInputCommand_descriptor,
         new java.lang.String[] { });
   }
 

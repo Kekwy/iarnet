@@ -1,8 +1,6 @@
 package com.kekwy.iarnet.resource.actor;
 
-import com.kekwy.iarnet.proto.actor.ActorDirective;
-import com.kekwy.iarnet.proto.actor.ActorReadyReport;
-import com.kekwy.iarnet.proto.actor.ActorReport;
+import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link ActorRegistry} 的默认实现。
  * <p>
- * 维护 Actor 会话、ControlChannel 连接，并定期扫描心跳超时的 Actor。
+ * 维护 Actor 会话与连接，并定期扫描心跳超时的 Actor。
  */
 @Service
 public class DefaultActorRegistry implements ActorRegistry {
@@ -52,30 +49,49 @@ public class DefaultActorRegistry implements ActorRegistry {
         sessions.clear();
     }
 
-    @Override
-    public void onActorConnected(String actorId, ActorReadyReport ready,
-                                 StreamObserver<ActorDirective> directiveSender) {
+    /**
+     * 注册 actor 的消息发送通道（由 gRPC 服务层在 SignalingChannel 建立时调用）。
+     */
+    public void registerConnection(String actorId, StreamObserver<ActorEnvelope> sender) {
         ActorConnection oldConn = connections.get(actorId);
         if (oldConn != null && !oldConn.isClosed()) {
-            log.info("替换 Actor 已有的 ControlChannel: actorId={}", actorId);
+            log.info("替换 Actor 已有连接: actorId={}", actorId);
             oldConn.close();
-            connections.remove(actorId);
-            sessions.remove(actorId);
+        }
+        connections.put(actorId, new ActorConnection(actorId, sender));
+    }
+
+    @Override
+    public void onActorReady(String actorId) {
+        ActorSession oldSession = sessions.get(actorId);
+        if (oldSession != null) {
+            log.debug("Actor 重新上报 ready，更新 session: actorId={}", actorId);
         }
 
-        ActorSession session = new ActorSession(actorId, ready);
-        ActorConnection conn = new ActorConnection(actorId, directiveSender);
+        ActorSession session = new ActorSession(actorId);
         sessions.put(actorId, session);
-        connections.put(actorId, conn);
 
-        log.info("Actor ControlChannel 已建立: actorId={}, workflowId={}, nodeId={}",
-                actorId, ready.getWorkflowId(), ready.getNodeId());
+        log.info("Actor ready: actorId={}", actorId);
 
         for (ActorLifecycleListener listener : listeners) {
             try {
-                listener.onActorReady(actorId, ready);
+                listener.onActorReady(actorId);
             } catch (Exception e) {
                 log.warn("ActorLifecycleListener.onActorReady 异常: actorId={}", actorId, e);
+            }
+        }
+    }
+
+    @Override
+    public void onChannelConnected(String srcActorId, String dstActorId) {
+        log.info("Channel connected: src={}, dst={}", srcActorId, dstActorId);
+
+        for (ActorLifecycleListener listener : listeners) {
+            try {
+                listener.onChannelConnected(srcActorId, dstActorId);
+            } catch (Exception e) {
+                log.warn("ActorLifecycleListener.onChannelConnected 异常: src={}, dst={}",
+                        srcActorId, dstActorId, e);
             }
         }
     }
@@ -88,7 +104,7 @@ public class DefaultActorRegistry implements ActorRegistry {
         }
         ActorSession session = sessions.remove(actorId);
         if (session != null) {
-            log.info("Actor ControlChannel 已断开: actorId={}, workflowId={}", actorId, session.getWorkflowId());
+            log.info("Actor 已断开: actorId={}", actorId);
         }
 
         for (ActorLifecycleListener listener : listeners) {
@@ -101,43 +117,12 @@ public class DefaultActorRegistry implements ActorRegistry {
     }
 
     @Override
-    public void handleReport(String actorId, ActorReport report) {
-        ActorConnection conn = connections.get(actorId);
-        ActorSession session = sessions.get(actorId);
-        if (conn != null) {
-            conn.onReport(report);
-        }
-        if (session != null) {
-            switch (report.getPayloadCase()) {
-                case HEARTBEAT -> session.updateHeartbeat();
-                case STATUS_CHANGE -> {
-                    var change = report.getStatusChange();
-                    session.setStatus("error".equalsIgnoreCase(change.getStatus())
-                            ? ActorSession.Status.ERROR
-                            : ActorSession.Status.READY);
-                    for (ActorLifecycleListener listener : listeners) {
-                        try {
-                            listener.onActorStatusChanged(actorId, change);
-                        } catch (Exception e) {
-                            log.warn("ActorLifecycleListener.onActorStatusChanged 异常: actorId={}", actorId, e);
-                        }
-                    }
-                }
-                case METRICS, READY, PAYLOAD_NOT_SET -> { }
-            }
-        }
-        if (conn == null) {
-            log.warn("收到 Actor 上报但无活跃连接: actorId={}", actorId);
-        }
-    }
-
-    @Override
-    public void sendDirective(String actorId, ActorDirective directive) {
+    public void sendToActor(String actorId, ActorEnvelope envelope) {
         ActorConnection conn = connections.get(actorId);
         if (conn == null || conn.isClosed()) {
-            throw new IllegalStateException("Actor 无活跃 ControlChannel: " + actorId);
+            throw new IllegalStateException("Actor 无活跃连接: " + actorId);
         }
-        conn.sendDirective(directive);
+        conn.send(envelope);
     }
 
     @Override
@@ -146,14 +131,8 @@ public class DefaultActorRegistry implements ActorRegistry {
     }
 
     @Override
-    public List<ActorSession> listActorsByWorkflow(String workflowId) {
-        List<ActorSession> result = new ArrayList<>();
-        for (ActorSession s : sessions.values()) {
-            if (workflowId.equals(s.getWorkflowId())) {
-                result.add(s);
-            }
-        }
-        return result;
+    public List<ActorSession> listSessions() {
+        return List.copyOf(sessions.values());
     }
 
     @Override
@@ -171,7 +150,7 @@ public class DefaultActorRegistry implements ActorRegistry {
         for (ActorSession session : sessions.values()) {
             if (session.getLastHeartbeat().isBefore(threshold)) {
                 String actorId = session.getActorId();
-                log.warn("Actor 心跳超时，断开连接: actorId={}, workflowId={}", actorId, session.getWorkflowId());
+                log.warn("Actor 心跳超时: actorId={}", actorId);
                 onActorDisconnected(actorId);
             }
         }
