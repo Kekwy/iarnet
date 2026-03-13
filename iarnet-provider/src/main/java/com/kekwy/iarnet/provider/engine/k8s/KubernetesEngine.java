@@ -208,7 +208,7 @@ public class KubernetesEngine implements ProviderEngine {
                     .withName(name)
                     .withNamespace(namespace)
                 .endMetadata()
-                .addToBinaryData("function.pb", fd.toByteArray())
+                .addToBinaryData("function.pb", Arrays.toString(fd.toByteArray()))
                 .build();
         kubeClient.configMaps().inNamespace(namespace).resource(cm).create();
         log.info("已创建函数描述 ConfigMap: actorId={}, name={}", actorId, name);
