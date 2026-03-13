@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private SignalingEnvelope() {
     providerId_ = "";
+    targetActorId_ = "";
   }
 
   @java.lang.Override
@@ -145,6 +146,53 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public long getTimestampMs() {
     return timestampMs_;
+  }
+
+  public static final int TARGET_ACTOR_ID_FIELD_NUMBER = 20;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object targetActorId_ = "";
+  /**
+   * <pre>
+   * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+   * </pre>
+   *
+   * <code>string target_actor_id = 20;</code>
+   * @return The targetActorId.
+   */
+  @java.lang.Override
+  public java.lang.String getTargetActorId() {
+    java.lang.Object ref = targetActorId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      targetActorId_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+   * </pre>
+   *
+   * <code>string target_actor_id = 20;</code>
+   * @return The bytes for targetActorId.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getTargetActorIdBytes() {
+    java.lang.Object ref = targetActorId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      targetActorId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   public static final int CONNECT_INSTRUCTION_FIELD_NUMBER = 10;
@@ -371,6 +419,9 @@ private static final long serialVersionUID = 0L;
     if (payloadCase_ == 15) {
       output.writeMessage(15, (com.kekwy.iarnet.proto.actor.ActorEnvelope) payload_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(targetActorId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 20, targetActorId_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -411,6 +462,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(15, (com.kekwy.iarnet.proto.actor.ActorEnvelope) payload_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(targetActorId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(20, targetActorId_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -430,6 +484,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getProviderId())) return false;
     if (getTimestampMs()
         != other.getTimestampMs()) return false;
+    if (!getTargetActorId()
+        .equals(other.getTargetActorId())) return false;
     if (!getPayloadCase().equals(other.getPayloadCase())) return false;
     switch (payloadCase_) {
       case 10:
@@ -475,6 +531,8 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + TIMESTAMP_MS_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getTimestampMs());
+    hash = (37 * hash) + TARGET_ACTOR_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getTargetActorId().hashCode();
     switch (payloadCase_) {
       case 10:
         hash = (37 * hash) + CONNECT_INSTRUCTION_FIELD_NUMBER;
@@ -634,6 +692,7 @@ private static final long serialVersionUID = 0L;
       bitField0_ = 0;
       providerId_ = "";
       timestampMs_ = 0L;
+      targetActorId_ = "";
       if (connectInstructionBuilder_ != null) {
         connectInstructionBuilder_.clear();
       }
@@ -693,6 +752,9 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
         result.timestampMs_ = timestampMs_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.targetActorId_ = targetActorId_;
       }
     }
 
@@ -776,6 +838,11 @@ private static final long serialVersionUID = 0L;
       }
       if (other.getTimestampMs() != 0L) {
         setTimestampMs(other.getTimestampMs());
+      }
+      if (!other.getTargetActorId().isEmpty()) {
+        targetActorId_ = other.targetActorId_;
+        bitField0_ |= 0x00000004;
+        onChanged();
       }
       switch (other.getPayloadCase()) {
         case CONNECT_INSTRUCTION: {
@@ -884,6 +951,11 @@ private static final long serialVersionUID = 0L;
               payloadCase_ = 15;
               break;
             } // case 122
+            case 162: {
+              targetActorId_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 162
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1028,6 +1100,98 @@ private static final long serialVersionUID = 0L;
     public Builder clearTimestampMs() {
       bitField0_ = (bitField0_ & ~0x00000002);
       timestampMs_ = 0L;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object targetActorId_ = "";
+    /**
+     * <pre>
+     * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+     * </pre>
+     *
+     * <code>string target_actor_id = 20;</code>
+     * @return The targetActorId.
+     */
+    public java.lang.String getTargetActorId() {
+      java.lang.Object ref = targetActorId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        targetActorId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+     * </pre>
+     *
+     * <code>string target_actor_id = 20;</code>
+     * @return The bytes for targetActorId.
+     */
+    public com.google.protobuf.ByteString
+        getTargetActorIdBytes() {
+      java.lang.Object ref = targetActorId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        targetActorId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+     * </pre>
+     *
+     * <code>string target_actor_id = 20;</code>
+     * @param value The targetActorId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetActorId(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      targetActorId_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+     * </pre>
+     *
+     * <code>string target_actor_id = 20;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearTargetActorId() {
+      targetActorId_ = getDefaultInstance().getTargetActorId();
+      bitField0_ = (bitField0_ & ~0x00000004);
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+     * </pre>
+     *
+     * <code>string target_actor_id = 20;</code>
+     * @param value The bytes for targetActorId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setTargetActorIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      targetActorId_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }

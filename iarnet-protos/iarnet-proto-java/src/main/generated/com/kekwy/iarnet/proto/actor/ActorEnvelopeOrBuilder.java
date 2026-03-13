@@ -34,5 +34,86 @@ public interface ActorEnvelopeOrBuilder extends
    */
   com.kekwy.iarnet.proto.actor.StartInputCommandOrBuilder getStartInputCommandOrBuilder();
 
+  /**
+   * <pre>
+   * Actor 启动后向 Provider 报告 actor_id
+   * </pre>
+   *
+   * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+   * @return Whether the registerActor field is set.
+   */
+  boolean hasRegisterActor();
+  /**
+   * <pre>
+   * Actor 启动后向 Provider 报告 actor_id
+   * </pre>
+   *
+   * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+   * @return The registerActor.
+   */
+  com.kekwy.iarnet.proto.actor.RegisterActorRequest getRegisterActor();
+  /**
+   * <pre>
+   * Actor 启动后向 Provider 报告 actor_id
+   * </pre>
+   *
+   * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+   */
+  com.kekwy.iarnet.proto.actor.RegisterActorRequestOrBuilder getRegisterActorOrBuilder();
+
+  /**
+   * <pre>
+   * Actor 产出的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_output = 3;</code>
+   * @return Whether the rowOutput field is set.
+   */
+  boolean hasRowOutput();
+  /**
+   * <pre>
+   * Actor 产出的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_output = 3;</code>
+   * @return The rowOutput.
+   */
+  com.kekwy.iarnet.proto.actor.DataRow getRowOutput();
+  /**
+   * <pre>
+   * Actor 产出的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_output = 3;</code>
+   */
+  com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowOutputOrBuilder();
+
+  /**
+   * <pre>
+   * Provider 转发给下游 Actor 的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+   * @return Whether the rowDelivery field is set.
+   */
+  boolean hasRowDelivery();
+  /**
+   * <pre>
+   * Provider 转发给下游 Actor 的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+   * @return The rowDelivery.
+   */
+  com.kekwy.iarnet.proto.actor.DataRow getRowDelivery();
+  /**
+   * <pre>
+   * Provider 转发给下游 Actor 的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+   */
+  com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowDeliveryOrBuilder();
+
   public com.kekwy.iarnet.proto.actor.ActorEnvelope.PayloadCase getPayloadCase();
 }

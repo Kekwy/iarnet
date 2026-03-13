@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-workflow</artifactId>
+            <artifactId>iarnet-execution</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 

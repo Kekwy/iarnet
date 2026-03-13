@@ -49,22 +49,26 @@ public final class Control {
   static {
     java.lang.String[] descriptorData = {
       "\n\035iarnet/provider/control.proto\022\017iarnet." +
-      "provider\"\367\001\n\017ControlEnvelope\022\022\n\nmessage_" +
+      "provider\"\202\003\n\017ControlEnvelope\022\022\n\nmessage_" +
       "id\030\001 \001(\t\022\026\n\016correlation_id\030\002 \001(\t\022M\n\031regi" +
       "ster_provider_request\030\003 \001(\0132(.iarnet.pro" +
       "vider.RegisterProviderRequestH\000\022O\n\032regis" +
       "ter_provider_response\030\004 \001(\0132).iarnet.pro" +
-      "vider.RegisterProviderResponseH\000\022\r\n\005erro" +
-      "r\030\005 \001(\tB\t\n\007message\"x\n\027RegisterProviderRe" +
-      "quest\022\025\n\rprovider_name\030\001 \001(\t\022\025\n\rprovider" +
-      "_type\030\002 \001(\t\022\023\n\013description\030\003 \001(\t\022\014\n\004tags" +
-      "\030\004 \003(\t\022\014\n\004zone\030\005 \001(\t\"R\n\030RegisterProvider" +
-      "Response\022\020\n\010accepted\030\001 \001(\010\022\023\n\013provider_i" +
-      "d\030\002 \001(\t\022\017\n\007message\030\003 \001(\t\"L\n\021ProviderHear" +
-      "tbeat\022\023\n\013provider_id\030\001 \001(\t\022\024\n\014timestamp_" +
-      "ms\030\002 \001(\003\022\014\n\004tags\030\003 \003(\t\",\n\024ProviderHeartb" +
-      "eatAck\022\024\n\014acknowledged\030\001 \001(\010B#\n\037com.kekw" +
-      "y.iarnet.proto.providerP\001b\006proto3"
+      "vider.RegisterProviderResponseH\000\022@\n\022prov" +
+      "ider_heartbeat\030\005 \001(\0132\".iarnet.provider.P" +
+      "roviderHeartbeatH\000\022G\n\026provider_heartbeat" +
+      "_ack\030\006 \001(\0132%.iarnet.provider.ProviderHea" +
+      "rtbeatAckH\000\022\r\n\005error\030\007 \001(\tB\t\n\007message\"x\n" +
+      "\027RegisterProviderRequest\022\025\n\rprovider_nam" +
+      "e\030\001 \001(\t\022\025\n\rprovider_type\030\002 \001(\t\022\023\n\013descri" +
+      "ption\030\003 \001(\t\022\014\n\004tags\030\004 \003(\t\022\014\n\004zone\030\005 \001(\t\"" +
+      "R\n\030RegisterProviderResponse\022\020\n\010accepted\030" +
+      "\001 \001(\010\022\023\n\013provider_id\030\002 \001(\t\022\017\n\007message\030\003 " +
+      "\001(\t\"L\n\021ProviderHeartbeat\022\023\n\013provider_id\030" +
+      "\001 \001(\t\022\024\n\014timestamp_ms\030\002 \001(\003\022\014\n\004tags\030\003 \003(" +
+      "\t\",\n\024ProviderHeartbeatAck\022\024\n\014acknowledge" +
+      "d\030\001 \001(\010B#\n\037com.kekwy.iarnet.proto.provid" +
+      "erP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -75,7 +79,7 @@ public final class Control {
     internal_static_iarnet_provider_ControlEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_ControlEnvelope_descriptor,
-        new java.lang.String[] { "MessageId", "CorrelationId", "RegisterProviderRequest", "RegisterProviderResponse", "Error", "Message", });
+        new java.lang.String[] { "MessageId", "CorrelationId", "RegisterProviderRequest", "RegisterProviderResponse", "ProviderHeartbeat", "ProviderHeartbeatAck", "Error", "Message", });
     internal_static_iarnet_provider_RegisterProviderRequest_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_iarnet_provider_RegisterProviderRequest_fieldAccessorTable = new

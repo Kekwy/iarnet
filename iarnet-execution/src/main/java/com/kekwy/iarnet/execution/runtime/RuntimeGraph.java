@@ -1,6 +1,6 @@
-package com.kekwy.iarnet.workflow.runtime;
+package com.kekwy.iarnet.execution.runtime;
 
-import com.kekwy.iarnet.workflow.RuntimeNode;
+import com.kekwy.iarnet.execution.RuntimeNode;
 import lombok.Getter;
 
 import java.util.List;

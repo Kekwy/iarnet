@@ -30,6 +30,26 @@ public interface SignalingEnvelopeOrBuilder extends
   long getTimestampMs();
 
   /**
+   * <pre>
+   * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+   * </pre>
+   *
+   * <code>string target_actor_id = 20;</code>
+   * @return The targetActorId.
+   */
+  java.lang.String getTargetActorId();
+  /**
+   * <pre>
+   * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
+   * </pre>
+   *
+   * <code>string target_actor_id = 20;</code>
+   * @return The bytes for targetActorId.
+   */
+  com.google.protobuf.ByteString
+      getTargetActorIdBytes();
+
+  /**
    * <code>.iarnet.provider.ConnectInstruction connect_instruction = 10;</code>
    * @return Whether the connectInstruction field is set.
    */

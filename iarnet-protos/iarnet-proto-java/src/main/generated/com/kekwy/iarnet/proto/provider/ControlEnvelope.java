@@ -53,6 +53,8 @@ private static final long serialVersionUID = 0L;
           com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     REGISTER_PROVIDER_REQUEST(3),
     REGISTER_PROVIDER_RESPONSE(4),
+    PROVIDER_HEARTBEAT(5),
+    PROVIDER_HEARTBEAT_ACK(6),
     MESSAGE_NOT_SET(0);
     private final int value;
     private MessageCase(int value) {
@@ -72,6 +74,8 @@ private static final long serialVersionUID = 0L;
       switch (value) {
         case 3: return REGISTER_PROVIDER_REQUEST;
         case 4: return REGISTER_PROVIDER_RESPONSE;
+        case 5: return PROVIDER_HEARTBEAT;
+        case 6: return PROVIDER_HEARTBEAT_ACK;
         case 0: return MESSAGE_NOT_SET;
         default: return null;
       }
@@ -227,11 +231,73 @@ private static final long serialVersionUID = 0L;
     return com.kekwy.iarnet.proto.provider.RegisterProviderResponse.getDefaultInstance();
   }
 
-  public static final int ERROR_FIELD_NUMBER = 5;
+  public static final int PROVIDER_HEARTBEAT_FIELD_NUMBER = 5;
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+   * @return Whether the providerHeartbeat field is set.
+   */
+  @java.lang.Override
+  public boolean hasProviderHeartbeat() {
+    return messageCase_ == 5;
+  }
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+   * @return The providerHeartbeat.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.provider.ProviderHeartbeat getProviderHeartbeat() {
+    if (messageCase_ == 5) {
+       return (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_;
+    }
+    return com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance();
+  }
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.provider.ProviderHeartbeatOrBuilder getProviderHeartbeatOrBuilder() {
+    if (messageCase_ == 5) {
+       return (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_;
+    }
+    return com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance();
+  }
+
+  public static final int PROVIDER_HEARTBEAT_ACK_FIELD_NUMBER = 6;
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+   * @return Whether the providerHeartbeatAck field is set.
+   */
+  @java.lang.Override
+  public boolean hasProviderHeartbeatAck() {
+    return messageCase_ == 6;
+  }
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+   * @return The providerHeartbeatAck.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck getProviderHeartbeatAck() {
+    if (messageCase_ == 6) {
+       return (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_;
+    }
+    return com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance();
+  }
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.provider.ProviderHeartbeatAckOrBuilder getProviderHeartbeatAckOrBuilder() {
+    if (messageCase_ == 6) {
+       return (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_;
+    }
+    return com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance();
+  }
+
+  public static final int ERROR_FIELD_NUMBER = 7;
   @SuppressWarnings("serial")
   private volatile java.lang.Object error_ = "";
   /**
-   * <code>string error = 5;</code>
+   * <code>string error = 7;</code>
    * @return The error.
    */
   @java.lang.Override
@@ -248,7 +314,7 @@ private static final long serialVersionUID = 0L;
     }
   }
   /**
-   * <code>string error = 5;</code>
+   * <code>string error = 7;</code>
    * @return The bytes for error.
    */
   @java.lang.Override
@@ -292,8 +358,14 @@ private static final long serialVersionUID = 0L;
     if (messageCase_ == 4) {
       output.writeMessage(4, (com.kekwy.iarnet.proto.provider.RegisterProviderResponse) message_);
     }
+    if (messageCase_ == 5) {
+      output.writeMessage(5, (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_);
+    }
+    if (messageCase_ == 6) {
+      output.writeMessage(6, (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_);
+    }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(error_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 5, error_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 7, error_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -318,8 +390,16 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(4, (com.kekwy.iarnet.proto.provider.RegisterProviderResponse) message_);
     }
+    if (messageCase_ == 5) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(5, (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_);
+    }
+    if (messageCase_ == 6) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(6, (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_);
+    }
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(error_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(5, error_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, error_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -352,6 +432,14 @@ private static final long serialVersionUID = 0L;
         if (!getRegisterProviderResponse()
             .equals(other.getRegisterProviderResponse())) return false;
         break;
+      case 5:
+        if (!getProviderHeartbeat()
+            .equals(other.getProviderHeartbeat())) return false;
+        break;
+      case 6:
+        if (!getProviderHeartbeatAck()
+            .equals(other.getProviderHeartbeatAck())) return false;
+        break;
       case 0:
       default:
     }
@@ -380,6 +468,14 @@ private static final long serialVersionUID = 0L;
       case 4:
         hash = (37 * hash) + REGISTER_PROVIDER_RESPONSE_FIELD_NUMBER;
         hash = (53 * hash) + getRegisterProviderResponse().hashCode();
+        break;
+      case 5:
+        hash = (37 * hash) + PROVIDER_HEARTBEAT_FIELD_NUMBER;
+        hash = (53 * hash) + getProviderHeartbeat().hashCode();
+        break;
+      case 6:
+        hash = (37 * hash) + PROVIDER_HEARTBEAT_ACK_FIELD_NUMBER;
+        hash = (53 * hash) + getProviderHeartbeatAck().hashCode();
         break;
       case 0:
       default:
@@ -521,6 +617,12 @@ private static final long serialVersionUID = 0L;
       if (registerProviderResponseBuilder_ != null) {
         registerProviderResponseBuilder_.clear();
       }
+      if (providerHeartbeatBuilder_ != null) {
+        providerHeartbeatBuilder_.clear();
+      }
+      if (providerHeartbeatAckBuilder_ != null) {
+        providerHeartbeatAckBuilder_.clear();
+      }
       error_ = "";
       messageCase_ = 0;
       message_ = null;
@@ -564,7 +666,7 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000002) != 0)) {
         result.correlationId_ = correlationId_;
       }
-      if (((from_bitField0_ & 0x00000010) != 0)) {
+      if (((from_bitField0_ & 0x00000040) != 0)) {
         result.error_ = error_;
       }
     }
@@ -579,6 +681,14 @@ private static final long serialVersionUID = 0L;
       if (messageCase_ == 4 &&
           registerProviderResponseBuilder_ != null) {
         result.message_ = registerProviderResponseBuilder_.build();
+      }
+      if (messageCase_ == 5 &&
+          providerHeartbeatBuilder_ != null) {
+        result.message_ = providerHeartbeatBuilder_.build();
+      }
+      if (messageCase_ == 6 &&
+          providerHeartbeatAckBuilder_ != null) {
+        result.message_ = providerHeartbeatAckBuilder_.build();
       }
     }
 
@@ -638,7 +748,7 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getError().isEmpty()) {
         error_ = other.error_;
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000040;
         onChanged();
       }
       switch (other.getMessageCase()) {
@@ -648,6 +758,14 @@ private static final long serialVersionUID = 0L;
         }
         case REGISTER_PROVIDER_RESPONSE: {
           mergeRegisterProviderResponse(other.getRegisterProviderResponse());
+          break;
+        }
+        case PROVIDER_HEARTBEAT: {
+          mergeProviderHeartbeat(other.getProviderHeartbeat());
+          break;
+        }
+        case PROVIDER_HEARTBEAT_ACK: {
+          mergeProviderHeartbeatAck(other.getProviderHeartbeatAck());
           break;
         }
         case MESSAGE_NOT_SET: {
@@ -705,10 +823,24 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 34
             case 42: {
-              error_ = input.readStringRequireUtf8();
-              bitField0_ |= 0x00000010;
+              input.readMessage(
+                  getProviderHeartbeatFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              messageCase_ = 5;
               break;
             } // case 42
+            case 50: {
+              input.readMessage(
+                  getProviderHeartbeatAckFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              messageCase_ = 6;
+              break;
+            } // case 50
+            case 58: {
+              error_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000040;
+              break;
+            } // case 58
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1169,9 +1301,293 @@ private static final long serialVersionUID = 0L;
       return registerProviderResponseBuilder_;
     }
 
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.provider.ProviderHeartbeat, com.kekwy.iarnet.proto.provider.ProviderHeartbeat.Builder, com.kekwy.iarnet.proto.provider.ProviderHeartbeatOrBuilder> providerHeartbeatBuilder_;
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     * @return Whether the providerHeartbeat field is set.
+     */
+    @java.lang.Override
+    public boolean hasProviderHeartbeat() {
+      return messageCase_ == 5;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     * @return The providerHeartbeat.
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.provider.ProviderHeartbeat getProviderHeartbeat() {
+      if (providerHeartbeatBuilder_ == null) {
+        if (messageCase_ == 5) {
+          return (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_;
+        }
+        return com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance();
+      } else {
+        if (messageCase_ == 5) {
+          return providerHeartbeatBuilder_.getMessage();
+        }
+        return com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    public Builder setProviderHeartbeat(com.kekwy.iarnet.proto.provider.ProviderHeartbeat value) {
+      if (providerHeartbeatBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        message_ = value;
+        onChanged();
+      } else {
+        providerHeartbeatBuilder_.setMessage(value);
+      }
+      messageCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    public Builder setProviderHeartbeat(
+        com.kekwy.iarnet.proto.provider.ProviderHeartbeat.Builder builderForValue) {
+      if (providerHeartbeatBuilder_ == null) {
+        message_ = builderForValue.build();
+        onChanged();
+      } else {
+        providerHeartbeatBuilder_.setMessage(builderForValue.build());
+      }
+      messageCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    public Builder mergeProviderHeartbeat(com.kekwy.iarnet.proto.provider.ProviderHeartbeat value) {
+      if (providerHeartbeatBuilder_ == null) {
+        if (messageCase_ == 5 &&
+            message_ != com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance()) {
+          message_ = com.kekwy.iarnet.proto.provider.ProviderHeartbeat.newBuilder((com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          message_ = value;
+        }
+        onChanged();
+      } else {
+        if (messageCase_ == 5) {
+          providerHeartbeatBuilder_.mergeFrom(value);
+        } else {
+          providerHeartbeatBuilder_.setMessage(value);
+        }
+      }
+      messageCase_ = 5;
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    public Builder clearProviderHeartbeat() {
+      if (providerHeartbeatBuilder_ == null) {
+        if (messageCase_ == 5) {
+          messageCase_ = 0;
+          message_ = null;
+          onChanged();
+        }
+      } else {
+        if (messageCase_ == 5) {
+          messageCase_ = 0;
+          message_ = null;
+        }
+        providerHeartbeatBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.ProviderHeartbeat.Builder getProviderHeartbeatBuilder() {
+      return getProviderHeartbeatFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.provider.ProviderHeartbeatOrBuilder getProviderHeartbeatOrBuilder() {
+      if ((messageCase_ == 5) && (providerHeartbeatBuilder_ != null)) {
+        return providerHeartbeatBuilder_.getMessageOrBuilder();
+      } else {
+        if (messageCase_ == 5) {
+          return (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_;
+        }
+        return com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.provider.ProviderHeartbeat, com.kekwy.iarnet.proto.provider.ProviderHeartbeat.Builder, com.kekwy.iarnet.proto.provider.ProviderHeartbeatOrBuilder> 
+        getProviderHeartbeatFieldBuilder() {
+      if (providerHeartbeatBuilder_ == null) {
+        if (!(messageCase_ == 5)) {
+          message_ = com.kekwy.iarnet.proto.provider.ProviderHeartbeat.getDefaultInstance();
+        }
+        providerHeartbeatBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.provider.ProviderHeartbeat, com.kekwy.iarnet.proto.provider.ProviderHeartbeat.Builder, com.kekwy.iarnet.proto.provider.ProviderHeartbeatOrBuilder>(
+                (com.kekwy.iarnet.proto.provider.ProviderHeartbeat) message_,
+                getParentForChildren(),
+                isClean());
+        message_ = null;
+      }
+      messageCase_ = 5;
+      onChanged();
+      return providerHeartbeatBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck, com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.Builder, com.kekwy.iarnet.proto.provider.ProviderHeartbeatAckOrBuilder> providerHeartbeatAckBuilder_;
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     * @return Whether the providerHeartbeatAck field is set.
+     */
+    @java.lang.Override
+    public boolean hasProviderHeartbeatAck() {
+      return messageCase_ == 6;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     * @return The providerHeartbeatAck.
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck getProviderHeartbeatAck() {
+      if (providerHeartbeatAckBuilder_ == null) {
+        if (messageCase_ == 6) {
+          return (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_;
+        }
+        return com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance();
+      } else {
+        if (messageCase_ == 6) {
+          return providerHeartbeatAckBuilder_.getMessage();
+        }
+        return com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    public Builder setProviderHeartbeatAck(com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck value) {
+      if (providerHeartbeatAckBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        message_ = value;
+        onChanged();
+      } else {
+        providerHeartbeatAckBuilder_.setMessage(value);
+      }
+      messageCase_ = 6;
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    public Builder setProviderHeartbeatAck(
+        com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.Builder builderForValue) {
+      if (providerHeartbeatAckBuilder_ == null) {
+        message_ = builderForValue.build();
+        onChanged();
+      } else {
+        providerHeartbeatAckBuilder_.setMessage(builderForValue.build());
+      }
+      messageCase_ = 6;
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    public Builder mergeProviderHeartbeatAck(com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck value) {
+      if (providerHeartbeatAckBuilder_ == null) {
+        if (messageCase_ == 6 &&
+            message_ != com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance()) {
+          message_ = com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.newBuilder((com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          message_ = value;
+        }
+        onChanged();
+      } else {
+        if (messageCase_ == 6) {
+          providerHeartbeatAckBuilder_.mergeFrom(value);
+        } else {
+          providerHeartbeatAckBuilder_.setMessage(value);
+        }
+      }
+      messageCase_ = 6;
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    public Builder clearProviderHeartbeatAck() {
+      if (providerHeartbeatAckBuilder_ == null) {
+        if (messageCase_ == 6) {
+          messageCase_ = 0;
+          message_ = null;
+          onChanged();
+        }
+      } else {
+        if (messageCase_ == 6) {
+          messageCase_ = 0;
+          message_ = null;
+        }
+        providerHeartbeatAckBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.Builder getProviderHeartbeatAckBuilder() {
+      return getProviderHeartbeatAckFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.provider.ProviderHeartbeatAckOrBuilder getProviderHeartbeatAckOrBuilder() {
+      if ((messageCase_ == 6) && (providerHeartbeatAckBuilder_ != null)) {
+        return providerHeartbeatAckBuilder_.getMessageOrBuilder();
+      } else {
+        if (messageCase_ == 6) {
+          return (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_;
+        }
+        return com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck, com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.Builder, com.kekwy.iarnet.proto.provider.ProviderHeartbeatAckOrBuilder> 
+        getProviderHeartbeatAckFieldBuilder() {
+      if (providerHeartbeatAckBuilder_ == null) {
+        if (!(messageCase_ == 6)) {
+          message_ = com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.getDefaultInstance();
+        }
+        providerHeartbeatAckBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck, com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck.Builder, com.kekwy.iarnet.proto.provider.ProviderHeartbeatAckOrBuilder>(
+                (com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck) message_,
+                getParentForChildren(),
+                isClean());
+        message_ = null;
+      }
+      messageCase_ = 6;
+      onChanged();
+      return providerHeartbeatAckBuilder_;
+    }
+
     private java.lang.Object error_ = "";
     /**
-     * <code>string error = 5;</code>
+     * <code>string error = 7;</code>
      * @return The error.
      */
     public java.lang.String getError() {
@@ -1187,7 +1603,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string error = 5;</code>
+     * <code>string error = 7;</code>
      * @return The bytes for error.
      */
     public com.google.protobuf.ByteString
@@ -1204,7 +1620,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     /**
-     * <code>string error = 5;</code>
+     * <code>string error = 7;</code>
      * @param value The error to set.
      * @return This builder for chaining.
      */
@@ -1212,22 +1628,22 @@ private static final long serialVersionUID = 0L;
         java.lang.String value) {
       if (value == null) { throw new NullPointerException(); }
       error_ = value;
-      bitField0_ |= 0x00000010;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }
     /**
-     * <code>string error = 5;</code>
+     * <code>string error = 7;</code>
      * @return This builder for chaining.
      */
     public Builder clearError() {
       error_ = getDefaultInstance().getError();
-      bitField0_ = (bitField0_ & ~0x00000010);
+      bitField0_ = (bitField0_ & ~0x00000040);
       onChanged();
       return this;
     }
     /**
-     * <code>string error = 5;</code>
+     * <code>string error = 7;</code>
      * @param value The bytes for error to set.
      * @return This builder for chaining.
      */
@@ -1236,7 +1652,7 @@ private static final long serialVersionUID = 0L;
       if (value == null) { throw new NullPointerException(); }
       checkByteStringIsUtf8(value);
       error_ = value;
-      bitField0_ |= 0x00000010;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }

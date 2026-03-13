@@ -49,6 +49,9 @@ private static final long serialVersionUID = 0L;
       implements com.google.protobuf.Internal.EnumLite,
           com.google.protobuf.AbstractMessage.InternalOneOfEnum {
     START_INPUT_COMMAND(1),
+    REGISTER_ACTOR(2),
+    ROW_OUTPUT(3),
+    ROW_DELIVERY(4),
     PAYLOAD_NOT_SET(0);
     private final int value;
     private PayloadCase(int value) {
@@ -67,6 +70,9 @@ private static final long serialVersionUID = 0L;
     public static PayloadCase forNumber(int value) {
       switch (value) {
         case 1: return START_INPUT_COMMAND;
+        case 2: return REGISTER_ACTOR;
+        case 3: return ROW_OUTPUT;
+        case 4: return ROW_DELIVERY;
         case 0: return PAYLOAD_NOT_SET;
         default: return null;
       }
@@ -125,6 +131,135 @@ private static final long serialVersionUID = 0L;
     return com.kekwy.iarnet.proto.actor.StartInputCommand.getDefaultInstance();
   }
 
+  public static final int REGISTER_ACTOR_FIELD_NUMBER = 2;
+  /**
+   * <pre>
+   * Actor 启动后向 Provider 报告 actor_id
+   * </pre>
+   *
+   * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+   * @return Whether the registerActor field is set.
+   */
+  @java.lang.Override
+  public boolean hasRegisterActor() {
+    return payloadCase_ == 2;
+  }
+  /**
+   * <pre>
+   * Actor 启动后向 Provider 报告 actor_id
+   * </pre>
+   *
+   * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+   * @return The registerActor.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.actor.RegisterActorRequest getRegisterActor() {
+    if (payloadCase_ == 2) {
+       return (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_;
+    }
+    return com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance();
+  }
+  /**
+   * <pre>
+   * Actor 启动后向 Provider 报告 actor_id
+   * </pre>
+   *
+   * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.actor.RegisterActorRequestOrBuilder getRegisterActorOrBuilder() {
+    if (payloadCase_ == 2) {
+       return (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_;
+    }
+    return com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance();
+  }
+
+  public static final int ROW_OUTPUT_FIELD_NUMBER = 3;
+  /**
+   * <pre>
+   * Actor 产出的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_output = 3;</code>
+   * @return Whether the rowOutput field is set.
+   */
+  @java.lang.Override
+  public boolean hasRowOutput() {
+    return payloadCase_ == 3;
+  }
+  /**
+   * <pre>
+   * Actor 产出的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_output = 3;</code>
+   * @return The rowOutput.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.actor.DataRow getRowOutput() {
+    if (payloadCase_ == 3) {
+       return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+    }
+    return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+  }
+  /**
+   * <pre>
+   * Actor 产出的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_output = 3;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowOutputOrBuilder() {
+    if (payloadCase_ == 3) {
+       return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+    }
+    return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+  }
+
+  public static final int ROW_DELIVERY_FIELD_NUMBER = 4;
+  /**
+   * <pre>
+   * Provider 转发给下游 Actor 的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+   * @return Whether the rowDelivery field is set.
+   */
+  @java.lang.Override
+  public boolean hasRowDelivery() {
+    return payloadCase_ == 4;
+  }
+  /**
+   * <pre>
+   * Provider 转发给下游 Actor 的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+   * @return The rowDelivery.
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.actor.DataRow getRowDelivery() {
+    if (payloadCase_ == 4) {
+       return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+    }
+    return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+  }
+  /**
+   * <pre>
+   * Provider 转发给下游 Actor 的一行数据
+   * </pre>
+   *
+   * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowDeliveryOrBuilder() {
+    if (payloadCase_ == 4) {
+       return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+    }
+    return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -142,6 +277,15 @@ private static final long serialVersionUID = 0L;
     if (payloadCase_ == 1) {
       output.writeMessage(1, (com.kekwy.iarnet.proto.actor.StartInputCommand) payload_);
     }
+    if (payloadCase_ == 2) {
+      output.writeMessage(2, (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_);
+    }
+    if (payloadCase_ == 3) {
+      output.writeMessage(3, (com.kekwy.iarnet.proto.actor.DataRow) payload_);
+    }
+    if (payloadCase_ == 4) {
+      output.writeMessage(4, (com.kekwy.iarnet.proto.actor.DataRow) payload_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -154,6 +298,18 @@ private static final long serialVersionUID = 0L;
     if (payloadCase_ == 1) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(1, (com.kekwy.iarnet.proto.actor.StartInputCommand) payload_);
+    }
+    if (payloadCase_ == 2) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(2, (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_);
+    }
+    if (payloadCase_ == 3) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(3, (com.kekwy.iarnet.proto.actor.DataRow) payload_);
+    }
+    if (payloadCase_ == 4) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(4, (com.kekwy.iarnet.proto.actor.DataRow) payload_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -176,6 +332,18 @@ private static final long serialVersionUID = 0L;
         if (!getStartInputCommand()
             .equals(other.getStartInputCommand())) return false;
         break;
+      case 2:
+        if (!getRegisterActor()
+            .equals(other.getRegisterActor())) return false;
+        break;
+      case 3:
+        if (!getRowOutput()
+            .equals(other.getRowOutput())) return false;
+        break;
+      case 4:
+        if (!getRowDelivery()
+            .equals(other.getRowDelivery())) return false;
+        break;
       case 0:
       default:
     }
@@ -194,6 +362,18 @@ private static final long serialVersionUID = 0L;
       case 1:
         hash = (37 * hash) + START_INPUT_COMMAND_FIELD_NUMBER;
         hash = (53 * hash) + getStartInputCommand().hashCode();
+        break;
+      case 2:
+        hash = (37 * hash) + REGISTER_ACTOR_FIELD_NUMBER;
+        hash = (53 * hash) + getRegisterActor().hashCode();
+        break;
+      case 3:
+        hash = (37 * hash) + ROW_OUTPUT_FIELD_NUMBER;
+        hash = (53 * hash) + getRowOutput().hashCode();
+        break;
+      case 4:
+        hash = (37 * hash) + ROW_DELIVERY_FIELD_NUMBER;
+        hash = (53 * hash) + getRowDelivery().hashCode();
         break;
       case 0:
       default:
@@ -330,6 +510,15 @@ private static final long serialVersionUID = 0L;
       if (startInputCommandBuilder_ != null) {
         startInputCommandBuilder_.clear();
       }
+      if (registerActorBuilder_ != null) {
+        registerActorBuilder_.clear();
+      }
+      if (rowOutputBuilder_ != null) {
+        rowOutputBuilder_.clear();
+      }
+      if (rowDeliveryBuilder_ != null) {
+        rowDeliveryBuilder_.clear();
+      }
       payloadCase_ = 0;
       payload_ = null;
       return this;
@@ -374,6 +563,18 @@ private static final long serialVersionUID = 0L;
       if (payloadCase_ == 1 &&
           startInputCommandBuilder_ != null) {
         result.payload_ = startInputCommandBuilder_.build();
+      }
+      if (payloadCase_ == 2 &&
+          registerActorBuilder_ != null) {
+        result.payload_ = registerActorBuilder_.build();
+      }
+      if (payloadCase_ == 3 &&
+          rowOutputBuilder_ != null) {
+        result.payload_ = rowOutputBuilder_.build();
+      }
+      if (payloadCase_ == 4 &&
+          rowDeliveryBuilder_ != null) {
+        result.payload_ = rowDeliveryBuilder_.build();
       }
     }
 
@@ -426,6 +627,18 @@ private static final long serialVersionUID = 0L;
           mergeStartInputCommand(other.getStartInputCommand());
           break;
         }
+        case REGISTER_ACTOR: {
+          mergeRegisterActor(other.getRegisterActor());
+          break;
+        }
+        case ROW_OUTPUT: {
+          mergeRowOutput(other.getRowOutput());
+          break;
+        }
+        case ROW_DELIVERY: {
+          mergeRowDelivery(other.getRowDelivery());
+          break;
+        }
         case PAYLOAD_NOT_SET: {
           break;
         }
@@ -463,6 +676,27 @@ private static final long serialVersionUID = 0L;
               payloadCase_ = 1;
               break;
             } // case 10
+            case 18: {
+              input.readMessage(
+                  getRegisterActorFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              payloadCase_ = 2;
+              break;
+            } // case 18
+            case 26: {
+              input.readMessage(
+                  getRowOutputFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              payloadCase_ = 3;
+              break;
+            } // case 26
+            case 34: {
+              input.readMessage(
+                  getRowDeliveryFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              payloadCase_ = 4;
+              break;
+            } // case 34
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -671,6 +905,540 @@ private static final long serialVersionUID = 0L;
       payloadCase_ = 1;
       onChanged();
       return startInputCommandBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.actor.RegisterActorRequest, com.kekwy.iarnet.proto.actor.RegisterActorRequest.Builder, com.kekwy.iarnet.proto.actor.RegisterActorRequestOrBuilder> registerActorBuilder_;
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     * @return Whether the registerActor field is set.
+     */
+    @java.lang.Override
+    public boolean hasRegisterActor() {
+      return payloadCase_ == 2;
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     * @return The registerActor.
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.actor.RegisterActorRequest getRegisterActor() {
+      if (registerActorBuilder_ == null) {
+        if (payloadCase_ == 2) {
+          return (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_;
+        }
+        return com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance();
+      } else {
+        if (payloadCase_ == 2) {
+          return registerActorBuilder_.getMessage();
+        }
+        return com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance();
+      }
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    public Builder setRegisterActor(com.kekwy.iarnet.proto.actor.RegisterActorRequest value) {
+      if (registerActorBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        payload_ = value;
+        onChanged();
+      } else {
+        registerActorBuilder_.setMessage(value);
+      }
+      payloadCase_ = 2;
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    public Builder setRegisterActor(
+        com.kekwy.iarnet.proto.actor.RegisterActorRequest.Builder builderForValue) {
+      if (registerActorBuilder_ == null) {
+        payload_ = builderForValue.build();
+        onChanged();
+      } else {
+        registerActorBuilder_.setMessage(builderForValue.build());
+      }
+      payloadCase_ = 2;
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    public Builder mergeRegisterActor(com.kekwy.iarnet.proto.actor.RegisterActorRequest value) {
+      if (registerActorBuilder_ == null) {
+        if (payloadCase_ == 2 &&
+            payload_ != com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance()) {
+          payload_ = com.kekwy.iarnet.proto.actor.RegisterActorRequest.newBuilder((com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          payload_ = value;
+        }
+        onChanged();
+      } else {
+        if (payloadCase_ == 2) {
+          registerActorBuilder_.mergeFrom(value);
+        } else {
+          registerActorBuilder_.setMessage(value);
+        }
+      }
+      payloadCase_ = 2;
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    public Builder clearRegisterActor() {
+      if (registerActorBuilder_ == null) {
+        if (payloadCase_ == 2) {
+          payloadCase_ = 0;
+          payload_ = null;
+          onChanged();
+        }
+      } else {
+        if (payloadCase_ == 2) {
+          payloadCase_ = 0;
+          payload_ = null;
+        }
+        registerActorBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.actor.RegisterActorRequest.Builder getRegisterActorBuilder() {
+      return getRegisterActorFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.actor.RegisterActorRequestOrBuilder getRegisterActorOrBuilder() {
+      if ((payloadCase_ == 2) && (registerActorBuilder_ != null)) {
+        return registerActorBuilder_.getMessageOrBuilder();
+      } else {
+        if (payloadCase_ == 2) {
+          return (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_;
+        }
+        return com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance();
+      }
+    }
+    /**
+     * <pre>
+     * Actor 启动后向 Provider 报告 actor_id
+     * </pre>
+     *
+     * <code>.iarnet.actor.RegisterActorRequest register_actor = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.actor.RegisterActorRequest, com.kekwy.iarnet.proto.actor.RegisterActorRequest.Builder, com.kekwy.iarnet.proto.actor.RegisterActorRequestOrBuilder> 
+        getRegisterActorFieldBuilder() {
+      if (registerActorBuilder_ == null) {
+        if (!(payloadCase_ == 2)) {
+          payload_ = com.kekwy.iarnet.proto.actor.RegisterActorRequest.getDefaultInstance();
+        }
+        registerActorBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.actor.RegisterActorRequest, com.kekwy.iarnet.proto.actor.RegisterActorRequest.Builder, com.kekwy.iarnet.proto.actor.RegisterActorRequestOrBuilder>(
+                (com.kekwy.iarnet.proto.actor.RegisterActorRequest) payload_,
+                getParentForChildren(),
+                isClean());
+        payload_ = null;
+      }
+      payloadCase_ = 2;
+      onChanged();
+      return registerActorBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.actor.DataRow, com.kekwy.iarnet.proto.actor.DataRow.Builder, com.kekwy.iarnet.proto.actor.DataRowOrBuilder> rowOutputBuilder_;
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     * @return Whether the rowOutput field is set.
+     */
+    @java.lang.Override
+    public boolean hasRowOutput() {
+      return payloadCase_ == 3;
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     * @return The rowOutput.
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.actor.DataRow getRowOutput() {
+      if (rowOutputBuilder_ == null) {
+        if (payloadCase_ == 3) {
+          return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+        }
+        return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+      } else {
+        if (payloadCase_ == 3) {
+          return rowOutputBuilder_.getMessage();
+        }
+        return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+      }
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    public Builder setRowOutput(com.kekwy.iarnet.proto.actor.DataRow value) {
+      if (rowOutputBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        payload_ = value;
+        onChanged();
+      } else {
+        rowOutputBuilder_.setMessage(value);
+      }
+      payloadCase_ = 3;
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    public Builder setRowOutput(
+        com.kekwy.iarnet.proto.actor.DataRow.Builder builderForValue) {
+      if (rowOutputBuilder_ == null) {
+        payload_ = builderForValue.build();
+        onChanged();
+      } else {
+        rowOutputBuilder_.setMessage(builderForValue.build());
+      }
+      payloadCase_ = 3;
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    public Builder mergeRowOutput(com.kekwy.iarnet.proto.actor.DataRow value) {
+      if (rowOutputBuilder_ == null) {
+        if (payloadCase_ == 3 &&
+            payload_ != com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance()) {
+          payload_ = com.kekwy.iarnet.proto.actor.DataRow.newBuilder((com.kekwy.iarnet.proto.actor.DataRow) payload_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          payload_ = value;
+        }
+        onChanged();
+      } else {
+        if (payloadCase_ == 3) {
+          rowOutputBuilder_.mergeFrom(value);
+        } else {
+          rowOutputBuilder_.setMessage(value);
+        }
+      }
+      payloadCase_ = 3;
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    public Builder clearRowOutput() {
+      if (rowOutputBuilder_ == null) {
+        if (payloadCase_ == 3) {
+          payloadCase_ = 0;
+          payload_ = null;
+          onChanged();
+        }
+      } else {
+        if (payloadCase_ == 3) {
+          payloadCase_ = 0;
+          payload_ = null;
+        }
+        rowOutputBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    public com.kekwy.iarnet.proto.actor.DataRow.Builder getRowOutputBuilder() {
+      return getRowOutputFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowOutputOrBuilder() {
+      if ((payloadCase_ == 3) && (rowOutputBuilder_ != null)) {
+        return rowOutputBuilder_.getMessageOrBuilder();
+      } else {
+        if (payloadCase_ == 3) {
+          return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+        }
+        return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+      }
+    }
+    /**
+     * <pre>
+     * Actor 产出的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_output = 3;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.actor.DataRow, com.kekwy.iarnet.proto.actor.DataRow.Builder, com.kekwy.iarnet.proto.actor.DataRowOrBuilder> 
+        getRowOutputFieldBuilder() {
+      if (rowOutputBuilder_ == null) {
+        if (!(payloadCase_ == 3)) {
+          payload_ = com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+        }
+        rowOutputBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.actor.DataRow, com.kekwy.iarnet.proto.actor.DataRow.Builder, com.kekwy.iarnet.proto.actor.DataRowOrBuilder>(
+                (com.kekwy.iarnet.proto.actor.DataRow) payload_,
+                getParentForChildren(),
+                isClean());
+        payload_ = null;
+      }
+      payloadCase_ = 3;
+      onChanged();
+      return rowOutputBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.actor.DataRow, com.kekwy.iarnet.proto.actor.DataRow.Builder, com.kekwy.iarnet.proto.actor.DataRowOrBuilder> rowDeliveryBuilder_;
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     * @return Whether the rowDelivery field is set.
+     */
+    @java.lang.Override
+    public boolean hasRowDelivery() {
+      return payloadCase_ == 4;
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     * @return The rowDelivery.
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.actor.DataRow getRowDelivery() {
+      if (rowDeliveryBuilder_ == null) {
+        if (payloadCase_ == 4) {
+          return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+        }
+        return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+      } else {
+        if (payloadCase_ == 4) {
+          return rowDeliveryBuilder_.getMessage();
+        }
+        return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+      }
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    public Builder setRowDelivery(com.kekwy.iarnet.proto.actor.DataRow value) {
+      if (rowDeliveryBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        payload_ = value;
+        onChanged();
+      } else {
+        rowDeliveryBuilder_.setMessage(value);
+      }
+      payloadCase_ = 4;
+      return this;
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    public Builder setRowDelivery(
+        com.kekwy.iarnet.proto.actor.DataRow.Builder builderForValue) {
+      if (rowDeliveryBuilder_ == null) {
+        payload_ = builderForValue.build();
+        onChanged();
+      } else {
+        rowDeliveryBuilder_.setMessage(builderForValue.build());
+      }
+      payloadCase_ = 4;
+      return this;
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    public Builder mergeRowDelivery(com.kekwy.iarnet.proto.actor.DataRow value) {
+      if (rowDeliveryBuilder_ == null) {
+        if (payloadCase_ == 4 &&
+            payload_ != com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance()) {
+          payload_ = com.kekwy.iarnet.proto.actor.DataRow.newBuilder((com.kekwy.iarnet.proto.actor.DataRow) payload_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          payload_ = value;
+        }
+        onChanged();
+      } else {
+        if (payloadCase_ == 4) {
+          rowDeliveryBuilder_.mergeFrom(value);
+        } else {
+          rowDeliveryBuilder_.setMessage(value);
+        }
+      }
+      payloadCase_ = 4;
+      return this;
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    public Builder clearRowDelivery() {
+      if (rowDeliveryBuilder_ == null) {
+        if (payloadCase_ == 4) {
+          payloadCase_ = 0;
+          payload_ = null;
+          onChanged();
+        }
+      } else {
+        if (payloadCase_ == 4) {
+          payloadCase_ = 0;
+          payload_ = null;
+        }
+        rowDeliveryBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    public com.kekwy.iarnet.proto.actor.DataRow.Builder getRowDeliveryBuilder() {
+      return getRowDeliveryFieldBuilder().getBuilder();
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowDeliveryOrBuilder() {
+      if ((payloadCase_ == 4) && (rowDeliveryBuilder_ != null)) {
+        return rowDeliveryBuilder_.getMessageOrBuilder();
+      } else {
+        if (payloadCase_ == 4) {
+          return (com.kekwy.iarnet.proto.actor.DataRow) payload_;
+        }
+        return com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+      }
+    }
+    /**
+     * <pre>
+     * Provider 转发给下游 Actor 的一行数据
+     * </pre>
+     *
+     * <code>.iarnet.actor.DataRow row_delivery = 4;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.actor.DataRow, com.kekwy.iarnet.proto.actor.DataRow.Builder, com.kekwy.iarnet.proto.actor.DataRowOrBuilder> 
+        getRowDeliveryFieldBuilder() {
+      if (rowDeliveryBuilder_ == null) {
+        if (!(payloadCase_ == 4)) {
+          payload_ = com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance();
+        }
+        rowDeliveryBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.actor.DataRow, com.kekwy.iarnet.proto.actor.DataRow.Builder, com.kekwy.iarnet.proto.actor.DataRowOrBuilder>(
+                (com.kekwy.iarnet.proto.actor.DataRow) payload_,
+                getParentForChildren(),
+                isClean());
+        payload_ = null;
+      }
+      payloadCase_ = 4;
+      onChanged();
+      return rowDeliveryBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

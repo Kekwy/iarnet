@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>iarnet-workflow</artifactId>
+    <artifactId>iarnet-execution</artifactId>
     <packaging>jar</packaging>
     <name>iarnet-workflow</name>
     <description>iarnet 工作流运行时</description>

@@ -62,12 +62,42 @@ public interface ControlEnvelopeOrBuilder extends
   com.kekwy.iarnet.proto.provider.RegisterProviderResponseOrBuilder getRegisterProviderResponseOrBuilder();
 
   /**
-   * <code>string error = 5;</code>
+   * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+   * @return Whether the providerHeartbeat field is set.
+   */
+  boolean hasProviderHeartbeat();
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+   * @return The providerHeartbeat.
+   */
+  com.kekwy.iarnet.proto.provider.ProviderHeartbeat getProviderHeartbeat();
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeat provider_heartbeat = 5;</code>
+   */
+  com.kekwy.iarnet.proto.provider.ProviderHeartbeatOrBuilder getProviderHeartbeatOrBuilder();
+
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+   * @return Whether the providerHeartbeatAck field is set.
+   */
+  boolean hasProviderHeartbeatAck();
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+   * @return The providerHeartbeatAck.
+   */
+  com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck getProviderHeartbeatAck();
+  /**
+   * <code>.iarnet.provider.ProviderHeartbeatAck provider_heartbeat_ack = 6;</code>
+   */
+  com.kekwy.iarnet.proto.provider.ProviderHeartbeatAckOrBuilder getProviderHeartbeatAckOrBuilder();
+
+  /**
+   * <code>string error = 7;</code>
    * @return The error.
    */
   java.lang.String getError();
   /**
-   * <code>string error = 5;</code>
+   * <code>string error = 7;</code>
    * @return The bytes for error.
    */
   com.google.protobuf.ByteString
