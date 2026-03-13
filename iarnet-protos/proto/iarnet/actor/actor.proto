@@ -2,16 +2,31 @@ syntax = "proto3";
 
 package iarnet.actor;
 
+import "iarnet/common/type.proto";
+
 option java_package = "com.kekwy.iarnet.proto.actor";
 option java_multiple_files = true;
 
 message ActorEnvelope {
   oneof payload {
     StartInputCommand start_input_command = 1;  // 命令 input Actor 开始产生输入
+    RegisterActorRequest register_actor = 2;     // Actor 启动后向 Provider 报告 actor_id
+    DataRow row_output = 3;                     // Actor 产出的一行数据
+    DataRow row_delivery = 4;                   // Provider 转发给下游 Actor 的一行数据
   }
 }
 
 // 命令 input Actor 开始产生输入
 message StartInputCommand {
+}
+
+// Actor 向 Provider 注册时携带的 actor_id
+message RegisterActorRequest {
+  string actor_id = 1;
+}
+
+// 一行数据，用于 Actor 间经 Provider 路由
+message DataRow {
+  repeated iarnet.common.Value values = 1;
 }
 

@@ -15,7 +15,7 @@ message ControlEnvelope {
     ProviderHeartbeat provider_heartbeat = 5;
     ProviderHeartbeatAck provider_heartbeat_ack = 6;
   }
-
+  
   string error = 7;
 }
 

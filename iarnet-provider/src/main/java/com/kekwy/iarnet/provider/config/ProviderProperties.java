@@ -1,23 +1,24 @@
-package com.kekwy.iarnet.adapter.config;
+package com.kekwy.iarnet.provider.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-@ConfigurationProperties(prefix = "iarnet.adapter")
-public class AdapterProperties {
+@ConfigurationProperties(prefix = "iarnet.provider")
+public class ProviderProperties {
     private String host;
     private String name;
     private String description = "";
     private String type = "docker";
+    private String zone = "";
     private ControlPlane controlPlane = new ControlPlane();
     private List<String> tags = List.of();
     private ResourceConfig resource = new ResourceConfig();
     /** 默认使用用户目录，避免 /tmp 在 WSL 等环境下无写权限 */
-    private String artifactDir = System.getProperty("user.home") + "/.iarnet-adapter/artifacts";
+    private String artifactDir = System.getProperty("user.home") + "/.iarnet-provider/artifacts";
     private DockerConfig docker = new DockerConfig();
     private K8sConfig k8s = new K8sConfig();
-    private DeviceAgent deviceAgent = new DeviceAgent();
+    private ActorAgent actorAgent = new ActorAgent();
 
     // ===== Getters / Setters =====
 
@@ -29,6 +30,9 @@ public class AdapterProperties {
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
+
+    public String getZone() { return zone; }
+    public void setZone(String zone) { this.zone = zone; }
 
     public ControlPlane getControlPlane() { return controlPlane; }
     public void setControlPlane(ControlPlane controlPlane) { this.controlPlane = controlPlane; }
@@ -48,13 +52,11 @@ public class AdapterProperties {
     public K8sConfig getK8s() { return k8s; }
     public void setK8s(K8sConfig k8s) { this.k8s = k8s; }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
+    public void setHost(String host) { this.host = host; }
+    public String getHost() { return host; }
 
-    public String getHost() {
-        return host;
-    }
+    public ActorAgent getActorAgent() { return actorAgent; }
+    public void setActorAgent(ActorAgent actorAgent) { this.actorAgent = actorAgent; }
 
     // ===== 嵌套配置类 =====
 
@@ -104,11 +106,8 @@ public class AdapterProperties {
         public void setNamespace(String namespace) { this.namespace = namespace; }
     }
 
-    public DeviceAgent getDeviceAgent() { return deviceAgent; }
-    public void setDeviceAgent(DeviceAgent deviceAgent) { this.deviceAgent = deviceAgent; }
-
-    public static class DeviceAgent {
-        /** Device Agent 本地监听端口（对 Adapter 所在宿主机），Actor 通过 env 回连该端口 */
+    /** 本地 Actor 连接端口（Provider 所在宿主机），Actor 通过 env 回连该端口 */
+    public static class ActorAgent {
         private int port = 10000;
 
         public int getPort() { return port; }

@@ -1,14 +1,16 @@
 iarnet:
-  adapter:
+  provider:
     host: 172.30.23.95
 
-    # 适配器名称（用户自定义，注册时提交给控制平面）
-    name: docker-adapter-01
-    # 适配器描述
-    description: "本机 Docker 资源适配器"
+    # Provider 名称（用户自定义，注册时提交给控制平面）
+    name: docker-provider-01
+    # Provider 描述
+    description: "本机 Docker Provider"
     # 引擎类型: docker / k8s
     type: docker
-    # control-plane 连接信息（Adapter 主动连接，无需暴露本地端口）
+    # 可选：拓扑/区域信息，例如 "edge-a" / "az-1"
+    zone: ""
+    # control-plane 连接信息（Provider 主动连接，无需暴露本地端口）
     control-plane:
       host: 127.0.0.1
       port: 9090
@@ -21,8 +23,8 @@ iarnet:
       cpu: 4.0
       memory: 8Gi
       gpu: 0
-    # artifact 存储目录（默认 ~/.iarnet-adapter/artifacts，可避免 /tmp 无写权限）
-    # artifact-dir: ~/.iarnet-adapter/artifacts
+    # artifact 存储目录（默认 ~/.iarnet-provider/artifacts）
+    # artifact-dir: ~/.iarnet-provider/artifacts
 
     # ===== Docker 引擎配置 =====
     docker:
@@ -34,3 +36,7 @@ iarnet:
       kubeconfig: ""
       in-cluster: false
       namespace: default
+
+    # ===== 本地 Actor 连接 =====
+    actor-agent:
+      port: 10000
