@@ -13,7 +13,7 @@
 
     <artifactId>iarnet-execution</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-workflow</name>
+    <name>iarnet-execution</name>
     <description>iarnet 工作流运行时</description>
     <dependencies>
         <dependency>

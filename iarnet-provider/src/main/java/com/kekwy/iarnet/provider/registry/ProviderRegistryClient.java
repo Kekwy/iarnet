@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.provider.registry;
 
+import com.kekwy.iarnet.provider.actor.LocalActorGraph;
 import com.kekwy.iarnet.provider.engine.ProviderEngine;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.proto.fabric.ProviderRegistryServiceGrpc;
@@ -190,8 +191,8 @@ public class ProviderRegistryClient implements AutoCloseable {
         StreamObserver<SignalingEnvelope> sender = headerStub.signalingChannel(receiver);
         proxy.setDelegate(sender);
 
-        com.kekwy.iarnet.provider.agent.LocalActorGraph.getInstance().setSignalingSender(proxy);
-        com.kekwy.iarnet.provider.agent.LocalActorGraph.getInstance().setProviderId(providerId);
+        LocalActorGraph.getInstance().setSignalingSender(proxy);
+        LocalActorGraph.getInstance().setProviderId(providerId);
 
         log.info("SignalingChannel 已建立: providerId={}", providerId);
     }
