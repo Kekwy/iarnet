@@ -1,15 +1,19 @@
 package com.kekwy.iarnet.provider.registry;
 
 import com.kekwy.iarnet.provider.actor.ActorRouter;
+import com.kekwy.iarnet.provider.control.ControlService;
+import com.kekwy.iarnet.provider.deployment.DeploymentService;
 import com.kekwy.iarnet.provider.engine.ProviderEngine;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.proto.fabric.ProviderRegistryServiceGrpc;
 import com.kekwy.iarnet.proto.provider.*;
+import com.kekwy.iarnet.provider.signaling.SignalingService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
 import io.grpc.stub.StreamObserver;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +48,21 @@ public class ProviderRegistryClient implements AutoCloseable {
     private final ProviderRegistryServiceGrpc.ProviderRegistryServiceStub asyncStub;
     private final ScheduledExecutorService scheduler;
 
+    @Getter
     private volatile String providerId;
     private volatile boolean registered = false;
     private volatile boolean closed = false;
+
+    private final ControlService controlService;
+    private final DeploymentService deploymentService;
+    private final SignalingService signalingService;
 
     public ProviderRegistryClient(String providerName, String description, String zone,
                                   String providerType, List<String> tags,
                                   ProviderEngine engine, ArtifactFetcher artifactFetcher,
                                   ActorRouter actorRouter,
-                                  String cpHost, int cpPort) {
+                                  String cpHost, int cpPort,
+                                  ControlService controlService, DeploymentService deploymentService, SignalingService signalingService) {
         this.providerName = providerName != null ? providerName : "provider";
         this.description = description != null ? description : "";
         this.zone = zone != null ? zone : "";
@@ -69,6 +79,10 @@ public class ProviderRegistryClient implements AutoCloseable {
         this.blockingStub = ProviderRegistryServiceGrpc.newBlockingStub(channel);
         this.asyncStub = ProviderRegistryServiceGrpc.newStub(channel);
         this.scheduler = Executors.newScheduledThreadPool(2);
+
+        this.controlService = controlService;
+        this.deploymentService = deploymentService;
+        this.signalingService = signalingService;
     }
 
     public void start() {
@@ -95,10 +109,6 @@ public class ProviderRegistryClient implements AutoCloseable {
         } catch (Exception e) {
             log.error("Provider 注册失败: name={}", providerName, e);
         }
-    }
-
-    public String getProviderId() {
-        return providerId;
     }
 
     @Override
