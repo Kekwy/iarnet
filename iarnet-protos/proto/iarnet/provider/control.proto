@@ -12,9 +12,11 @@ message ControlEnvelope {
   oneof message {
     RegisterProviderRequest register_provider_request = 3;
     RegisterProviderResponse register_provider_response = 4;
+    ProviderHeartbeat provider_heartbeat = 5;
+    ProviderHeartbeatAck provider_heartbeat_ack = 6;
   }
 
-  string error = 5;
+  string error = 7;
 }
 
 // ======================== 设备注册与心跳 ========================

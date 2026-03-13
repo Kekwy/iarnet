@@ -2,7 +2,7 @@ package com.kekwy.iarnet.workflow.runtime;
 
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.StartInputCommand;
-import com.kekwy.iarnet.resource.ActorInstanceRef;
+import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
 import com.kekwy.iarnet.workflow.RuntimeNode;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

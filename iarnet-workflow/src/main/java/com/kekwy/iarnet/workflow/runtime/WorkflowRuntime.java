@@ -6,16 +6,16 @@ import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.ResourceSpec;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
-import com.kekwy.iarnet.resource.ActorEdge;
-import com.kekwy.iarnet.resource.ActorInstanceRef;
+import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
+import com.kekwy.iarnet.fabric.actor.ActorMessage;
+import com.kekwy.iarnet.fabric.deployment.ActorEdge;
+import com.kekwy.iarnet.fabric.deployment.ActorSpec;
+import com.kekwy.iarnet.fabric.deployment.DeploymentCallback;
+import com.kekwy.iarnet.fabric.deployment.DeploymentPlanGraph;
+import com.kekwy.iarnet.fabric.deployment.DeploymentService;
+import com.kekwy.iarnet.fabric.deployment.InstanceRefGraph;
+import com.kekwy.iarnet.fabric.messaging.MessageInbox;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.resource.ActorMessage;
-import com.kekwy.iarnet.resource.ActorMessageInbox;
-import com.kekwy.iarnet.resource.ActorSpec;
-import com.kekwy.iarnet.resource.DeploymentCallback;
-import com.kekwy.iarnet.resource.DeploymentPlanGraph;
-import com.kekwy.iarnet.resource.InstanceRefGraph;
-import com.kekwy.iarnet.resource.service.DeploymentService;
 import com.kekwy.iarnet.workflow.RuntimeNode;
 import com.kekwy.iarnet.workflow.port.ArtifactUrlProvider;
 import com.kekwy.iarnet.workflow.util.ArtifactBuilder;
@@ -52,7 +52,7 @@ public class WorkflowRuntime {
     private final DeploymentService deploymentService;
     private final ArtifactUrlProvider artifactUrlProvider;
 
-    private final ActorMessageInbox actorMessageInbox = new ActorMessageInbox() {
+    private final MessageInbox<ActorMessage> actorMessageInbox = new MessageInbox<>() {
 
         private final BlockingQueue<ActorMessage> queue = new LinkedBlockingQueue<>();
 

@@ -1,15 +1,11 @@
-package com.kekwy.iarnet.workflow;
+package com.kekwy.iarnet.fabric.deployment;
 
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
 
 import java.util.List;
 
-public record RuntimeNode(
-        String nodeId,
-        String nodeName,
+public record InstanceRefGraph(
+        String deploymentId,
         List<ActorInstanceRef> actorInstanceRefs
 ) {
-
-
-
 }
