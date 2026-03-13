@@ -2,6 +2,7 @@ package com.kekwy.iarnet.fabric.actor;
 
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import io.grpc.stub.StreamObserver;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,21 +15,15 @@ public class ActorConnection {
 
     private static final Logger log = LoggerFactory.getLogger(ActorConnection.class);
 
+    @Getter
     private final String actorId;
     private final StreamObserver<ActorEnvelope> sender;
+    @Getter
     private volatile boolean closed = false;
 
     public ActorConnection(String actorId, StreamObserver<ActorEnvelope> sender) {
         this.actorId = actorId;
         this.sender = sender;
-    }
-
-    public String getActorId() {
-        return actorId;
-    }
-
-    public boolean isClosed() {
-        return closed;
     }
 
     public void send(ActorEnvelope envelope) {

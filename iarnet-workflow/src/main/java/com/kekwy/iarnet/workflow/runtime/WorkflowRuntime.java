@@ -1,6 +1,7 @@
 package com.kekwy.iarnet.workflow.runtime;
 
 import com.kekwy.iarnet.common.Constants;
+import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.ResourceSpec;
@@ -52,25 +53,7 @@ public class WorkflowRuntime {
     private final DeploymentService deploymentService;
     private final ArtifactUrlProvider artifactUrlProvider;
 
-    private final MessageInbox<ActorMessage> actorMessageInbox = new MessageInbox<>() {
-
-        private final BlockingQueue<ActorMessage> queue = new LinkedBlockingQueue<>();
-
-        @Override
-        public ActorMessage get() {
-            try {
-                return queue.poll(100, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return null;
-            }
-        }
-
-        @Override
-        public void put(ActorMessage message) {
-            queue.add(message);
-        }
-    };
+    private final ActorMessageInbox actorMessageInbox = new ActorMessageInbox();
 
     // 后续取决于时间看看是否能引入并发处理工作流提交请求，并考虑全平台线程安全
     private final BlockingQueue<SubmitRequest> queue = new LinkedBlockingQueue<>();

@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.provider;
 
-import com.kekwy.iarnet.provider.agent.ActorRegistrationServiceImpl;
-import com.kekwy.iarnet.provider.agent.LocalActorGraph;
+import com.kekwy.iarnet.provider.actor.ActorRegistrationServiceImpl;
+import com.kekwy.iarnet.provider.actor.LocalActorGraph;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.provider.artifact.ArtifactStore;
 import com.kekwy.iarnet.provider.config.ProviderProperties;

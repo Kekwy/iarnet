@@ -1,7 +1,8 @@
 package com.kekwy.iarnet.provider.registry;
 
-import com.kekwy.iarnet.provider.agent.LocalActorGraph;
 import com.kekwy.iarnet.proto.provider.SignalingEnvelope;
+import com.kekwy.iarnet.provider.actor.LocalActorGraph;
+
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

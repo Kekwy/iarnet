@@ -1,10 +1,9 @@
 package com.kekwy.iarnet.fabric.deployment;
 
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
-import com.kekwy.iarnet.fabric.actor.ActorMessage;
 import com.kekwy.iarnet.fabric.actor.ActorRegistry;
 import com.kekwy.iarnet.fabric.actor.ActorLifecycleListener;
-import com.kekwy.iarnet.fabric.messaging.MessageInbox;
+import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
 import com.kekwy.iarnet.proto.provider.DeployActorRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
     }
 
     @Override
-    public void deploy(DeploymentPlanGraph planGraph, MessageInbox<ActorMessage> inbox, DeploymentCallback callback) {
+    public void deploy(DeploymentPlanGraph planGraph, ActorMessageInbox inbox, DeploymentCallback callback) {
         String deploymentId = planGraph.deploymentId();
         List<ActorSpec> specs = planGraph.actorSpecs();
         List<ActorEdge> edges = planGraph.edges();

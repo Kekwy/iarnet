@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.provider.registry;
 
-import com.kekwy.iarnet.provider.agent.LocalActorGraph;
 import com.kekwy.iarnet.provider.engine.ProviderEngine;
+import com.kekwy.iarnet.provider.actor.LocalActorGraph;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.proto.provider.*;
 import io.grpc.stub.StreamObserver;
