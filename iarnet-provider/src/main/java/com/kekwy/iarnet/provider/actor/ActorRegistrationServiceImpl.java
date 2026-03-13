@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.provider.agent;
+package com.kekwy.iarnet.provider.actor;
 
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.DataRow;
