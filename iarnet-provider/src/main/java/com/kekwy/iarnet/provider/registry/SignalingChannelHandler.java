@@ -37,7 +37,7 @@ public class SignalingChannelHandler implements StreamObserver<SignalingEnvelope
         switch (value.getPayloadCase()) {
             case ACTOR_ENVELOPE_FORWARD:
                 String targetActorId = value.getTargetActorId();
-                if (targetActorId != null && !targetActorId.isBlank()) {
+                if (!targetActorId.isBlank()) {
                     actorRouter.forwardEnvelopeToActor(targetActorId, value.getActorEnvelopeForward());
                 } else {
                     log.warn("SignalingEnvelope actor_envelope_forward 缺少 target_actor_id，无法转发");
@@ -49,11 +49,12 @@ public class SignalingChannelHandler implements StreamObserver<SignalingEnvelope
             case ICE_ENVELOPE:
                 log.debug("收到 IceEnvelope: connectId={}", value.getIceEnvelope().getConnectId());
                 break;
+            case ACTOR_READY:
+                responseObserver.onNext(value);
+                break;
             case CANDIDATE_UPDATE:
             case ACTOR_CHANNEL:
-            case ACTOR_READY:
-                log.debug("SignalingChannel 收到: {}", value.getPayloadCase());
-                break;
+
             default:
                 log.debug("SignalingChannel 收到: {}", value.getPayloadCase());
         }

@@ -61,7 +61,7 @@ public class ActorRouter {
     public void routeEnvelope(ActorEnvelope envelope) {
         if (envelope == null) return;
         String target = envelope.getTarget();
-        if (target == null || target.isBlank()) {
+        if (target.isBlank()) {
             log.warn("ActorEnvelope 缺少 target，无法路由");
             return;
         }
