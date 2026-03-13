@@ -12,6 +12,8 @@ message ControlEnvelope {
   oneof message {
     RegisterProviderRequest register_provider_request = 3;
     RegisterProviderResponse register_provider_response = 4;
+    ProviderHeartbeat provider_heartbeat = 6;
+    ProviderHeartbeatAck provider_heartbeat_ack = 7;
   }
 
   string error = 5;

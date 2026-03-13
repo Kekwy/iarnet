@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.adapter.artifact;
+package com.kekwy.iarnet.provider.artifact;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class ArtifactStore {
         } catch (java.nio.file.AccessDeniedException e) {
             throw new RuntimeException(
                 "无法创建 artifact 存储目录（无写权限）: " + baseDir
-                    + "。请配置 iarnet.adapter.artifact-dir 为有写权限的目录，如 ~/.iarnet-adapter/artifacts", e);
+                    + "。请配置 iarnet.provider.artifact-dir 为有写权限的目录，如 ~/.iarnet-provider/artifacts", e);
         } catch (IOException e) {
             throw new RuntimeException("无法创建 artifact 存储目录: " + baseDir, e);
         }
@@ -65,22 +65,21 @@ public class ArtifactStore {
         return Files.isDirectory(baseDir.resolve(artifactId));
     }
 
-    /** 存放各实例函数描述文件的子目录名 */
     private static final String FUNCTIONS_SUBDIR = "_functions";
 
     /**
-     * 将函数描述（Proto 二进制）写入实例专属文件，供部署时挂载到 Actor 容器。
+     * 将函数描述（Proto 二进制）写入 Actor 专属文件，供部署时挂载到容器。
      *
-     * @param instanceId 实例 ID
+     * @param actorId  Actor ID
      * @param descriptorBytes FunctionDescriptor 的 proto 序列化字节
      * @return 写入后的文件路径（主机路径，用于 Docker bind mount）
      */
-    public Path storeFunctionDescriptor(String instanceId, byte[] descriptorBytes) throws IOException {
-        Path dir = baseDir.resolve(FUNCTIONS_SUBDIR).resolve(instanceId);
+    public Path storeFunctionDescriptor(String actorId, byte[] descriptorBytes) throws IOException {
+        Path dir = baseDir.resolve(FUNCTIONS_SUBDIR).resolve(actorId);
         Files.createDirectories(dir);
         Path file = dir.resolve("function.pb");
         Files.write(file, descriptorBytes != null ? descriptorBytes : new byte[0]);
-        log.info("函数描述已写入: instanceId={}, path={}", instanceId, file);
+        log.info("函数描述已写入: actorId={}, path={}", actorId, file);
         return file;
     }
 }

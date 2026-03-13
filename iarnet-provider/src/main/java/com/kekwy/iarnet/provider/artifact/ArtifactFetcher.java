@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.adapter.artifact;
+package com.kekwy.iarnet.provider.artifact;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 按 artifact_url 拉取 artifact 到本地 ArtifactStore，按 artifact_id 去重：
- * 同一 artifact_id 正在拉取时等待完成，已拉取则直接返回本地路径。
+ * 按 artifact_url 拉取 artifact 到本地 ArtifactStore，按 artifact_id 去重。
  */
 public class ArtifactFetcher {
 
@@ -25,9 +24,7 @@ public class ArtifactFetcher {
     private final ArtifactStore artifactStore;
     private final HttpClient httpClient;
 
-    /** artifact_id → 已拉取到的本地文件路径 */
     private final Map<String, Path> cache = new ConcurrentHashMap<>();
-    /** artifact_id → 正在拉取的 Future */
     private final Map<String, CompletableFuture<Path>> inFlight = new ConcurrentHashMap<>();
 
     public ArtifactFetcher(ArtifactStore artifactStore) {
@@ -37,10 +34,6 @@ public class ArtifactFetcher {
 
     /**
      * 拉取 artifact：若已缓存或正在拉取则复用，否则从 url 下载并存入 store。
-     *
-     * @param artifactId artifact 标识
-     * @param artifactUrl 拉取地址（如 OSS 预签名 URL）
-     * @return 本地文件路径
      */
     public Path fetch(String artifactId, String artifactUrl) throws IOException {
         if (artifactId == null || artifactId.isBlank() || artifactUrl == null || artifactUrl.isBlank()) {
