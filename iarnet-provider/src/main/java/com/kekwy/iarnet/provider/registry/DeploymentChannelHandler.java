@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.provider.registry;
 
+import com.kekwy.iarnet.provider.actor.ActorRouter;
 import com.kekwy.iarnet.provider.engine.ProviderEngine;
-import com.kekwy.iarnet.provider.actor.LocalActorGraph;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.proto.provider.*;
 import io.grpc.stub.StreamObserver;
@@ -21,14 +21,17 @@ public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelo
 
     private final ProviderEngine engine;
     private final ArtifactFetcher artifactFetcher;
+    private final ActorRouter actorRouter;
     private final StreamObserver<DeploymentEnvelope> responseObserver;
     private final Runnable onDisconnect;
 
     public DeploymentChannelHandler(ProviderEngine engine, ArtifactFetcher artifactFetcher,
+                                    ActorRouter actorRouter,
                                     StreamObserver<DeploymentEnvelope> responseObserver,
                                     Runnable onDisconnect) {
         this.engine = engine;
         this.artifactFetcher = artifactFetcher;
+        this.actorRouter = actorRouter;
         this.responseObserver = responseObserver;
         this.onDisconnect = onDisconnect;
     }
@@ -106,13 +109,7 @@ public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelo
         }
 
         String actorId = request.getActorId();
-        LocalActorGraph graph = LocalActorGraph.getInstance();
-        graph.onDeploy(actorId, request.getDownstreamActorAddrsList());
-
-        var localAgent = graph.getActorRegistrationService();
-        if (localAgent != null) {
-            localAgent.setDownstreamsForActor(actorId, request.getDownstreamActorAddrsList());
-        }
+        actorRouter.onDeploy(actorId, request.getDownstreamActorAddrsList());
 
         DeployActorResponse response = engine.deployActor(request, artifactPath);
         return DeploymentEnvelope.newBuilder()

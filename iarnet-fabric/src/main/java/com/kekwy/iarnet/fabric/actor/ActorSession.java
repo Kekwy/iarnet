@@ -16,17 +16,26 @@ public class ActorSession {
     }
 
     private final String actorId;
+    private final String providerId;
     private volatile Instant lastHeartbeat;
     private volatile Status status;
 
-    public ActorSession(String actorId) {
+    public ActorSession(String actorId, String providerId) {
         this.actorId = actorId;
+        this.providerId = providerId;
         this.lastHeartbeat = Instant.now();
         this.status = Status.READY;
     }
 
     public String getActorId() {
         return actorId;
+    }
+
+    /**
+     * 部署该 Actor 的 Provider 标识，用于通过 SignalingChannel 转发消息。
+     */
+    public String getProviderId() {
+        return providerId;
     }
 
     public Instant getLastHeartbeat() {
@@ -47,6 +56,6 @@ public class ActorSession {
 
     @Override
     public String toString() {
-        return "ActorSession{actorId=" + actorId + ", status=" + status + "}";
+        return "ActorSession{actorId=" + actorId + ", providerId=" + providerId + ", status=" + status + "}";
     }
 }

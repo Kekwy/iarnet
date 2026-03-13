@@ -13,8 +13,11 @@ public interface ActorRegistry {
 
     /**
      * Actor 上报 ready 时调用。
+     *
+     * @param actorId    Actor 标识
+     * @param providerId 部署该 Actor 的 Provider 标识
      */
-    void onActorReady(String actorId);
+    void onActorReady(String actorId, String providerId);
 
     /**
      * Actor 间数据通道连通时调用（由 gRPC 服务层转发 ActorChannelStatus）。

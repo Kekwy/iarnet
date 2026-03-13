@@ -59,7 +59,7 @@ public final class Signaling {
   static {
     java.lang.String[] descriptorData = {
       "\n\037iarnet/provider/signaling.proto\022\017iarne" +
-      "t.provider\032\030iarnet/actor/actor.proto\"\311\003\n" +
+      "t.provider\032\030iarnet/actor/actor.proto\"\321\003\n" +
       "\021SignalingEnvelope\022\023\n\013provider_id\030\001 \001(\t\022" +
       "\024\n\014timestamp_ms\030\002 \001(\003\022\027\n\017target_actor_id" +
       "\030\024 \001(\t\022B\n\023connect_instruction\030\n \001(\0132#.ia" +
@@ -69,28 +69,28 @@ public final class Signaling {
       "net.provider.CandidateUpdateH\000\022<\n\ractor_" +
       "channel\030\r \001(\0132#.iarnet.provider.ActorCha" +
       "nnelStatusH\000\0228\n\013actor_ready\030\016 \001(\0132!.iarn" +
-      "et.provider.ActorReadyReportH\000\0225\n\016actor_" +
-      "envelope\030\017 \001(\0132\033.iarnet.actor.ActorEnvel" +
-      "opeH\000B\t\n\007payload\"$\n\020ActorReadyReport\022\020\n\010" +
-      "actor_id\030\001 \001(\t\"\204\001\n\022ActorChannelStatus\022\023\n" +
-      "\013workflow_id\030\001 \001(\t\022\026\n\016application_id\030\002 \001" +
-      "(\t\022\026\n\016src_actor_addr\030\003 \001(\t\022\026\n\016dst_actor_" +
-      "addr\030\004 \001(\t\022\021\n\tconnected\030\005 \001(\010\"k\n\022Connect" +
-      "Instruction\022\022\n\nconnect_id\030\001 \001(\t\022\026\n\016src_a" +
-      "ctor_addr\030\002 \001(\t\022\026\n\016dst_actor_addr\030\003 \001(\t\022" +
-      "\021\n\tinitiator\030\004 \001(\010\"\200\001\n\013IceEnvelope\022\022\n\nco" +
-      "nnect_id\030\001 \001(\t\022\030\n\020from_provider_id\030\002 \001(\t" +
-      "\022\026\n\016to_provider_id\030\003 \001(\t\022\023\n\013signal_type\030" +
-      "\005 \001(\t\022\026\n\016signal_payload\030\006 \001(\014\"]\n\017Candida" +
-      "teUpdate\022\023\n\013provider_id\030\001 \001(\t\0225\n\ncandida" +
-      "tes\030\002 \003(\0132!.iarnet.provider.NetworkCandi" +
-      "date\"\327\001\n\020NetworkCandidate\022=\n\004type\030\001 \001(\0162" +
-      "/.iarnet.provider.NetworkCandidate.Candi" +
-      "dateType\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\022\020\n\010" +
-      "priority\030\004 \001(\005\"V\n\rCandidateType\022\036\n\032CANDI" +
-      "DATE_TYPE_UNSPECIFIED\020\000\022\n\n\006DIRECT\020\001\022\016\n\nN" +
-      "AT_MAPPED\020\002\022\t\n\005RELAY\020\003B#\n\037com.kekwy.iarn" +
-      "et.proto.providerP\001b\006proto3"
+      "et.provider.ActorReadyReportH\000\022=\n\026actor_" +
+      "envelope_forward\030\017 \001(\0132\033.iarnet.actor.Ac" +
+      "torEnvelopeH\000B\t\n\007payload\"$\n\020ActorReadyRe" +
+      "port\022\020\n\010actor_id\030\001 \001(\t\"\204\001\n\022ActorChannelS" +
+      "tatus\022\023\n\013workflow_id\030\001 \001(\t\022\026\n\016applicatio" +
+      "n_id\030\002 \001(\t\022\026\n\016src_actor_addr\030\003 \001(\t\022\026\n\016ds" +
+      "t_actor_addr\030\004 \001(\t\022\021\n\tconnected\030\005 \001(\010\"k\n" +
+      "\022ConnectInstruction\022\022\n\nconnect_id\030\001 \001(\t\022" +
+      "\026\n\016src_actor_addr\030\002 \001(\t\022\026\n\016dst_actor_add" +
+      "r\030\003 \001(\t\022\021\n\tinitiator\030\004 \001(\010\"\200\001\n\013IceEnvelo" +
+      "pe\022\022\n\nconnect_id\030\001 \001(\t\022\030\n\020from_provider_" +
+      "id\030\002 \001(\t\022\026\n\016to_provider_id\030\003 \001(\t\022\023\n\013sign" +
+      "al_type\030\005 \001(\t\022\026\n\016signal_payload\030\006 \001(\014\"]\n" +
+      "\017CandidateUpdate\022\023\n\013provider_id\030\001 \001(\t\0225\n" +
+      "\ncandidates\030\002 \003(\0132!.iarnet.provider.Netw" +
+      "orkCandidate\"\327\001\n\020NetworkCandidate\022=\n\004typ" +
+      "e\030\001 \001(\0162/.iarnet.provider.NetworkCandida" +
+      "te.CandidateType\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003" +
+      " \001(\005\022\020\n\010priority\030\004 \001(\005\"V\n\rCandidateType\022" +
+      "\036\n\032CANDIDATE_TYPE_UNSPECIFIED\020\000\022\n\n\006DIREC" +
+      "T\020\001\022\016\n\nNAT_MAPPED\020\002\022\t\n\005RELAY\020\003B#\n\037com.ke" +
+      "kwy.iarnet.proto.providerP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -102,7 +102,7 @@ public final class Signaling {
     internal_static_iarnet_provider_SignalingEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_SignalingEnvelope_descriptor,
-        new java.lang.String[] { "ProviderId", "TimestampMs", "TargetActorId", "ConnectInstruction", "IceEnvelope", "CandidateUpdate", "ActorChannel", "ActorReady", "ActorEnvelope", "Payload", });
+        new java.lang.String[] { "ProviderId", "TimestampMs", "TargetActorId", "ConnectInstruction", "IceEnvelope", "CandidateUpdate", "ActorChannel", "ActorReady", "ActorEnvelopeForward", "Payload", });
     internal_static_iarnet_provider_ActorReadyReport_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_iarnet_provider_ActorReadyReport_fieldAccessorTable = new

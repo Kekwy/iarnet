@@ -125,19 +125,19 @@ public interface SignalingEnvelopeOrBuilder extends
   com.kekwy.iarnet.proto.provider.ActorReadyReportOrBuilder getActorReadyOrBuilder();
 
   /**
-   * <code>.iarnet.actor.ActorEnvelope actor_envelope = 15;</code>
-   * @return Whether the actorEnvelope field is set.
+   * <code>.iarnet.actor.ActorEnvelope actor_envelope_forward = 15;</code>
+   * @return Whether the actorEnvelopeForward field is set.
    */
-  boolean hasActorEnvelope();
+  boolean hasActorEnvelopeForward();
   /**
-   * <code>.iarnet.actor.ActorEnvelope actor_envelope = 15;</code>
-   * @return The actorEnvelope.
+   * <code>.iarnet.actor.ActorEnvelope actor_envelope_forward = 15;</code>
+   * @return The actorEnvelopeForward.
    */
-  com.kekwy.iarnet.proto.actor.ActorEnvelope getActorEnvelope();
+  com.kekwy.iarnet.proto.actor.ActorEnvelope getActorEnvelopeForward();
   /**
-   * <code>.iarnet.actor.ActorEnvelope actor_envelope = 15;</code>
+   * <code>.iarnet.actor.ActorEnvelope actor_envelope_forward = 15;</code>
    */
-  com.kekwy.iarnet.proto.actor.ActorEnvelopeOrBuilder getActorEnvelopeOrBuilder();
+  com.kekwy.iarnet.proto.actor.ActorEnvelopeOrBuilder getActorEnvelopeForwardOrBuilder();
 
   public com.kekwy.iarnet.proto.provider.SignalingEnvelope.PayloadCase getPayloadCase();
 }

@@ -20,7 +20,7 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private DataRow() {
-    values_ = java.util.Collections.emptyList();
+    rowId_ = "";
   }
 
   @java.lang.Override
@@ -48,45 +48,69 @@ private static final long serialVersionUID = 0L;
             com.kekwy.iarnet.proto.actor.DataRow.class, com.kekwy.iarnet.proto.actor.DataRow.Builder.class);
   }
 
-  public static final int VALUES_FIELD_NUMBER = 1;
+  public static final int ROWID_FIELD_NUMBER = 1;
   @SuppressWarnings("serial")
-  private java.util.List<com.kekwy.iarnet.proto.common.Value> values_;
+  private volatile java.lang.Object rowId_ = "";
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>string rowId = 1;</code>
+   * @return The rowId.
    */
   @java.lang.Override
-  public java.util.List<com.kekwy.iarnet.proto.common.Value> getValuesList() {
-    return values_;
+  public java.lang.String getRowId() {
+    java.lang.Object ref = rowId_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      rowId_ = s;
+      return s;
+    }
   }
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>string rowId = 1;</code>
+   * @return The bytes for rowId.
    */
   @java.lang.Override
-  public java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
-      getValuesOrBuilderList() {
-    return values_;
+  public com.google.protobuf.ByteString
+      getRowIdBytes() {
+    java.lang.Object ref = rowId_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      rowId_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
+  public static final int VALUE_FIELD_NUMBER = 2;
+  private com.kekwy.iarnet.proto.common.Value value_;
+  /**
+   * <code>.iarnet.common.Value value = 2;</code>
+   * @return Whether the value field is set.
+   */
+  @java.lang.Override
+  public boolean hasValue() {
+    return value_ != null;
   }
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
+   * @return The value.
    */
   @java.lang.Override
-  public int getValuesCount() {
-    return values_.size();
+  public com.kekwy.iarnet.proto.common.Value getValue() {
+    return value_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
   }
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
    */
   @java.lang.Override
-  public com.kekwy.iarnet.proto.common.Value getValues(int index) {
-    return values_.get(index);
-  }
-  /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
-   */
-  @java.lang.Override
-  public com.kekwy.iarnet.proto.common.ValueOrBuilder getValuesOrBuilder(
-      int index) {
-    return values_.get(index);
+  public com.kekwy.iarnet.proto.common.ValueOrBuilder getValueOrBuilder() {
+    return value_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -103,8 +127,11 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    for (int i = 0; i < values_.size(); i++) {
-      output.writeMessage(1, values_.get(i));
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(rowId_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, rowId_);
+    }
+    if (value_ != null) {
+      output.writeMessage(2, getValue());
     }
     getUnknownFields().writeTo(output);
   }
@@ -115,9 +142,12 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    for (int i = 0; i < values_.size(); i++) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(rowId_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, rowId_);
+    }
+    if (value_ != null) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(1, values_.get(i));
+        .computeMessageSize(2, getValue());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -134,8 +164,13 @@ private static final long serialVersionUID = 0L;
     }
     com.kekwy.iarnet.proto.actor.DataRow other = (com.kekwy.iarnet.proto.actor.DataRow) obj;
 
-    if (!getValuesList()
-        .equals(other.getValuesList())) return false;
+    if (!getRowId()
+        .equals(other.getRowId())) return false;
+    if (hasValue() != other.hasValue()) return false;
+    if (hasValue()) {
+      if (!getValue()
+          .equals(other.getValue())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -147,9 +182,11 @@ private static final long serialVersionUID = 0L;
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptor().hashCode();
-    if (getValuesCount() > 0) {
-      hash = (37 * hash) + VALUES_FIELD_NUMBER;
-      hash = (53 * hash) + getValuesList().hashCode();
+    hash = (37 * hash) + ROWID_FIELD_NUMBER;
+    hash = (53 * hash) + getRowId().hashCode();
+    if (hasValue()) {
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + getValue().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -284,13 +321,12 @@ private static final long serialVersionUID = 0L;
     public Builder clear() {
       super.clear();
       bitField0_ = 0;
-      if (valuesBuilder_ == null) {
-        values_ = java.util.Collections.emptyList();
-      } else {
-        values_ = null;
-        valuesBuilder_.clear();
+      rowId_ = "";
+      value_ = null;
+      if (valueBuilder_ != null) {
+        valueBuilder_.dispose();
+        valueBuilder_ = null;
       }
-      bitField0_ = (bitField0_ & ~0x00000001);
       return this;
     }
 
@@ -317,26 +353,21 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.kekwy.iarnet.proto.actor.DataRow buildPartial() {
       com.kekwy.iarnet.proto.actor.DataRow result = new com.kekwy.iarnet.proto.actor.DataRow(this);
-      buildPartialRepeatedFields(result);
       if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
     }
 
-    private void buildPartialRepeatedFields(com.kekwy.iarnet.proto.actor.DataRow result) {
-      if (valuesBuilder_ == null) {
-        if (((bitField0_ & 0x00000001) != 0)) {
-          values_ = java.util.Collections.unmodifiableList(values_);
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.values_ = values_;
-      } else {
-        result.values_ = valuesBuilder_.build();
-      }
-    }
-
     private void buildPartial0(com.kekwy.iarnet.proto.actor.DataRow result) {
       int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.rowId_ = rowId_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.value_ = valueBuilder_ == null
+            ? value_
+            : valueBuilder_.build();
+      }
     }
 
     @java.lang.Override
@@ -383,31 +414,13 @@ private static final long serialVersionUID = 0L;
 
     public Builder mergeFrom(com.kekwy.iarnet.proto.actor.DataRow other) {
       if (other == com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance()) return this;
-      if (valuesBuilder_ == null) {
-        if (!other.values_.isEmpty()) {
-          if (values_.isEmpty()) {
-            values_ = other.values_;
-            bitField0_ = (bitField0_ & ~0x00000001);
-          } else {
-            ensureValuesIsMutable();
-            values_.addAll(other.values_);
-          }
-          onChanged();
-        }
-      } else {
-        if (!other.values_.isEmpty()) {
-          if (valuesBuilder_.isEmpty()) {
-            valuesBuilder_.dispose();
-            valuesBuilder_ = null;
-            values_ = other.values_;
-            bitField0_ = (bitField0_ & ~0x00000001);
-            valuesBuilder_ = 
-              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                 getValuesFieldBuilder() : null;
-          } else {
-            valuesBuilder_.addAllMessages(other.values_);
-          }
-        }
+      if (!other.getRowId().isEmpty()) {
+        rowId_ = other.rowId_;
+        bitField0_ |= 0x00000001;
+        onChanged();
+      }
+      if (other.hasValue()) {
+        mergeValue(other.getValue());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -436,18 +449,17 @@ private static final long serialVersionUID = 0L;
               done = true;
               break;
             case 10: {
-              com.kekwy.iarnet.proto.common.Value m =
-                  input.readMessage(
-                      com.kekwy.iarnet.proto.common.Value.parser(),
-                      extensionRegistry);
-              if (valuesBuilder_ == null) {
-                ensureValuesIsMutable();
-                values_.add(m);
-              } else {
-                valuesBuilder_.addMessage(m);
-              }
+              rowId_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
               break;
             } // case 10
+            case 18: {
+              input.readMessage(
+                  getValueFieldBuilder().getBuilder(),
+                  extensionRegistry);
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -465,244 +477,195 @@ private static final long serialVersionUID = 0L;
     }
     private int bitField0_;
 
-    private java.util.List<com.kekwy.iarnet.proto.common.Value> values_ =
-      java.util.Collections.emptyList();
-    private void ensureValuesIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
-        values_ = new java.util.ArrayList<com.kekwy.iarnet.proto.common.Value>(values_);
-        bitField0_ |= 0x00000001;
-       }
+    private java.lang.Object rowId_ = "";
+    /**
+     * <code>string rowId = 1;</code>
+     * @return The rowId.
+     */
+    public java.lang.String getRowId() {
+      java.lang.Object ref = rowId_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        rowId_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <code>string rowId = 1;</code>
+     * @return The bytes for rowId.
+     */
+    public com.google.protobuf.ByteString
+        getRowIdBytes() {
+      java.lang.Object ref = rowId_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        rowId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>string rowId = 1;</code>
+     * @param value The rowId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setRowId(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      rowId_ = value;
+      bitField0_ |= 0x00000001;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string rowId = 1;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearRowId() {
+      rowId_ = getDefaultInstance().getRowId();
+      bitField0_ = (bitField0_ & ~0x00000001);
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>string rowId = 1;</code>
+     * @param value The bytes for rowId to set.
+     * @return This builder for chaining.
+     */
+    public Builder setRowIdBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      rowId_ = value;
+      bitField0_ |= 0x00000001;
+      onChanged();
+      return this;
     }
 
-    private com.google.protobuf.RepeatedFieldBuilderV3<
-        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> valuesBuilder_;
-
+    private com.kekwy.iarnet.proto.common.Value value_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> valueBuilder_;
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
+     * @return Whether the value field is set.
      */
-    public java.util.List<com.kekwy.iarnet.proto.common.Value> getValuesList() {
-      if (valuesBuilder_ == null) {
-        return java.util.Collections.unmodifiableList(values_);
+    public boolean hasValue() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>.iarnet.common.Value value = 2;</code>
+     * @return The value.
+     */
+    public com.kekwy.iarnet.proto.common.Value getValue() {
+      if (valueBuilder_ == null) {
+        return value_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
       } else {
-        return valuesBuilder_.getMessageList();
+        return valueBuilder_.getMessage();
       }
     }
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public int getValuesCount() {
-      if (valuesBuilder_ == null) {
-        return values_.size();
-      } else {
-        return valuesBuilder_.getCount();
-      }
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public com.kekwy.iarnet.proto.common.Value getValues(int index) {
-      if (valuesBuilder_ == null) {
-        return values_.get(index);
-      } else {
-        return valuesBuilder_.getMessage(index);
-      }
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public Builder setValues(
-        int index, com.kekwy.iarnet.proto.common.Value value) {
-      if (valuesBuilder_ == null) {
+    public Builder setValue(com.kekwy.iarnet.proto.common.Value value) {
+      if (valueBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
-        ensureValuesIsMutable();
-        values_.set(index, value);
-        onChanged();
+        value_ = value;
       } else {
-        valuesBuilder_.setMessage(index, value);
+        valueBuilder_.setMessage(value);
       }
+      bitField0_ |= 0x00000002;
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public Builder setValues(
-        int index, com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
-      if (valuesBuilder_ == null) {
-        ensureValuesIsMutable();
-        values_.set(index, builderForValue.build());
-        onChanged();
-      } else {
-        valuesBuilder_.setMessage(index, builderForValue.build());
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public Builder addValues(com.kekwy.iarnet.proto.common.Value value) {
-      if (valuesBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensureValuesIsMutable();
-        values_.add(value);
-        onChanged();
-      } else {
-        valuesBuilder_.addMessage(value);
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public Builder addValues(
-        int index, com.kekwy.iarnet.proto.common.Value value) {
-      if (valuesBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensureValuesIsMutable();
-        values_.add(index, value);
-        onChanged();
-      } else {
-        valuesBuilder_.addMessage(index, value);
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public Builder addValues(
+    public Builder setValue(
         com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
-      if (valuesBuilder_ == null) {
-        ensureValuesIsMutable();
-        values_.add(builderForValue.build());
-        onChanged();
+      if (valueBuilder_ == null) {
+        value_ = builderForValue.build();
       } else {
-        valuesBuilder_.addMessage(builderForValue.build());
+        valueBuilder_.setMessage(builderForValue.build());
       }
+      bitField0_ |= 0x00000002;
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public Builder addValues(
-        int index, com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
-      if (valuesBuilder_ == null) {
-        ensureValuesIsMutable();
-        values_.add(index, builderForValue.build());
-        onChanged();
+    public Builder mergeValue(com.kekwy.iarnet.proto.common.Value value) {
+      if (valueBuilder_ == null) {
+        if (((bitField0_ & 0x00000002) != 0) &&
+          value_ != null &&
+          value_ != com.kekwy.iarnet.proto.common.Value.getDefaultInstance()) {
+          getValueBuilder().mergeFrom(value);
+        } else {
+          value_ = value;
+        }
       } else {
-        valuesBuilder_.addMessage(index, builderForValue.build());
+        valueBuilder_.mergeFrom(value);
       }
+      bitField0_ |= 0x00000002;
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public Builder addAllValues(
-        java.lang.Iterable<? extends com.kekwy.iarnet.proto.common.Value> values) {
-      if (valuesBuilder_ == null) {
-        ensureValuesIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, values_);
-        onChanged();
-      } else {
-        valuesBuilder_.addAllMessages(values);
+    public Builder clearValue() {
+      bitField0_ = (bitField0_ & ~0x00000002);
+      value_ = null;
+      if (valueBuilder_ != null) {
+        valueBuilder_.dispose();
+        valueBuilder_ = null;
       }
+      onChanged();
       return this;
     }
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public Builder clearValues() {
-      if (valuesBuilder_ == null) {
-        values_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000001);
-        onChanged();
+    public com.kekwy.iarnet.proto.common.Value.Builder getValueBuilder() {
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return getValueFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.iarnet.common.Value value = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.ValueOrBuilder getValueOrBuilder() {
+      if (valueBuilder_ != null) {
+        return valueBuilder_.getMessageOrBuilder();
       } else {
-        valuesBuilder_.clear();
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public Builder removeValues(int index) {
-      if (valuesBuilder_ == null) {
-        ensureValuesIsMutable();
-        values_.remove(index);
-        onChanged();
-      } else {
-        valuesBuilder_.remove(index);
-      }
-      return this;
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public com.kekwy.iarnet.proto.common.Value.Builder getValuesBuilder(
-        int index) {
-      return getValuesFieldBuilder().getBuilder(index);
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public com.kekwy.iarnet.proto.common.ValueOrBuilder getValuesOrBuilder(
-        int index) {
-      if (valuesBuilder_ == null) {
-        return values_.get(index);  } else {
-        return valuesBuilder_.getMessageOrBuilder(index);
+        return value_ == null ?
+            com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
       }
     }
     /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
-         getValuesOrBuilderList() {
-      if (valuesBuilder_ != null) {
-        return valuesBuilder_.getMessageOrBuilderList();
-      } else {
-        return java.util.Collections.unmodifiableList(values_);
-      }
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public com.kekwy.iarnet.proto.common.Value.Builder addValuesBuilder() {
-      return getValuesFieldBuilder().addBuilder(
-          com.kekwy.iarnet.proto.common.Value.getDefaultInstance());
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public com.kekwy.iarnet.proto.common.Value.Builder addValuesBuilder(
-        int index) {
-      return getValuesFieldBuilder().addBuilder(
-          index, com.kekwy.iarnet.proto.common.Value.getDefaultInstance());
-    }
-    /**
-     * <code>repeated .iarnet.common.Value values = 1;</code>
-     */
-    public java.util.List<com.kekwy.iarnet.proto.common.Value.Builder> 
-         getValuesBuilderList() {
-      return getValuesFieldBuilder().getBuilderList();
-    }
-    private com.google.protobuf.RepeatedFieldBuilderV3<
+    private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> 
-        getValuesFieldBuilder() {
-      if (valuesBuilder_ == null) {
-        valuesBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+        getValueFieldBuilder() {
+      if (valueBuilder_ == null) {
+        valueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
             com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder>(
-                values_,
-                ((bitField0_ & 0x00000001) != 0),
+                getValue(),
                 getParentForChildren(),
                 isClean());
-        values_ = null;
+        value_ = null;
       }
-      return valuesBuilder_;
+      return valueBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

@@ -8,26 +8,29 @@ public interface DataRowOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>string rowId = 1;</code>
+   * @return The rowId.
    */
-  java.util.List<com.kekwy.iarnet.proto.common.Value> 
-      getValuesList();
+  java.lang.String getRowId();
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>string rowId = 1;</code>
+   * @return The bytes for rowId.
    */
-  com.kekwy.iarnet.proto.common.Value getValues(int index);
+  com.google.protobuf.ByteString
+      getRowIdBytes();
+
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
+   * @return Whether the value field is set.
    */
-  int getValuesCount();
+  boolean hasValue();
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
+   * @return The value.
    */
-  java.util.List<? extends com.kekwy.iarnet.proto.common.ValueOrBuilder> 
-      getValuesOrBuilderList();
+  com.kekwy.iarnet.proto.common.Value getValue();
   /**
-   * <code>repeated .iarnet.common.Value values = 1;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
    */
-  com.kekwy.iarnet.proto.common.ValueOrBuilder getValuesOrBuilder(
-      int index);
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getValueOrBuilder();
 }

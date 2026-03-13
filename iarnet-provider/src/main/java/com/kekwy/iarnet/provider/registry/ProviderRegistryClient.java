@@ -1,6 +1,6 @@
 package com.kekwy.iarnet.provider.registry;
 
-import com.kekwy.iarnet.provider.actor.LocalActorGraph;
+import com.kekwy.iarnet.provider.actor.ActorRouter;
 import com.kekwy.iarnet.provider.engine.ProviderEngine;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.proto.fabric.ProviderRegistryServiceGrpc;
@@ -37,6 +37,7 @@ public class ProviderRegistryClient implements AutoCloseable {
     private final List<String> tags;
     private final ProviderEngine engine;
     private final ArtifactFetcher artifactFetcher;
+    private final ActorRouter actorRouter;
 
     private final ManagedChannel channel;
     private final ProviderRegistryServiceGrpc.ProviderRegistryServiceBlockingStub blockingStub;
@@ -50,6 +51,7 @@ public class ProviderRegistryClient implements AutoCloseable {
     public ProviderRegistryClient(String providerName, String description, String zone,
                                   String providerType, List<String> tags,
                                   ProviderEngine engine, ArtifactFetcher artifactFetcher,
+                                  ActorRouter actorRouter,
                                   String cpHost, int cpPort) {
         this.providerName = providerName != null ? providerName : "provider";
         this.description = description != null ? description : "";
@@ -58,6 +60,7 @@ public class ProviderRegistryClient implements AutoCloseable {
         this.tags = tags != null ? tags : List.of();
         this.engine = engine;
         this.artifactFetcher = artifactFetcher;
+        this.actorRouter = actorRouter;
 
         this.channel = ManagedChannelBuilder
                 .forAddress(cpHost, cpPort)
@@ -159,7 +162,7 @@ public class ProviderRegistryClient implements AutoCloseable {
         DelegatingObserver<DeploymentEnvelope> proxy = new DelegatingObserver<>();
 
         StreamObserver<DeploymentEnvelope> receiver = new DeploymentChannelHandler(
-                engine, artifactFetcher, proxy, this::onDeploymentChannelDisconnect);
+                engine, artifactFetcher, actorRouter, proxy, this::onDeploymentChannelDisconnect);
 
         Metadata headers = new Metadata();
         headers.put(PROVIDER_ID_METADATA_KEY, providerId);
@@ -182,7 +185,7 @@ public class ProviderRegistryClient implements AutoCloseable {
 
         DelegatingObserver<SignalingEnvelope> proxy = new DelegatingObserver<>();
 
-        StreamObserver<SignalingEnvelope> receiver = new SignalingChannelHandler(providerId, proxy, this::onSignalingChannelDisconnect);
+        StreamObserver<SignalingEnvelope> receiver = new SignalingChannelHandler(providerId, actorRouter, proxy, this::onSignalingChannelDisconnect);
 
         Metadata headers = new Metadata();
         headers.put(PROVIDER_ID_METADATA_KEY, providerId);
@@ -191,8 +194,8 @@ public class ProviderRegistryClient implements AutoCloseable {
         StreamObserver<SignalingEnvelope> sender = headerStub.signalingChannel(receiver);
         proxy.setDelegate(sender);
 
-        LocalActorGraph.getInstance().setSignalingSender(proxy);
-        LocalActorGraph.getInstance().setProviderId(providerId);
+        actorRouter.setSignalingSender(proxy);
+        actorRouter.setProviderId(providerId);
 
         log.info("SignalingChannel 已建立: providerId={}", providerId);
     }

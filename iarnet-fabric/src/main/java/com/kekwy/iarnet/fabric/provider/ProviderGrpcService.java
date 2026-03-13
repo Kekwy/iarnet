@@ -172,7 +172,7 @@ public class ProviderGrpcService
             public void onNext(SignalingEnvelope value) {
                 try {
                     switch (value.getPayloadCase()) {
-                        case ACTOR_READY -> handleActorReady(value.getActorReady());
+                        case ACTOR_READY -> handleActorReady(providerId, value.getActorReady());
                         case ACTOR_CHANNEL -> handleActorChannel(value.getActorChannel());
                         default -> log.debug("SignalingChannel 收到未处理的消息类型: providerId={}, type={}",
                                 providerId, value.getPayloadCase());
@@ -202,14 +202,14 @@ public class ProviderGrpcService
 
     // ======================== 信令事件处理 ========================
 
-    private void handleActorReady(ActorReadyReport ready) {
+    private void handleActorReady(String providerId, ActorReadyReport ready) {
         String actorId = ready.getActorId();
         if (actorId == null || actorId.isBlank()) {
             log.warn("收到 ActorReadyReport 但 actor_id 为空");
             return;
         }
-        log.info("收到 ActorReadyReport: actorId={}", actorId);
-        actorRegistry.onActorReady(actorId);
+        log.info("收到 ActorReadyReport: actorId={}, providerId={}", actorId, providerId);
+        actorRegistry.onActorReady(actorId, providerId);
     }
 
     private void handleActorChannel(ActorChannelStatus status) {

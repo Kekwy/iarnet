@@ -126,7 +126,7 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
     // ======================== Actor 生命周期事件路由 ========================
 
     @Override
-    public void onActorReady(String actorId) {
+    public void onActorReady(String actorId, String providerId) {
         DeploymentContext context = actorIdToContext.get(actorId);
         if (context != null) {
             context.onActorReady(actorId);

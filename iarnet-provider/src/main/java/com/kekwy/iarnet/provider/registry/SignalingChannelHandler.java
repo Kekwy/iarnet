@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.provider.registry;
 
+import com.kekwy.iarnet.provider.actor.ActorRouter;
 import com.kekwy.iarnet.proto.provider.SignalingEnvelope;
-import com.kekwy.iarnet.provider.actor.LocalActorGraph;
 
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
@@ -9,20 +9,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 处理 SignalingChannel 下发的 SignalingEnvelope（ConnectInstruction、ICE、actor_envelope 等），
- * 将 actor_envelope 转发给本地 Actor；上报由 LocalActorGraph 通过 setSignalingSender 发送。
+ * 将 actor_envelope 转发给本地 Actor；上报由 ActorRouter 通过 setSignalingSender 发送。
  */
 public class SignalingChannelHandler implements StreamObserver<SignalingEnvelope> {
 
     private static final Logger log = LoggerFactory.getLogger(SignalingChannelHandler.class);
 
     private final String providerId;
+    private final ActorRouter actorRouter;
     private final StreamObserver<SignalingEnvelope> responseObserver;
     private final Runnable onDisconnect;
 
     public SignalingChannelHandler(String providerId,
+                                   ActorRouter actorRouter,
                                    StreamObserver<SignalingEnvelope> responseObserver,
                                    Runnable onDisconnect) {
         this.providerId = providerId;
+        this.actorRouter = actorRouter;
         this.responseObserver = responseObserver;
         this.onDisconnect = onDisconnect;
     }
@@ -32,12 +35,12 @@ public class SignalingChannelHandler implements StreamObserver<SignalingEnvelope
         if (value == null) return;
 
         switch (value.getPayloadCase()) {
-            case ACTOR_ENVELOPE:
+            case ACTOR_ENVELOPE_FORWARD:
                 String targetActorId = value.getTargetActorId();
                 if (targetActorId != null && !targetActorId.isBlank()) {
-                    LocalActorGraph.getInstance().forwardEnvelopeToActor(targetActorId, value.getActorEnvelope());
+                    actorRouter.forwardEnvelopeToActor(targetActorId, value.getActorEnvelopeForward());
                 } else {
-                    log.warn("SignalingEnvelope actor_envelope 缺少 target_actor_id，无法转发");
+                    log.warn("SignalingEnvelope actor_envelope_forward 缺少 target_actor_id，无法转发");
                 }
                 break;
             case CONNECT_INSTRUCTION:

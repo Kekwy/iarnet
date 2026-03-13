@@ -10,8 +10,11 @@ public interface ActorLifecycleListener {
 
     /**
      * Actor 已启动并就绪（Provider 上报 ActorReadyReport 后触发）。
+     *
+     * @param actorId    Actor 标识
+     * @param providerId 部署该 Actor 的 Provider 标识
      */
-    void onActorReady(String actorId);
+    void onActorReady(String actorId, String providerId);
 
     /**
      * Actor 间数据通道已建立（Provider 上报 ActorChannelStatus.connected=true 后触发）。

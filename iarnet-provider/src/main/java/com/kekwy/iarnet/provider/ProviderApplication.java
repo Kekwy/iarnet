@@ -1,7 +1,7 @@
 package com.kekwy.iarnet.provider;
 
-import com.kekwy.iarnet.provider.actor.ActorRegistrationServiceImpl;
-import com.kekwy.iarnet.provider.actor.LocalActorGraph;
+import com.kekwy.iarnet.provider.actor.ActorRegistrationServiceGrpcImpl;
+import com.kekwy.iarnet.provider.actor.ActorRouter;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.provider.artifact.ArtifactStore;
 import com.kekwy.iarnet.provider.config.ProviderProperties;
@@ -33,13 +33,19 @@ public class ProviderApplication {
     private static final Logger log = LoggerFactory.getLogger(ProviderApplication.class);
 
     private final ProviderProperties props;
+    private final ActorRegistrationServiceGrpcImpl actorRegistrationService;
+    private final ActorRouter actorRouter;
 
     private ProviderEngine engine;
     private ProviderRegistryClient registryClient;
     private Server actorRegistrationServer;
 
-    public ProviderApplication(ProviderProperties props) {
+    public ProviderApplication(ProviderProperties props,
+                               ActorRegistrationServiceGrpcImpl actorRegistrationService,
+                               ActorRouter actorRouter) {
         this.props = props;
+        this.actorRegistrationService = actorRegistrationService;
+        this.actorRouter = actorRouter;
     }
 
     public static void main(String[] args) {
@@ -53,13 +59,11 @@ public class ProviderApplication {
         ArtifactFetcher artifactFetcher = new ArtifactFetcher(artifactStore);
 
         int agentPort = props.getActorAgent().getPort();
-        ActorRegistrationServiceImpl actorRegistrationService = new ActorRegistrationServiceImpl();
         try {
             actorRegistrationServer = ServerBuilder.forPort(agentPort)
                     .addService(actorRegistrationService)
                     .build()
                     .start();
-            LocalActorGraph.getInstance().setActorRegistrationService(actorRegistrationService);
             log.info("ActorRegistrationService 已启动: port={}", agentPort);
         } catch (Exception e) {
             throw new IllegalStateException("启动 ActorRegistrationService 失败: port=" + agentPort, e);
@@ -74,6 +78,7 @@ public class ProviderApplication {
                 props.getTags(),
                 engine,
                 artifactFetcher,
+                actorRouter,
                 cp.getHost(),
                 cp.getPort());
         registryClient.start();

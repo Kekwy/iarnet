@@ -1,7 +1,9 @@
 package com.kekwy.iarnet.fabric.actor;
 
+import com.kekwy.iarnet.fabric.provider.ProviderConnection;
+import com.kekwy.iarnet.fabric.provider.ProviderRegistry;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
-import io.grpc.stub.StreamObserver;
+import com.kekwy.iarnet.proto.provider.SignalingEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link ActorRegistry} 的默认实现。
  * <p>
- * 维护 Actor 会话与连接，并定期扫描心跳超时的 Actor。
+ * 维护 Actor 会话（含 providerId），消息通过部署该 Actor 的 Provider 的 SignalingChannel
+ * 多路复用转发（target_actor_id + actor_envelope_forward）。
  */
 @Service
 public class DefaultActorRegistry implements ActorRegistry {
@@ -27,12 +30,13 @@ public class DefaultActorRegistry implements ActorRegistry {
     private static final Logger log = LoggerFactory.getLogger(DefaultActorRegistry.class);
     private static final Duration HEARTBEAT_TIMEOUT = Duration.ofSeconds(120);
 
+    private final ProviderRegistry providerRegistry;
     private final ConcurrentHashMap<String, ActorSession> sessions = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, ActorConnection> connections = new ConcurrentHashMap<>();
     private final CopyOnWriteArrayList<ActorLifecycleListener> listeners = new CopyOnWriteArrayList<>();
     private final ScheduledExecutorService watchdog;
 
-    public DefaultActorRegistry() {
+    public DefaultActorRegistry(ProviderRegistry providerRegistry) {
+        this.providerRegistry = providerRegistry;
         watchdog = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "actor-registry-watchdog");
             t.setDaemon(true);
@@ -44,38 +48,24 @@ public class DefaultActorRegistry implements ActorRegistry {
     @PreDestroy
     public void shutdown() {
         watchdog.shutdownNow();
-        connections.values().forEach(ActorConnection::close);
-        connections.clear();
         sessions.clear();
     }
 
-    /**
-     * 注册 actor 的消息发送通道（由 gRPC 服务层在 SignalingChannel 建立时调用）。
-     */
-    public void registerConnection(String actorId, StreamObserver<ActorEnvelope> sender) {
-        ActorConnection oldConn = connections.get(actorId);
-        if (oldConn != null && !oldConn.isClosed()) {
-            log.info("替换 Actor 已有连接: actorId={}", actorId);
-            oldConn.close();
-        }
-        connections.put(actorId, new ActorConnection(actorId, sender));
-    }
-
     @Override
-    public void onActorReady(String actorId) {
+    public void onActorReady(String actorId, String providerId) {
         ActorSession oldSession = sessions.get(actorId);
         if (oldSession != null) {
             log.debug("Actor 重新上报 ready，更新 session: actorId={}", actorId);
         }
 
-        ActorSession session = new ActorSession(actorId);
+        ActorSession session = new ActorSession(actorId, providerId);
         sessions.put(actorId, session);
 
-        log.info("Actor ready: actorId={}", actorId);
+        log.info("Actor ready: actorId={}, providerId={}", actorId, providerId);
 
         for (ActorLifecycleListener listener : listeners) {
             try {
-                listener.onActorReady(actorId);
+                listener.onActorReady(actorId, providerId);
             } catch (Exception e) {
                 log.warn("ActorLifecycleListener.onActorReady 异常: actorId={}", actorId, e);
             }
@@ -98,10 +88,6 @@ public class DefaultActorRegistry implements ActorRegistry {
 
     @Override
     public void onActorDisconnected(String actorId) {
-        ActorConnection conn = connections.remove(actorId);
-        if (conn != null) {
-            conn.close();
-        }
         ActorSession session = sessions.remove(actorId);
         if (session != null) {
             log.info("Actor 已断开: actorId={}", actorId);
@@ -118,11 +104,21 @@ public class DefaultActorRegistry implements ActorRegistry {
 
     @Override
     public void sendToActor(String actorId, ActorEnvelope envelope) {
-        ActorConnection conn = connections.get(actorId);
-        if (conn == null || conn.isClosed()) {
-            throw new IllegalStateException("Actor 无活跃连接: " + actorId);
+        ActorSession session = sessions.get(actorId);
+        if (session == null) {
+            throw new IllegalStateException("Actor 未就绪或已断开: " + actorId);
         }
-        conn.send(envelope);
+        String providerId = session.getProviderId();
+        ProviderConnection conn = providerRegistry.getConnection(providerId);
+        if (conn == null || conn.isClosed()) {
+            throw new IllegalStateException("Provider 无活跃连接: " + providerId + ", actorId=" + actorId);
+        }
+        SignalingEnvelope signaling = SignalingEnvelope.newBuilder()
+                .setTargetActorId(actorId)
+                .setActorEnvelopeForward(envelope)
+                .setTimestampMs(System.currentTimeMillis())
+                .build();
+        conn.sendSignaling(signaling);
     }
 
     @Override
