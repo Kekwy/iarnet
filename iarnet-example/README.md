@@ -18,12 +18,12 @@ flowchart TD
     CAM2["Camera-2 (source)"]
     DEC1["frame-decode (edge, 0.5C/256Mi)"]
     DEC2["frame-decode (edge, 0.5C/256Mi)"]
-    MERGE["merge-cameras (union)"]
+    MERGE["merge-cameras (join)"]
     MOTION["motion-filter (edge, when)"]
     DETECT["object-detect (cloud, 2C/4Gi/1GPU x2)"]
     PERSON["person-reid (cloud, 2C/2Gi/1GPU)"]
     VEHICLE["plate-recognize (edge, 1C/1Gi)"]
-    UNION["merge-events (union)"]
+    JOIN["merge-events (join)"]
     SINK["archive-and-alert (sink)"]
 
     CAM1 --> DEC1
@@ -45,12 +45,12 @@ flowchart TD
 |------|----------|----------|------|
 | 1 | `source(ConstantSource.of(...))` | — | 双路摄像头数据源 |
 | 2 | `then("frame-decode", ...)` | 0.5C / 256Mi（边缘） | 帧解码，轻量计算部署在边缘 |
-| 3 | `union("merge-cameras", ...)` | — | 多路视频流汇合 |
+| 3 | `join("merge-cameras", ...)` | — | 多路视频流汇合 |
 | 4 | `when(hasMotion).then("motion-filter", ...)` | 0.5C / 256Mi（边缘） | 运动过滤，仅保留有运动帧 |
 | 5 | `then("object-detect", ...)` | 2C / 4Gi / 1GPU × 2（云端） | 目标检测，GPU 密集型 |
 | 6a | `when(person).then("person-reid", ...)` | 2C / 2Gi / 1GPU（云端） | 行人重识别 |
 | 6b | `when(vehicle).then("plate-recognize", ...)` | 1C / 1Gi（边缘） | 车辆号牌识别 |
-| 7 | `union("merge-events", ...)` | — | 行人/车辆事件汇合 |
+| 7 | `join("merge-events", ...)` | — | 行人/车辆事件汇合 |
 | 8 | `then("archive-and-alert", ...)` | — | 归档 + 异常告警 sink |
 
 ## DSL 特性覆盖
@@ -58,7 +58,7 @@ flowchart TD
 - **source**：多路数据源
 - **then(name, function, config)**：语义化阶段名称 + 异构资源声明（边缘 vs 云端）
 - **when(condition)**：条件分流（行人 / 车辆）
-- **union(name, other, function)**：多路汇合（摄像头流、事件流）
+- **join(name, other, function)**：多路汇合（摄像头流、事件流）
 - **then(name, SinkFunction)**：终点消费（归档 + 告警）
 
 ## 运行方式

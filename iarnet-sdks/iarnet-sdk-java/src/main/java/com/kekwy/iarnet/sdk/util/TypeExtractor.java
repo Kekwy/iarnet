@@ -2,7 +2,7 @@ package com.kekwy.iarnet.sdk.util;
 
 import com.kekwy.iarnet.sdk.function.InputFunction;
 import com.kekwy.iarnet.sdk.function.TaskFunction;
-import com.kekwy.iarnet.sdk.function.UnionFunction;
+import com.kekwy.iarnet.sdk.function.JoinFunction;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -15,7 +15,7 @@ import java.util.Optional;
 /**
  * 从函数对象中提取输出类型的工具类。
  * <p>
- * 支持接口：{@link InputFunction}、{@link TaskFunction}、{@link UnionFunction}。
+ * 支持接口：{@link InputFunction}、{@link TaskFunction}、{@link JoinFunction}。
  * 推断优先级：
  * <ol>
  *   <li>具名类 / 匿名内部类：通过 {@code getGenericInterfaces()} / {@code getGenericSuperclass()} 提取泛型参数</li>
@@ -32,9 +32,9 @@ public final class TypeExtractor {
     /**
      * 从函数对象中提取输出类型。
      *
-     * @param function            函数对象（InputFunction / TaskFunction / UnionFunction）
-     * @param functionalInterface 目标函数式接口的 Class（如 InputFunction.class、TaskFunction.class、UnionFunction.class）
-     * @param typeArgIndex        要提取的泛型参数索引：InputFunction 的 O 为 0，TaskFunction 的 O 为 1，UnionFunction 的 V 为 2
+     * @param function            函数对象（InputFunction / TaskFunction / JoinFunction）
+     * @param functionalInterface 目标函数式接口的 Class（如 InputFunction.class、TaskFunction.class、JoinFunction.class）
+     * @param typeArgIndex        要提取的泛型参数索引：InputFunction 的 O 为 0，TaskFunction 的 O 为 1，JoinFunction 的 V 为 2
      * @return 提取到的 Type，推断失败时返回 null
      */
     public static Type extractOutputType(Object function, Class<?> functionalInterface, int typeArgIndex) {

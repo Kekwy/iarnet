@@ -311,7 +311,7 @@ public class WorkflowRuntime {
             }
         }
 
-        // 目标节点的不同源节点数：多于 1 为 Union 场景，用 HASH_BY_ROW_ID
+        // 目标节点的不同源节点数：多于 1 为 Join 场景，用 HASH_BY_ROW_ID
         Map<String, Set<String>> sourceNodesByDstNode = new HashMap<>();
         for (Edge edge : workflowGraph.getEdgesList()) {
             sourceNodesByDstNode

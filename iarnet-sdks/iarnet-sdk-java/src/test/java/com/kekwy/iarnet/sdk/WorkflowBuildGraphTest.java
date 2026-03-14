@@ -142,16 +142,16 @@ class WorkflowBuildGraphTest {
     }
 
     @Nested
-    @DisplayName("Union 汇合")
-    class UnionFlow {
+    @DisplayName("Join 汇合")
+    class JoinFlow {
 
         @Test
-        @DisplayName("双路 input union 后 output")
-        void twoInputsUnion() {
-            Workflow w = Workflow.create("union-demo");
+        @DisplayName("双路 input join 后 output")
+        void twoInputsJoin() {
+            Workflow w = Workflow.create("join-demo");
             var flow1 = w.input("a", Inputs.of(1, 2));
             var flow2 = w.input("b", Inputs.of(3, 4));
-            flow1.union("merge", flow2, (OptionalValue<Integer> a, OptionalValue<Integer> b) ->
+            flow1.join("merge", flow2, (OptionalValue<Integer> a, OptionalValue<Integer> b) ->
                             a.isPresent() ? a.get() : b.get())
                     .then("sink", x -> {
                     });

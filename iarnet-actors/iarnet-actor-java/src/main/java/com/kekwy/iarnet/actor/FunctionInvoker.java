@@ -2,17 +2,19 @@ package com.kekwy.iarnet.actor;
 
 import com.kekwy.iarnet.proto.ValueCodec;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
-import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.common.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * 根据 FunctionDescriptor 反序列化用户函数，并按类型（Input/Task/Output/Union）反射调用。
+ * 根据 FunctionDescriptor 反序列化用户函数，并按类型（Input/Task/Output/Join）反射调用。
  * 不依赖 SDK 接口，仅通过元数据推断类型。
  */
 public final class FunctionInvoker {
@@ -26,11 +28,26 @@ public final class FunctionInvoker {
     private final Kind kind;
     private final UserJarLoader jarLoader;
 
+    // 启动时从 Method 解析并缓存入参/返回值对应的 Java 类型，调用时直接使用
+    private final Method inputNext;
+    private final Method optionalIsEmpty;
+    private final Method optionalGet;
+    private final Method taskApply;
+    private final Class<?> taskInputClass;
+    private final Method outputAccept;
+    private final Class<?> outputInputClass;
+    private final Class<?> joinOptionalValueClass;
+    private final Method joinOfNullable;
+    private final Method joinEmpty;
+    private final Method joinJoin;
+    private final Class<?> joinLeftInputClass;
+    private final Class<?> joinRightInputClass;
+
     public enum Kind {
         INPUT,   // 0 inputs, has output -> next()
         TASK,    // 1 input, has output -> apply(I)
         OUTPUT,  // 1 input, no output -> accept(I)
-        UNION    // 2 inputs, has output -> union(OptionalValue, OptionalValue)
+        JOIN     // 2 inputs, has output -> join(OptionalValue, OptionalValue)
     }
 
     /**
@@ -41,7 +58,7 @@ public final class FunctionInvoker {
      * @param explicitKind 若非 null 则直接使用（如来自 IARNET_NODE_KIND），否则根据 descriptor 推断
      */
     public FunctionInvoker(FunctionDescriptor descriptor, UserJarLoader jarLoader, Kind explicitKind)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, NoSuchMethodException {
         this.descriptor = descriptor;
         this.jarLoader = jarLoader;
         if (!descriptor.getSerializedFunction().isEmpty()) {
@@ -50,12 +67,59 @@ public final class FunctionInvoker {
             throw new IllegalArgumentException("FunctionDescriptor 缺少 serialized_function");
         }
         this.kind = explicitKind != null ? explicitKind : inferKind(descriptor);
+        Method inputNext0 = null, optionalIsEmpty0 = null, optionalGet0 = null;
+        Method taskApply0 = null;
+        Class<?> taskInputClass0 = null;
+        Method outputAccept0 = null;
+        Class<?> outputInputClass0 = null;
+        Class<?> joinOptionalValueClass0 = null;
+        Method joinOfNullable0 = null, joinEmpty0 = null, joinJoin0 = null;
+        Class<?> joinLeftInputClass0 = null, joinRightInputClass0 = null;
+        Class<?> fnClass = this.function.getClass();
+        switch (this.kind) {
+            case INPUT -> {
+                inputNext0 = fnClass.getMethod("next");
+                optionalIsEmpty0 = Optional.class.getMethod("isEmpty");
+                optionalGet0 = Optional.class.getMethod("get");
+            }
+            case TASK -> {
+                taskApply0 = fnClass.getMethod("apply", Object.class);
+                taskInputClass0 = taskApply0.getParameterTypes()[0];
+            }
+            case OUTPUT -> {
+                outputAccept0 = fnClass.getMethod("accept", Object.class);
+                outputInputClass0 = outputAccept0.getParameterTypes()[0];
+            }
+            case JOIN -> {
+                ClassLoader cl = fnClass.getClassLoader();
+                joinOptionalValueClass0 = cl.loadClass(OPTIONAL_VALUE_CLASS);
+                joinOfNullable0 = joinOptionalValueClass0.getMethod("ofNullable", Object.class);
+                joinEmpty0 = joinOptionalValueClass0.getMethod("empty");
+                joinJoin0 = fnClass.getMethod("join", joinOptionalValueClass0, joinOptionalValueClass0);
+                Type[] genericParams = joinJoin0.getGenericParameterTypes();
+                joinLeftInputClass0 = toRawClass(firstTypeArgument(genericParams[0]));
+                joinRightInputClass0 = toRawClass(firstTypeArgument(genericParams[1]));
+            }
+        }
+        this.inputNext = inputNext0;
+        this.optionalIsEmpty = optionalIsEmpty0;
+        this.optionalGet = optionalGet0;
+        this.taskApply = taskApply0;
+        this.taskInputClass = taskInputClass0;
+        this.outputAccept = outputAccept0;
+        this.outputInputClass = outputInputClass0;
+        this.joinOptionalValueClass = joinOptionalValueClass0;
+        this.joinOfNullable = joinOfNullable0;
+        this.joinEmpty = joinEmpty0;
+        this.joinJoin = joinJoin0;
+        this.joinLeftInputClass = joinLeftInputClass0;
+        this.joinRightInputClass = joinRightInputClass0;
         log.debug("FunctionInvoker 已创建: kind={}, identifier={}", kind, descriptor.getFunctionIdentifier());
     }
 
     /** 等价于 {@code new FunctionInvoker(descriptor, jarLoader, null)}，完全由描述符推断类型。 */
     public FunctionInvoker(FunctionDescriptor descriptor, UserJarLoader jarLoader)
-            throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException, NoSuchMethodException {
         this(descriptor, jarLoader, null);
     }
 
@@ -69,11 +133,12 @@ public final class FunctionInvoker {
         if (inputCount == 1 && hasOutput) {
             return Kind.TASK;
         }
+        //noinspection ConstantValue
         if (inputCount == 1 && !hasOutput) {
             return Kind.OUTPUT;
         }
         if (inputCount == 2 && hasOutput) {
-            return Kind.UNION;
+            return Kind.JOIN;
         }
         throw new IllegalArgumentException("无法推断函数类型: inputs=" + inputCount + ", hasOutput=" + hasOutput);
     }
@@ -90,21 +155,12 @@ public final class FunctionInvoker {
         if (kind != Kind.INPUT) {
             throw new IllegalStateException("非 Input 函数");
         }
-        Method next = function.getClass().getMethod("next");
-        Type outputType = descriptor.getOutputType();
         while (true) {
-            Object result = next.invoke(function);
-            // Optional<?> from InputFunction.next()
-            if (result == null) {
-                break;
-            }
-            boolean empty = (Boolean) result.getClass().getMethod("isEmpty").invoke(result);
-            if (empty) {
-                break;
-            }
-            Object value = result.getClass().getMethod("get").invoke(result);
-            Value encoded = ValueCodec.encode(value, outputType);
-            sendValue.accept(encoded);
+            Object result = inputNext.invoke(function);
+            if (result == null) break;
+            if (Boolean.TRUE.equals(optionalIsEmpty.invoke(result))) break;
+            Object value = optionalGet.invoke(result);
+            sendValue.accept(ValueCodec.encode(value));
         }
     }
 
@@ -115,12 +171,9 @@ public final class FunctionInvoker {
         if (kind != Kind.TASK) {
             throw new IllegalStateException("非 Task 函数");
         }
-        Type inputType = descriptor.getInputsType(0);
-        Type outputType = descriptor.getOutputType();
-        Object decoded = ValueCodec.decode(input, typeToClass(inputType));
-        Method apply = function.getClass().getMethod("apply", Object.class);
-        Object result = apply.invoke(function, decoded);
-        return ValueCodec.encode(result, outputType);
+        Object decoded = ValueCodec.decode(input, taskInputClass);
+        Object result = taskApply.invoke(function, decoded);
+        return ValueCodec.encode(result);
     }
 
     /**
@@ -130,56 +183,42 @@ public final class FunctionInvoker {
         if (kind != Kind.OUTPUT) {
             throw new IllegalStateException("非 Output 函数");
         }
-        Type inputType = descriptor.getInputsType(0);
-        Object decoded = ValueCodec.decode(input, typeToClass(inputType));
-        Method accept = function.getClass().getMethod("accept", Object.class);
-        accept.invoke(function, decoded);
+        Object decoded = ValueCodec.decode(input, outputInputClass);
+        outputAccept.invoke(function, decoded);
     }
 
     /**
-     * Union 函数：两路输入（可为空），解码后包装为 OptionalValue 调用 union。
+     * Join 函数：两路输入（可为空），解码后包装为 OptionalValue 调用 join。
      */
-    public Value runUnion(Value input1, Value input2) throws Throwable {
-        if (kind != Kind.UNION) {
-            throw new IllegalStateException("非 Union 函数");
+    public Value runJoin(Value input1, Value input2) throws Throwable {
+        if (kind != Kind.JOIN) {
+            throw new IllegalStateException("非 Join 函数");
         }
-        ClassLoader cl = function.getClass().getClassLoader();
-        Class<?> optionalValueClass = cl.loadClass(OPTIONAL_VALUE_CLASS);
-        Type inputType1 = descriptor.getInputsType(0);
-        Type inputType2 = descriptor.getInputsType(1);
-        Type outputType = descriptor.getOutputType();
-
         Object left = input1 == null || input1.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
-                : ValueCodec.decode(input1, typeToClass(inputType1));
+                : ValueCodec.decode(input1, joinLeftInputClass);
         Object right = input2 == null || input2.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
-                : ValueCodec.decode(input2, typeToClass(inputType2));
-
-        Method of = optionalValueClass.getMethod("ofNullable", Object.class);
-        Method empty = optionalValueClass.getMethod("empty");
-        Object optLeft = left == null ? empty.invoke(null) : of.invoke(null, left);
-        Object optRight = right == null ? empty.invoke(null) : of.invoke(null, right);
-
-        Method union = function.getClass().getMethod("union", optionalValueClass, optionalValueClass);
-        Object result = union.invoke(function, optLeft, optRight);
-        return ValueCodec.encode(result, outputType);
+                : ValueCodec.decode(input2, joinRightInputClass);
+        Object optLeft = left == null ? joinEmpty.invoke(null) : joinOfNullable.invoke(null, left);
+        Object optRight = right == null ? joinEmpty.invoke(null) : joinOfNullable.invoke(null, right);
+        Object result = joinJoin.invoke(function, optLeft, optRight);
+        return ValueCodec.encode(result);
     }
 
-    private static Class<?> typeToClass(Type type) {
-        return switch (type.getKind()) {
-            case TYPE_KIND_STRING -> String.class;
-            case TYPE_KIND_INT32 -> Integer.class;
-            case TYPE_KIND_INT64 -> Long.class;
-            case TYPE_KIND_FLOAT -> Float.class;
-            case TYPE_KIND_DOUBLE -> Double.class;
-            case TYPE_KIND_BOOLEAN -> Boolean.class;
-            case TYPE_KIND_BYTES -> byte[].class;
-            case TYPE_KIND_NULL -> Void.class;
-            case TYPE_KIND_ARRAY -> java.util.List.class;
-            case TYPE_KIND_MAP -> java.util.Map.class;
-            case TYPE_KIND_STRUCT -> java.util.Map.class;
-            default -> Object.class;
-        };
+    /** 从 OptionalValue&lt;T&gt; 等参数化类型取第一个类型实参。 */
+    private static Type firstTypeArgument(Type type) {
+        if (type instanceof ParameterizedType pt) {
+            Type[] args = pt.getActualTypeArguments();
+            return args.length > 0 ? args[0] : Object.class;
+        }
+        return Object.class;
+    }
+
+    /** 将 java.lang.reflect.Type 转为 Class（泛型取 raw type）。 */
+    private static Class<?> toRawClass(Type type) {
+        if (type instanceof Class<?> c) return c;
+        if (type instanceof ParameterizedType pt) return (Class<?>) pt.getRawType();
+        return Object.class;
     }
 }

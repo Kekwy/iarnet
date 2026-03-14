@@ -59,11 +59,11 @@ public final class Workflow {
       "workflow.NodeConfig\022,\n\tnode_kind\030\005 \001(\0162\031" +
       ".iarnet.workflow.NodeKind\"R\n\nNodeConfig\022" +
       "\020\n\010replicas\030\001 \001(\005\0222\n\rresource_spec\030\002 \001(\013" +
-      "2\033.iarnet.common.ResourceSpec*y\n\010NodeKin" +
+      "2\033.iarnet.common.ResourceSpec*x\n\010NodeKin" +
       "d\022\031\n\025NODE_KIND_UNSPECIFIED\020\000\022\023\n\017NODE_KIN" +
       "D_INPUT\020\001\022\022\n\016NODE_KIND_TASK\020\002\022\024\n\020NODE_KI" +
-      "ND_OUTPUT\020\003\022\023\n\017NODE_KIND_UNION\020\004B#\n\037com." +
-      "kekwy.iarnet.proto.workflowP\001b\006proto3"
+      "ND_OUTPUT\020\003\022\022\n\016NODE_KIND_JOIN\020\004B#\n\037com.k" +
+      "ekwy.iarnet.proto.workflowP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,

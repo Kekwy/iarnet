@@ -25,7 +25,7 @@ import com.kekwy.iarnet.sdk.function.InputFunction;
 import com.kekwy.iarnet.sdk.function.OutputFunction;
 import com.kekwy.iarnet.sdk.function.PythonTaskFunction;
 import com.kekwy.iarnet.sdk.function.TaskFunction;
-import com.kekwy.iarnet.sdk.function.UnionFunction;
+import com.kekwy.iarnet.sdk.function.JoinFunction;
 import com.kekwy.iarnet.sdk.type.TypeToken;
 import com.kekwy.iarnet.sdk.util.IDUtil;
 import com.kekwy.iarnet.sdk.util.SerializationUtil;
@@ -122,7 +122,7 @@ public class Workflow {
      * @param name     节点名
      * @param function 输入函数，按序产出元素
      * @param <T>      输出元素类型
-     * @return Flow，可继续链式 then / union / when
+     * @return Flow，可继续链式 then / join / when
      */
     public <T> Flow<T> input(String name, InputFunction<T> function) {
         return input(name, function, null);
@@ -326,16 +326,16 @@ public class Workflow {
         }
 
         @Override
-        public <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function) {
-            return union(name, other, function, null);
+        public <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function) {
+            return join(name, other, function, null);
         }
 
         @Override
-        public <U, V> Flow<V> union(String name, Flow<U> other, UnionFunction<T, U, V> function, ExecutionConfig config) {
+        public <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function, ExecutionConfig config) {
             if (!(other instanceof DefaultFlow<U> otherFlow)) {
-                throw new IarnetValidationException("union() 仅支持同一 workflow 中的 flow");
+                throw new IarnetValidationException("join() 仅支持同一 workflow 中的 flow");
             }
-            return new DefaultFlow<>(addUnionNode(name, precursor, otherFlow.precursor, function, config));
+            return new DefaultFlow<>(addJoinNode(name, precursor, otherFlow.precursor, function, config));
         }
 
         @Override
@@ -431,8 +431,8 @@ public class Workflow {
     }
 
     /** 添加合并节点，连接两个前驱。 */
-    private Node addUnionNode(String name, Node precursor1, Node precursor2,
-                              UnionFunction<?, ?, ?> function, ExecutionConfig config) {
+    private Node addJoinNode(String name, Node precursor1, Node precursor2,
+                             JoinFunction<?, ?, ?> function, ExecutionConfig config) {
         String nodeId = uniqueNodeId(name);
         Type inputType1 = precursor1.getFunction().getOutputType();
         Type inputType2 = precursor2.getFunction().getOutputType();
@@ -443,7 +443,7 @@ public class Workflow {
                 .setName(name)
                 .setFunction(buildFunctionDescriptor(function, List.of(inputType1, inputType2), outputType, nodeId))
                 .setNodeConfig(buildNodeConfig(config))
-                .setNodeKind(NodeKind.NODE_KIND_UNION)
+                .setNodeKind(NodeKind.NODE_KIND_JOIN)
                 .build();
         nodes.add(node);
         edges.add(buildEdge(precursor1.getId(), nodeId, null, inputType1));
@@ -550,7 +550,7 @@ public class Workflow {
                 .build();
     }
 
-    /** 根据函数类型返回 NodeKind（Input/Task/Output，Union 在 addUnionNode 中直接设置）。 */
+    /** 根据函数类型返回 NodeKind（Input/Task/Output，Join 在 addJoinNode 中直接设置）。 */
     private static NodeKind nodeKindFromFunction(Function function) {
         if (function instanceof InputFunction) {
             return NodeKind.NODE_KIND_INPUT;
@@ -586,8 +586,8 @@ public class Workflow {
             extracted = TypeExtractor.extractOutputType(fn, InputFunction.class, 0);
         } else if (function instanceof TaskFunction<?, ?> fn) {
             extracted = TypeExtractor.extractOutputType(fn, TaskFunction.class, 1);
-        } else if (function instanceof UnionFunction<?, ?, ?> fn) {
-            extracted = TypeExtractor.extractOutputType(fn, UnionFunction.class, 2);
+        } else if (function instanceof JoinFunction<?, ?, ?> fn) {
+            extracted = TypeExtractor.extractOutputType(fn, JoinFunction.class, 2);
         }
         if (extracted != null && extracted != Object.class) {
             return com.kekwy.iarnet.proto.Types.fromType(extracted);

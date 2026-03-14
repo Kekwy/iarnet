@@ -4,12 +4,13 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * 可序列化的“可选值”容器。
  * <p>
  * 语义类似 {@link java.util.Optional}，但实现 {@link Serializable}，
- * 用于 {@link com.kekwy.iarnet.sdk.function.UnionFunction} 的两路输入：
+ * 用于 {@link com.kekwy.iarnet.sdk.function.JoinFunction} 的两路输入：
  * 每路可能“有值”或“无值”（对应分支暂无数据到达）。
  *
  * @param <T> 值类型
@@ -91,6 +92,34 @@ public final class OptionalValue<T> implements Serializable {
      */
     public T orElse(T other) {
         return present ? value : other;
+    }
+
+    /**
+     * 若有值则返回该值，否则抛出由 exceptionSupplier 提供的异常。
+     *
+     * @param exceptionSupplier 无值时的异常提供者
+     * @param <X>               异常类型
+     * @return 当前值
+     * @throws X                    若为空
+     * @throws NullPointerException 若 exceptionSupplier 为 null
+     */
+    public <X extends Throwable> T orElseThrow(Supplier<? extends X> exceptionSupplier) throws X {
+        if (present) return value;
+        throw exceptionSupplier.get();
+    }
+
+    /**
+     * 若当前有值则返回 this，否则返回 supplier 提供的 OptionalValue。
+     *
+     * @param supplier 无值时的替代
+     * @return 本实例或 supplier 结果
+     * @throws NullPointerException 若 supplier 为 null
+     */
+    @SuppressWarnings("unchecked")
+    public OptionalValue<T> or(Supplier<? extends OptionalValue<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier must not be null");
+        if (present) return this;
+        return (OptionalValue<T>) supplier.get();
     }
 
     /**

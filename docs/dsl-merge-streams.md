@@ -2,7 +2,7 @@
 
 本文结合之前讨论，说明在 DSL 中如何表达多条数据流的“合流”场景，尤其是：
 
-- 简单合流（Union）
+- 简单合流（Join）
 - 同一条原始数据多路处理后的 Fork-Join 合并
 - 与 `keyBy`、状态管理的关系
 
@@ -12,7 +12,7 @@
 
 在流式系统里，“把两条流合成一条”的语义主要有两类：
 
-- **Union（无对齐合流）**：  
+- **Join（无对齐合流）**：  
   只是把多条类型相同的流拼在一起，得到一个更大的流，不要求元素之间一一对应。
 
 - **Fork-Join（同一条数据多路处理后再对齐合并）**：  
@@ -22,7 +22,7 @@
 
 ---
 
-### 2. 简单合流：`union`
+### 2. 简单合流：`join`
 
 #### 2.1 语义
 
@@ -45,7 +45,7 @@ DataStream<T> s3 = s1.union(s2);
 Flow<T> s1 = ...;
 Flow<T> s2 = ...;
 
-Flow<T> merged = s1.union(s2);
+Flow<T> merged = s1.join(s2);
 ```
 
 约束：
@@ -56,13 +56,13 @@ Flow<T> merged = s1.union(s2);
 
 在 `WorkflowGraph` 中：
 
-- 引入 `UNION` 类型的多输入算子节点，如：
-  - `NodeKind.UNION` 或类似标识。
-  - 多条边 `s1 -> unionNode`、`s2 -> unionNode`。
+- 引入 `JOIN` 类型的多输入算子节点，如：
+  - `NodeKind.JOIN` 或类似标识。
+  - 多条边 `s1 -> joinNode`、`s2 -> joinNode`。
 
 运行时：
 
-- 上游各分支把元素按原样推入 `UNION` 节点，对下游表现为一条普通流。
+- 上游各分支把元素按原样推入 `JOIN` 节点，对下游表现为一条普通流。
 
 ---
 
@@ -241,14 +241,14 @@ Input x ->
 
     相当于 Flink 中的 `ValueState` / `ListState`。
 
-- 合流算子（无论是 `union` 还是 `CoProcess`）在 IR 中都表现为多输入节点，  
+- 合流算子（无论是 `join` 还是 `CoProcess`）在 IR 中都表现为多输入节点，  
   实际路由和状态拆分由运行时（Actor + Device Agent）根据 key 和分区规则完成。
 
 ---
 
 ### 6. 小结
 
-1. **Union**：适合“同类型流的简单合并”，语义等同于 Flink 的 `union`。
+1. **Join**：适合“同类型流的简单合并”，语义等同于 Flink 的 `union`。
 2. **Fork-Join**：
    - 高级版：`connect + keyBy + CoProcess`，可表达复杂的多路 join 和 one-to-many join。
    - 简化版：`map2(f1, f2, combiner)`，在单算子内部完成 fork-join。
