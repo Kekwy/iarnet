@@ -1,23 +1,30 @@
 package com.kekwy.iarnet.provider.actor;
 
+import com.kekwy.iarnet.provider.signaling.SignalingService;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.provider.ActorRegistrationServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * 本地 Actor 注册与消息入口：实现 ActorRegistrationService，流使用 ActorEnvelope。
- * 处理 register_actor、row（DataRow），将消息交由 ActorRouter 按 target 路由。
+ * 处理 register_actor、row（DataRow），将消息交由 ActorRouter 按 target 路由；
+ * 注册后通过 SignalingService 上报 Actor 就绪与通道建立。
  */
 @Slf4j
 @Component
 public class ActorRegistrationServiceGrpcImpl extends ActorRegistrationServiceGrpc.ActorRegistrationServiceImplBase {
 
     private final ActorRouter router;
+    private final SignalingService signalingService;
 
-    public ActorRegistrationServiceGrpcImpl(ActorRouter router) {
+    public ActorRegistrationServiceGrpcImpl(ActorRouter router, SignalingService signalingService) {
         this.router = router;
+        this.signalingService = signalingService;
     }
 
     @Override
@@ -31,7 +38,11 @@ public class ActorRegistrationServiceGrpcImpl extends ActorRegistrationServiceGr
                 switch (msg.getPayloadCase()) {
                     case REGISTER_ACTOR:
                         registeredActorId = msg.getRegisterActor().getActorId();
-                        router.registerActorStream(registeredActorId, responseObserver);
+                        Set<ActorEdge> establishedEdges = router.onActorConnected(registeredActorId, responseObserver);
+                        signalingService.reportActorReady(registeredActorId);
+                        for (ActorEdge edge : establishedEdges) {
+                            signalingService.reportChannelEstablished(edge.fromActorId(), edge.toActorId());
+                        }
                         break;
                     case ROW:
                         if (registeredActorId != null) {
@@ -47,13 +58,13 @@ public class ActorRegistrationServiceGrpcImpl extends ActorRegistrationServiceGr
 
             @Override
             public void onError(Throwable t) {
-                if (registeredActorId != null) router.unregisterActorStream(registeredActorId);
+                if (registeredActorId != null) router.onActorLostConnection(registeredActorId);
                 log.warn("ActorChannel 出错: {}", t.getMessage());
             }
 
             @Override
             public void onCompleted() {
-                if (registeredActorId != null) router.unregisterActorStream(registeredActorId);
+                if (registeredActorId != null) router.onActorLostConnection(registeredActorId);
                 responseObserver.onCompleted();
             }
         };

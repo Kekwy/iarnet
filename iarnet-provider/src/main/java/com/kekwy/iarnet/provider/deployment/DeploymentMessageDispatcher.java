@@ -1,37 +1,27 @@
-package com.kekwy.iarnet.provider.registry;
+package com.kekwy.iarnet.provider.deployment;
 
-import com.kekwy.iarnet.provider.actor.ActorRouter;
-import com.kekwy.iarnet.provider.engine.ProviderEngine;
-import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
 import com.kekwy.iarnet.proto.provider.*;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 /**
- * 处理 DeploymentChannel 下发的 DeploymentEnvelope（DeployActor / StopActor / RemoveActor / GetActorStatus），
- * 通过 correlation_id 回传响应。
+ * DeploymentChannel 消息分发：仅负责按 messageCase 委托 DeploymentService，并封装响应信封。
  */
-public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelope> {
+public class DeploymentMessageDispatcher implements StreamObserver<DeploymentEnvelope> {
 
-    private static final Logger log = LoggerFactory.getLogger(DeploymentChannelHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(DeploymentMessageDispatcher.class);
 
-    private final ProviderEngine engine;
-    private final ArtifactFetcher artifactFetcher;
-    private final ActorRouter actorRouter;
+    private final DeploymentService service;
     private final StreamObserver<DeploymentEnvelope> responseObserver;
     private final Runnable onDisconnect;
 
-    public DeploymentChannelHandler(ProviderEngine engine, ArtifactFetcher artifactFetcher,
-                                    ActorRouter actorRouter,
-                                    StreamObserver<DeploymentEnvelope> responseObserver,
-                                    Runnable onDisconnect) {
-        this.engine = engine;
-        this.artifactFetcher = artifactFetcher;
-        this.actorRouter = actorRouter;
+    public DeploymentMessageDispatcher(DeploymentService service,
+                                       StreamObserver<DeploymentEnvelope> responseObserver,
+                                       Runnable onDisconnect) {
+        this.service = service;
         this.responseObserver = responseObserver;
         this.onDisconnect = onDisconnect;
     }
@@ -69,10 +59,15 @@ public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelo
 
         switch (envelope.getMessageCase()) {
             case DEPLOY_ACTOR_REQUEST:
-                return handleDeployActor(correlationId, messageId, envelope.getDeployActorRequest());
+                DeployActorResponse deployResp = service.deployActor(envelope.getDeployActorRequest());
+                return DeploymentEnvelope.newBuilder()
+                        .setCorrelationId(correlationId)
+                        .setMessageId(messageId)
+                        .setDeployActorResponse(deployResp)
+                        .build();
 
             case STOP_ACTOR_REQUEST:
-                StopActorResponse stopResp = engine.stopActor(envelope.getStopActorRequest().getActorId());
+                StopActorResponse stopResp = service.stopActor(envelope.getStopActorRequest());
                 return DeploymentEnvelope.newBuilder()
                         .setCorrelationId(correlationId)
                         .setMessageId(messageId)
@@ -80,7 +75,7 @@ public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelo
                         .build();
 
             case REMOVE_ACTOR_REQUEST:
-                RemoveActorResponse removeResp = engine.removeActor(envelope.getRemoveActorRequest().getActorId());
+                RemoveActorResponse removeResp = service.removeActor(envelope.getRemoveActorRequest());
                 return DeploymentEnvelope.newBuilder()
                         .setCorrelationId(correlationId)
                         .setMessageId(messageId)
@@ -88,7 +83,7 @@ public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelo
                         .build();
 
             case GET_ACTOR_STATUS_REQUEST:
-                GetActorStatusResponse statusResp = engine.getActorStatus(envelope.getGetActorStatusRequest().getActorId());
+                GetActorStatusResponse statusResp = service.getActorStatus(envelope.getGetActorStatusRequest());
                 return DeploymentEnvelope.newBuilder()
                         .setCorrelationId(correlationId)
                         .setMessageId(messageId)
@@ -99,23 +94,5 @@ public class DeploymentChannelHandler implements StreamObserver<DeploymentEnvelo
                 log.debug("忽略 DeploymentEnvelope: {}", envelope.getMessageCase());
                 return null;
         }
-    }
-
-    private DeploymentEnvelope handleDeployActor(String correlationId, String messageId,
-                                                DeployActorRequest request) throws IOException {
-        Path artifactPath = null;
-        if (request.getArtifactUrl() != null && !request.getArtifactUrl().isBlank()) {
-            artifactPath = artifactFetcher.fetch(request.getActorId(), request.getArtifactUrl());
-        }
-
-        String actorId = request.getActorId();
-        actorRouter.onDeploy(actorId, request.getDownstreamActorAddrsList());
-
-        DeployActorResponse response = engine.deployActor(request, artifactPath);
-        return DeploymentEnvelope.newBuilder()
-                .setCorrelationId(correlationId)
-                .setMessageId(messageId)
-                .setDeployActorResponse(response)
-                .build();
     }
 }

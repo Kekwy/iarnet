@@ -1,7 +1,120 @@
 package com.kekwy.iarnet.provider.control;
 
+import com.kekwy.iarnet.provider.config.ProviderIdentity;
+import com.kekwy.iarnet.provider.config.ProviderProperties;
+import com.kekwy.iarnet.provider.registry.DelegatingObserver;
+import com.kekwy.iarnet.provider.registry.ProviderRegistryClient;
+import com.kekwy.iarnet.proto.fabric.ProviderRegistryServiceGrpc;
+import com.kekwy.iarnet.proto.provider.ControlEnvelope;
+import com.kekwy.iarnet.proto.provider.ProviderHeartbeat;
+import com.kekwy.iarnet.proto.provider.ProviderHeartbeatAck;
+import io.grpc.Metadata;
+import io.grpc.stub.MetadataUtils;
+import io.grpc.stub.StreamObserver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * 管理 ControlChannel 生命周期与心跳；asyncStub、scheduler、tags、providerId 均由 Spring 管理，
+ * providerId 从 {@link ProviderIdentity} 读取。
+ */
 @Service
 public class ControlService {
+
+    private static final Logger log = LoggerFactory.getLogger(ControlService.class);
+    private static final long RECONNECT_DELAY_SECONDS = 5;
+    private static final long HEARTBEAT_INTERVAL_SECONDS = 30;
+
+    private final ProviderRegistryServiceGrpc.ProviderRegistryServiceStub asyncStub;
+    private final ScheduledExecutorService scheduler;
+    private final List<String> tags;
+    private final ProviderIdentity identity;
+
+    private volatile boolean closed = false;
+    private volatile ScheduledFuture<?> heartbeatTask;
+
+    public ControlService(ProviderRegistryServiceGrpc.ProviderRegistryServiceStub asyncStub,
+                          ScheduledExecutorService providerScheduler,
+                          ProviderProperties props,
+                          ProviderIdentity identity) {
+        this.asyncStub = asyncStub;
+        this.scheduler = providerScheduler;
+        this.tags = props.getTags() != null ? props.getTags() : List.of();
+        this.identity = identity;
+    }
+
+    /** 建立 Control 流（providerId 从 ProviderIdentity 读取，重连时同样）。 */
+    public void openChannel() {
+        String providerId = identity != null ? identity.getProviderId() : null;
+        if (closed || asyncStub == null || providerId == null) return;
+
+        DelegatingObserver<ControlEnvelope> proxy = new DelegatingObserver<>();
+        StreamObserver<ControlEnvelope> receiver = new ControlMessageDispatcher(this, this::onDisconnect);
+
+        Metadata headers = new Metadata();
+        headers.put(ProviderRegistryClient.PROVIDER_ID_METADATA_KEY, providerId);
+        var headerStub = asyncStub.withInterceptors(MetadataUtils.newAttachHeadersInterceptor(headers));
+
+        StreamObserver<ControlEnvelope> sender = headerStub.controlChannel(receiver);
+        proxy.setDelegate(sender);
+
+        startHeartbeat(proxy);
+        log.info("ControlChannel 已建立: providerId={}", providerId);
+    }
+
+    private void startHeartbeat(DelegatingObserver<ControlEnvelope> controlSender) {
+        if (heartbeatTask != null) {
+            heartbeatTask.cancel(false);
+        }
+        heartbeatTask = scheduler.scheduleAtFixedRate(() -> {
+            if (closed) return;
+            String current = identity != null ? identity.getProviderId() : null;
+            if (current == null) return;
+            try {
+                ControlEnvelope heartbeat = ControlEnvelope.newBuilder()
+                        .setProviderHeartbeat(ProviderHeartbeat.newBuilder()
+                                .setProviderId(current)
+                                .setTimestampMs(System.currentTimeMillis())
+                                .addAllTags(tags)
+                                .build())
+                        .build();
+                controlSender.onNext(heartbeat);
+            } catch (Exception e) {
+                log.warn("发送心跳失败: providerId={}", current, e);
+            }
+        }, HEARTBEAT_INTERVAL_SECONDS, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        log.info("心跳已启动: 间隔={}s, providerId={}", HEARTBEAT_INTERVAL_SECONDS, identity != null ? identity.getProviderId() : null);
+    }
+
+    private void onDisconnect() {
+        if (heartbeatTask != null) {
+            heartbeatTask.cancel(false);
+            heartbeatTask = null;
+        }
+        if (closed) return;
+        log.warn("ControlChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
+        scheduler.schedule(this::openChannel, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+    }
+
+    public void close() {
+        closed = true;
+        if (heartbeatTask != null) {
+            heartbeatTask.cancel(false);
+            heartbeatTask = null;
+        }
+    }
+
+    // --- 业务方法，供 ControlMessageDispatcher 委托调用 ---
+
+    public void handleHeartbeatAck(ProviderHeartbeatAck ack, String messageId) {
+        if (ack != null && !ack.getAcknowledged()) {
+            log.warn("心跳未确认: messageId={}", messageId);
+        }
+    }
 }

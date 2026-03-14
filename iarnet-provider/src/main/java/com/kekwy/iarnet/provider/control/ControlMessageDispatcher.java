@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.provider.registry;
+package com.kekwy.iarnet.provider.control;
 
 import com.kekwy.iarnet.proto.provider.ControlEnvelope;
 import io.grpc.stub.StreamObserver;
@@ -6,15 +6,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 处理 ControlChannel 下发的 ControlEnvelope（如 ProviderHeartbeatAck）。
+ * ControlChannel 消息分发：仅负责按 messageCase 委托 ControlService。
  */
-public class ControlChannelHandler implements StreamObserver<ControlEnvelope> {
+public class ControlMessageDispatcher implements StreamObserver<ControlEnvelope> {
 
-    private static final Logger log = LoggerFactory.getLogger(ControlChannelHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ControlMessageDispatcher.class);
 
+    private final ControlService service;
     private final Runnable onDisconnect;
 
-    public ControlChannelHandler(Runnable onDisconnect) {
+    public ControlMessageDispatcher(ControlService service, Runnable onDisconnect) {
+        this.service = service;
         this.onDisconnect = onDisconnect;
     }
 
@@ -23,9 +25,7 @@ public class ControlChannelHandler implements StreamObserver<ControlEnvelope> {
         if (value == null) return;
         switch (value.getMessageCase()) {
             case PROVIDER_HEARTBEAT_ACK:
-                if (!value.getProviderHeartbeatAck().getAcknowledged()) {
-                    log.warn("心跳未确认: messageId={}", value.getMessageId());
-                }
+                service.handleHeartbeatAck(value.getProviderHeartbeatAck(), value.getMessageId());
                 break;
             case REGISTER_PROVIDER_REQUEST:
             case REGISTER_PROVIDER_RESPONSE:
