@@ -17,14 +17,10 @@ import java.util.logging.Logger;
  * 典型用法（与 {@link com.kekwy.iarnet.sdk.Workflow} 配合）：
  * <pre>{@code
  * // Python 任务：约定源码位于 resource/function/python/
- * w.input("src", Inputs.of(frame))
- *  .then("decode", Tasks.pythonTask("decode_frame"))
- *  .then("sink", Outputs.println());
+ * w.input("src", new TypeToken<Frame>() {}).then("decode", Tasks.pythonTask("decode_frame")).then("sink", Outputs.println());
  *
  * // Go 任务：约定源码位于 resource/function/go/，带输出类型提示
- * w.input("src", ...)
- *  .then("process", Tasks.goTask("Process", new TypeToken<Result>() {}))
- *  .then("sink", ...);
+ * w.input("src", new TypeToken<X>() {}).then("process", Tasks.goTask("Process", new TypeToken<Result>() {})).then("sink", ...);
  * }</pre>
  */
 public final class Tasks {

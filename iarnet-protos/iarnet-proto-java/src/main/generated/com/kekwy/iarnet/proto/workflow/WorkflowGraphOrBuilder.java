@@ -90,4 +90,28 @@ public interface WorkflowGraphOrBuilder extends
    */
   com.kekwy.iarnet.proto.workflow.EdgeOrBuilder getEdgesOrBuilder(
       int index);
+
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  java.util.List<com.kekwy.iarnet.proto.workflow.WorkflowInput> 
+      getInputsList();
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  com.kekwy.iarnet.proto.workflow.WorkflowInput getInputs(int index);
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  int getInputsCount();
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  java.util.List<? extends com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder> 
+      getInputsOrBuilderList();
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder getInputsOrBuilder(
+      int index);
 }

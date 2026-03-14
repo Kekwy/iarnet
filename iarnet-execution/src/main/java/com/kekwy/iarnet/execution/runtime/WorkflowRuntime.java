@@ -5,6 +5,8 @@ import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.ResourceSpec;
+import com.kekwy.iarnet.proto.common.Type;
+import com.kekwy.iarnet.proto.common.TypeKind;
 import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
@@ -16,6 +18,7 @@ import com.kekwy.iarnet.fabric.deployment.DeploymentCallback;
 import com.kekwy.iarnet.fabric.deployment.DeploymentPlanGraph;
 import com.kekwy.iarnet.fabric.deployment.DeploymentService;
 import com.kekwy.iarnet.fabric.deployment.InstanceRefGraph;
+import com.kekwy.iarnet.proto.workflow.WorkflowInput;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
 import com.kekwy.iarnet.execution.RuntimeNode;
 import com.kekwy.iarnet.execution.port.ArtifactUrlProvider;
@@ -35,8 +38,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -60,6 +65,9 @@ public class WorkflowRuntime {
     private Thread workerThread;
     private Thread inboxDispatcherThread;
 
+    /** workflowId -> token，提交时生成，供用户调用 execute(workflowId, token, inputs) 时校验 */
+    private final ConcurrentMap<String, String> workflowTokens = new ConcurrentHashMap<>();
+
     // TODO: 提供一些监测工作流运行情况的端点
 
     private record SubmitRequest(
@@ -69,12 +77,101 @@ public class WorkflowRuntime {
     ) {
     }
 
-    public void submit(WorkflowGraph graph, Path artifactDir, Path externalSourceDir) {
+    /**
+     * 提交工作流图，入队后立即返回 token，供后续 {@link #execute(String, String, Map)} 等调用时校验使用。
+     *
+     * @param graph              工作流图
+     * @param artifactDir        制品目录
+     * @param externalSourceDir  外部源码目录
+     * @return 本次提交的 token，调用 execute 时需传入此 token
+     */
+    public String submit(WorkflowGraph graph, Path artifactDir, Path externalSourceDir) {
         if (!running) {
             throw new IllegalStateException("Executor 已关闭，无法接收新的工作流");
         }
+        String workflowId = graph.getWorkflowId();
+        String token = UUID.randomUUID().toString();
+        workflowTokens.put(workflowId, token);
         queue.add(new SubmitRequest(graph, artifactDir, externalSourceDir));
-        log.info("工作流已入队: workflowId={}, 当前队列长度={}", graph.getWorkflowId(), queue.size());
+        log.info("工作流已入队: workflowId={}, token={}, 当前队列长度={}", workflowId, token, queue.size());
+        return token;
+    }
+
+    /**
+     * 使用提交时返回的 token 校验后，将输入参数转交 session 处理并驱动工作流执行。
+     * 仅当 token 与 submit 时下发的 token 一致时允许调用。
+     *
+     * @param workflowId 工作流 ID（即 graph.getWorkflowId()）
+     * @param token      submit 返回的 token
+     * @param inputs     工作流输入参数名到值的映射，与 WorkflowGraph.inputs 中定义的参数对应
+     * @return 本次执行的 submissionId，供后续查询或取消使用
+     */
+    public String execute(String workflowId, String token, Map<String, Object> inputs) {
+        String expectedToken = workflowTokens.get(workflowId);
+        if (expectedToken == null || !expectedToken.equals(token)) {
+            throw new IllegalArgumentException("无效的 workflowId 或 token，无法执行工作流");
+        }
+        RuntimeSession session = runtimeSessions.get(workflowId);
+        if (session == null) {
+            throw new IllegalStateException("工作流尚未就绪或已结束: workflowId=" + workflowId);
+        }
+        validateInputsAgainstWorkflow(session, inputs != null ? inputs : Map.of());
+        return session.execute(inputs != null ? inputs : Map.of());
+    }
+
+    /**
+     * 校验用户传入的 inputs 与工作流输入定义是否相符：参数名齐全且每个实参类型与定义一致。
+     *
+     * @throws IllegalArgumentException 若缺少参数、多出未定义参数或类型不匹配
+     */
+    private static void validateInputsAgainstWorkflow(RuntimeSession session, Map<String, Object> inputs) {
+        List<WorkflowInput> workflowInputs = session.getWorkflowInputs();
+        for (WorkflowInput def : workflowInputs) {
+            String paramName = def.getName();
+            if (!inputs.containsKey(paramName)) {
+                throw new IllegalArgumentException("缺少工作流输入参数: " + paramName +
+                        "，工作流定义需要: " + workflowInputs.stream().map(WorkflowInput::getName).toList());
+            }
+            Object value = inputs.get(paramName);
+            Type expectedType = def.getType();
+            if (!isValueCompatibleWithType(value, expectedType)) {
+                throw new IllegalArgumentException("工作流输入参数 " + paramName + " 类型不匹配: 期望 " +
+                        describeType(expectedType) + "，实际值类型为 " + (value == null ? "null" : value.getClass().getTypeName()));
+            }
+        }
+        Set<String> definedNames = workflowInputs.stream().map(WorkflowInput::getName).collect(Collectors.toSet());
+        for (String name : inputs.keySet()) {
+            if (!definedNames.contains(name)) {
+                throw new IllegalArgumentException("存在未在工作流输入定义中的参数: " + name +
+                        "，工作流仅接受: " + definedNames);
+            }
+        }
+    }
+
+    private static boolean isValueCompatibleWithType(Object value, Type type) {
+        if (type == null || type.getKind() == TypeKind.TYPE_KIND_UNSPECIFIED) {
+            return true;
+        }
+        if (value == null) {
+            return type.getKind() == TypeKind.TYPE_KIND_NULL;
+        }
+        return switch (type.getKind()) {
+            case TYPE_KIND_STRING -> value instanceof String;
+            case TYPE_KIND_INT32 -> value instanceof Integer || value instanceof Byte || value instanceof Short;
+            case TYPE_KIND_INT64 -> value instanceof Long || value instanceof Integer;
+            case TYPE_KIND_FLOAT -> value instanceof Float || value instanceof Double;
+            case TYPE_KIND_DOUBLE -> value instanceof Double || value instanceof Float;
+            case TYPE_KIND_BOOLEAN -> value instanceof Boolean;
+            case TYPE_KIND_BYTES -> value instanceof byte[];
+            case TYPE_KIND_NULL -> false;
+            case TYPE_KIND_ARRAY, TYPE_KIND_MAP, TYPE_KIND_STRUCT -> true;
+            default -> true;
+        };
+    }
+
+    private static String describeType(Type type) {
+        if (type == null) return "未指定";
+        return type.getKind().name();
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -178,12 +275,21 @@ public class WorkflowRuntime {
         DeploymentPlanGraph deploymentPlanGraph = buildDeploymentPlanGraph(workflowGraph, langArtifactUrlMap);
 
 
+        // 解析工作流输入定义与入口节点参数映射，随 session 保存供 execute 时使用
+        List<WorkflowInput> workflowInputs = workflowGraph.getInputsList();
+        Map<String, String> nodeIdToInputParamName = new HashMap<>();
+        for (Node node : workflowGraph.getNodesList()) {
+            if (!node.getInputParam().isEmpty()) {
+                nodeIdToInputParamName.put(node.getId(), node.getInputParam());
+            }
+        }
+
         // 部署的时候就需要为每个actor传入一个 handler
         deploymentService.deploy(deploymentPlanGraph, actorMessageInbox, new DeploymentCallback() {
             @Override
             public void onSuccess(InstanceRefGraph instanceRefGraph) {
                 RuntimeGraph runtimeGraph = buildRuntimeGraph(workflowGraph, instanceRefGraph);
-                RuntimeSession session = new RuntimeSession(runtimeGraph);
+                RuntimeSession session = new RuntimeSession(runtimeGraph, workflowInputs, nodeIdToInputParamName);
                 runtimeSessions.put(workflowId, session);
                 session.start();
             }

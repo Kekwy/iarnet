@@ -9,36 +9,6 @@ public interface ActorEnvelopeOrBuilder extends
 
   /**
    * <pre>
-   * 目标 actor id（由 Router 填写物理地址）
-   * </pre>
-   *
-   * <code>string target = 1;</code>
-   * @return The target.
-   */
-  java.lang.String getTarget();
-  /**
-   * <pre>
-   * 目标 actor id（由 Router 填写物理地址）
-   * </pre>
-   *
-   * <code>string target = 1;</code>
-   * @return The bytes for target.
-   */
-  com.google.protobuf.ByteString
-      getTargetBytes();
-
-  /**
-   * <pre>
-   * 输出端口号，默认 0，由 actor 设置
-   * </pre>
-   *
-   * <code>int32 output_port = 5;</code>
-   * @return The outputPort.
-   */
-  int getOutputPort();
-
-  /**
-   * <pre>
    * 命令 input Actor 开始产生输入
    * </pre>
    *
@@ -96,27 +66,42 @@ public interface ActorEnvelopeOrBuilder extends
    * Actor 产出的一行数据
    * </pre>
    *
-   * <code>.iarnet.actor.DataRow row = 4;</code>
-   * @return Whether the row field is set.
+   * <code>.iarnet.actor.InvokeResponse response = 4;</code>
+   * @return Whether the response field is set.
    */
-  boolean hasRow();
+  boolean hasResponse();
   /**
    * <pre>
    * Actor 产出的一行数据
    * </pre>
    *
-   * <code>.iarnet.actor.DataRow row = 4;</code>
-   * @return The row.
+   * <code>.iarnet.actor.InvokeResponse response = 4;</code>
+   * @return The response.
    */
-  com.kekwy.iarnet.proto.actor.DataRow getRow();
+  com.kekwy.iarnet.proto.actor.InvokeResponse getResponse();
   /**
    * <pre>
    * Actor 产出的一行数据
    * </pre>
    *
-   * <code>.iarnet.actor.DataRow row = 4;</code>
+   * <code>.iarnet.actor.InvokeResponse response = 4;</code>
    */
-  com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowOrBuilder();
+  com.kekwy.iarnet.proto.actor.InvokeResponseOrBuilder getResponseOrBuilder();
+
+  /**
+   * <code>.iarnet.actor.InvokeRequest request = 5;</code>
+   * @return Whether the request field is set.
+   */
+  boolean hasRequest();
+  /**
+   * <code>.iarnet.actor.InvokeRequest request = 5;</code>
+   * @return The request.
+   */
+  com.kekwy.iarnet.proto.actor.InvokeRequest getRequest();
+  /**
+   * <code>.iarnet.actor.InvokeRequest request = 5;</code>
+   */
+  com.kekwy.iarnet.proto.actor.InvokeRequestOrBuilder getRequestOrBuilder();
 
   public com.kekwy.iarnet.proto.actor.ActorEnvelope.PayloadCase getPayloadCase();
 }

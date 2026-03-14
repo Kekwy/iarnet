@@ -71,4 +71,24 @@ public interface NodeOrBuilder extends
    * @return The nodeKind.
    */
   com.kekwy.iarnet.proto.workflow.NodeKind getNodeKind();
+
+  /**
+   * <pre>
+   * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+   * </pre>
+   *
+   * <code>string input_param = 6;</code>
+   * @return The inputParam.
+   */
+  java.lang.String getInputParam();
+  /**
+   * <pre>
+   * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+   * </pre>
+   *
+   * <code>string input_param = 6;</code>
+   * @return The bytes for inputParam.
+   */
+  com.google.protobuf.ByteString
+      getInputParamBytes();
 }

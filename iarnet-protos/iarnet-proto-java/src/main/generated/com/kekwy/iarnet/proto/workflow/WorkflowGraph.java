@@ -21,6 +21,7 @@ private static final long serialVersionUID = 0L;
     name_ = "";
     nodes_ = java.util.Collections.emptyList();
     edges_ = java.util.Collections.emptyList();
+    inputs_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -247,6 +248,47 @@ private static final long serialVersionUID = 0L;
     return edges_.get(index);
   }
 
+  public static final int INPUTS_FIELD_NUMBER = 6;
+  @SuppressWarnings("serial")
+  private java.util.List<com.kekwy.iarnet.proto.workflow.WorkflowInput> inputs_;
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  @java.lang.Override
+  public java.util.List<com.kekwy.iarnet.proto.workflow.WorkflowInput> getInputsList() {
+    return inputs_;
+  }
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder> 
+      getInputsOrBuilderList() {
+    return inputs_;
+  }
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  @java.lang.Override
+  public int getInputsCount() {
+    return inputs_.size();
+  }
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.workflow.WorkflowInput getInputs(int index) {
+    return inputs_.get(index);
+  }
+  /**
+   * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder getInputsOrBuilder(
+      int index) {
+    return inputs_.get(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -276,6 +318,9 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < edges_.size(); i++) {
       output.writeMessage(5, edges_.get(i));
     }
+    for (int i = 0; i < inputs_.size(); i++) {
+      output.writeMessage(6, inputs_.get(i));
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -302,6 +347,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(5, edges_.get(i));
     }
+    for (int i = 0; i < inputs_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(6, inputs_.get(i));
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -327,6 +376,8 @@ private static final long serialVersionUID = 0L;
         .equals(other.getNodesList())) return false;
     if (!getEdgesList()
         .equals(other.getEdgesList())) return false;
+    if (!getInputsList()
+        .equals(other.getInputsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -351,6 +402,10 @@ private static final long serialVersionUID = 0L;
     if (getEdgesCount() > 0) {
       hash = (37 * hash) + EDGES_FIELD_NUMBER;
       hash = (53 * hash) + getEdgesList().hashCode();
+    }
+    if (getInputsCount() > 0) {
+      hash = (37 * hash) + INPUTS_FIELD_NUMBER;
+      hash = (53 * hash) + getInputsList().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -498,6 +553,13 @@ private static final long serialVersionUID = 0L;
         edgesBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00000010);
+      if (inputsBuilder_ == null) {
+        inputs_ = java.util.Collections.emptyList();
+      } else {
+        inputs_ = null;
+        inputsBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00000020);
       return this;
     }
 
@@ -548,6 +610,15 @@ private static final long serialVersionUID = 0L;
         result.edges_ = edges_;
       } else {
         result.edges_ = edgesBuilder_.build();
+      }
+      if (inputsBuilder_ == null) {
+        if (((bitField0_ & 0x00000020) != 0)) {
+          inputs_ = java.util.Collections.unmodifiableList(inputs_);
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.inputs_ = inputs_;
+      } else {
+        result.inputs_ = inputsBuilder_.build();
       }
     }
 
@@ -675,6 +746,32 @@ private static final long serialVersionUID = 0L;
           }
         }
       }
+      if (inputsBuilder_ == null) {
+        if (!other.inputs_.isEmpty()) {
+          if (inputs_.isEmpty()) {
+            inputs_ = other.inputs_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureInputsIsMutable();
+            inputs_.addAll(other.inputs_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.inputs_.isEmpty()) {
+          if (inputsBuilder_.isEmpty()) {
+            inputsBuilder_.dispose();
+            inputsBuilder_ = null;
+            inputs_ = other.inputs_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+            inputsBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getInputsFieldBuilder() : null;
+          } else {
+            inputsBuilder_.addAllMessages(other.inputs_);
+          }
+        }
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -742,6 +839,19 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 42
+            case 50: {
+              com.kekwy.iarnet.proto.workflow.WorkflowInput m =
+                  input.readMessage(
+                      com.kekwy.iarnet.proto.workflow.WorkflowInput.parser(),
+                      extensionRegistry);
+              if (inputsBuilder_ == null) {
+                ensureInputsIsMutable();
+                inputs_.add(m);
+              } else {
+                inputsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 50
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1453,6 +1563,246 @@ private static final long serialVersionUID = 0L;
         edges_ = null;
       }
       return edgesBuilder_;
+    }
+
+    private java.util.List<com.kekwy.iarnet.proto.workflow.WorkflowInput> inputs_ =
+      java.util.Collections.emptyList();
+    private void ensureInputsIsMutable() {
+      if (!((bitField0_ & 0x00000020) != 0)) {
+        inputs_ = new java.util.ArrayList<com.kekwy.iarnet.proto.workflow.WorkflowInput>(inputs_);
+        bitField0_ |= 0x00000020;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.kekwy.iarnet.proto.workflow.WorkflowInput, com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder, com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder> inputsBuilder_;
+
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public java.util.List<com.kekwy.iarnet.proto.workflow.WorkflowInput> getInputsList() {
+      if (inputsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(inputs_);
+      } else {
+        return inputsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public int getInputsCount() {
+      if (inputsBuilder_ == null) {
+        return inputs_.size();
+      } else {
+        return inputsBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WorkflowInput getInputs(int index) {
+      if (inputsBuilder_ == null) {
+        return inputs_.get(index);
+      } else {
+        return inputsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder setInputs(
+        int index, com.kekwy.iarnet.proto.workflow.WorkflowInput value) {
+      if (inputsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureInputsIsMutable();
+        inputs_.set(index, value);
+        onChanged();
+      } else {
+        inputsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder setInputs(
+        int index, com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder builderForValue) {
+      if (inputsBuilder_ == null) {
+        ensureInputsIsMutable();
+        inputs_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        inputsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder addInputs(com.kekwy.iarnet.proto.workflow.WorkflowInput value) {
+      if (inputsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureInputsIsMutable();
+        inputs_.add(value);
+        onChanged();
+      } else {
+        inputsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder addInputs(
+        int index, com.kekwy.iarnet.proto.workflow.WorkflowInput value) {
+      if (inputsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureInputsIsMutable();
+        inputs_.add(index, value);
+        onChanged();
+      } else {
+        inputsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder addInputs(
+        com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder builderForValue) {
+      if (inputsBuilder_ == null) {
+        ensureInputsIsMutable();
+        inputs_.add(builderForValue.build());
+        onChanged();
+      } else {
+        inputsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder addInputs(
+        int index, com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder builderForValue) {
+      if (inputsBuilder_ == null) {
+        ensureInputsIsMutable();
+        inputs_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        inputsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder addAllInputs(
+        java.lang.Iterable<? extends com.kekwy.iarnet.proto.workflow.WorkflowInput> values) {
+      if (inputsBuilder_ == null) {
+        ensureInputsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, inputs_);
+        onChanged();
+      } else {
+        inputsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder clearInputs() {
+      if (inputsBuilder_ == null) {
+        inputs_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+      } else {
+        inputsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public Builder removeInputs(int index) {
+      if (inputsBuilder_ == null) {
+        ensureInputsIsMutable();
+        inputs_.remove(index);
+        onChanged();
+      } else {
+        inputsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder getInputsBuilder(
+        int index) {
+      return getInputsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder getInputsOrBuilder(
+        int index) {
+      if (inputsBuilder_ == null) {
+        return inputs_.get(index);  } else {
+        return inputsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public java.util.List<? extends com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder> 
+         getInputsOrBuilderList() {
+      if (inputsBuilder_ != null) {
+        return inputsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(inputs_);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder addInputsBuilder() {
+      return getInputsFieldBuilder().addBuilder(
+          com.kekwy.iarnet.proto.workflow.WorkflowInput.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder addInputsBuilder(
+        int index) {
+      return getInputsFieldBuilder().addBuilder(
+          index, com.kekwy.iarnet.proto.workflow.WorkflowInput.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .iarnet.workflow.WorkflowInput inputs = 6;</code>
+     */
+    public java.util.List<com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder> 
+         getInputsBuilderList() {
+      return getInputsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.kekwy.iarnet.proto.workflow.WorkflowInput, com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder, com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder> 
+        getInputsFieldBuilder() {
+      if (inputsBuilder_ == null) {
+        inputsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            com.kekwy.iarnet.proto.workflow.WorkflowInput, com.kekwy.iarnet.proto.workflow.WorkflowInput.Builder, com.kekwy.iarnet.proto.workflow.WorkflowInputOrBuilder>(
+                inputs_,
+                ((bitField0_ & 0x00000020) != 0),
+                getParentForChildren(),
+                isClean());
+        inputs_ = null;
+      }
+      return inputsBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

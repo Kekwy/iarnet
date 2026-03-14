@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     id_ = "";
     name_ = "";
     nodeKind_ = 0;
+    inputParam_ = "";
   }
 
   @java.lang.Override
@@ -194,6 +195,53 @@ private static final long serialVersionUID = 0L;
     return result == null ? com.kekwy.iarnet.proto.workflow.NodeKind.UNRECOGNIZED : result;
   }
 
+  public static final int INPUT_PARAM_FIELD_NUMBER = 6;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object inputParam_ = "";
+  /**
+   * <pre>
+   * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+   * </pre>
+   *
+   * <code>string input_param = 6;</code>
+   * @return The inputParam.
+   */
+  @java.lang.Override
+  public java.lang.String getInputParam() {
+    java.lang.Object ref = inputParam_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      inputParam_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+   * </pre>
+   *
+   * <code>string input_param = 6;</code>
+   * @return The bytes for inputParam.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getInputParamBytes() {
+    java.lang.Object ref = inputParam_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      inputParam_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -223,6 +271,9 @@ private static final long serialVersionUID = 0L;
     if (nodeKind_ != com.kekwy.iarnet.proto.workflow.NodeKind.NODE_KIND_UNSPECIFIED.getNumber()) {
       output.writeEnum(5, nodeKind_);
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(inputParam_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, inputParam_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -249,6 +300,9 @@ private static final long serialVersionUID = 0L;
     if (nodeKind_ != com.kekwy.iarnet.proto.workflow.NodeKind.NODE_KIND_UNSPECIFIED.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(5, nodeKind_);
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(inputParam_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, inputParam_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -280,6 +334,8 @@ private static final long serialVersionUID = 0L;
           .equals(other.getNodeConfig())) return false;
     }
     if (nodeKind_ != other.nodeKind_) return false;
+    if (!getInputParam()
+        .equals(other.getInputParam())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -305,6 +361,8 @@ private static final long serialVersionUID = 0L;
     }
     hash = (37 * hash) + NODE_KIND_FIELD_NUMBER;
     hash = (53 * hash) + nodeKind_;
+    hash = (37 * hash) + INPUT_PARAM_FIELD_NUMBER;
+    hash = (53 * hash) + getInputParam().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -447,6 +505,7 @@ private static final long serialVersionUID = 0L;
         nodeConfigBuilder_ = null;
       }
       nodeKind_ = 0;
+      inputParam_ = "";
       return this;
     }
 
@@ -498,6 +557,9 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00000010) != 0)) {
         result.nodeKind_ = nodeKind_;
+      }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
+        result.inputParam_ = inputParam_;
       }
     }
 
@@ -564,6 +626,11 @@ private static final long serialVersionUID = 0L;
       if (other.nodeKind_ != 0) {
         setNodeKindValue(other.getNodeKindValue());
       }
+      if (!other.getInputParam().isEmpty()) {
+        inputParam_ = other.inputParam_;
+        bitField0_ |= 0x00000020;
+        onChanged();
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -619,6 +686,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000010;
               break;
             } // case 40
+            case 50: {
+              inputParam_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000020;
+              break;
+            } // case 50
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1067,6 +1139,98 @@ private static final long serialVersionUID = 0L;
     public Builder clearNodeKind() {
       bitField0_ = (bitField0_ & ~0x00000010);
       nodeKind_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.lang.Object inputParam_ = "";
+    /**
+     * <pre>
+     * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+     * </pre>
+     *
+     * <code>string input_param = 6;</code>
+     * @return The inputParam.
+     */
+    public java.lang.String getInputParam() {
+      java.lang.Object ref = inputParam_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        inputParam_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+     * </pre>
+     *
+     * <code>string input_param = 6;</code>
+     * @return The bytes for inputParam.
+     */
+    public com.google.protobuf.ByteString
+        getInputParamBytes() {
+      java.lang.Object ref = inputParam_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        inputParam_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+     * </pre>
+     *
+     * <code>string input_param = 6;</code>
+     * @param value The inputParam to set.
+     * @return This builder for chaining.
+     */
+    public Builder setInputParam(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      inputParam_ = value;
+      bitField0_ |= 0x00000020;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+     * </pre>
+     *
+     * <code>string input_param = 6;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearInputParam() {
+      inputParam_ = getDefaultInstance().getInputParam();
+      bitField0_ = (bitField0_ & ~0x00000020);
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+     * </pre>
+     *
+     * <code>string input_param = 6;</code>
+     * @param value The bytes for inputParam to set.
+     * @return This builder for chaining.
+     */
+    public Builder setInputParamBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      inputParam_ = value;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }

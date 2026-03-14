@@ -13,12 +13,11 @@ import java.util.logging.Logger;
  * <p>
  * 典型用法：
  * <pre>{@code
- * w.input("src", Inputs.of(1, 2, 3))
- *  .then("double", x -> x * 2)
+ * w.input("src", new TypeToken<Integer>() {})
+ *  .then("double", (Integer x) -> x * 2)
  *  .then("print", Outputs.println());   // 打印到 stdout
  *
- * w.input("src", ...)
- *  .then("noop", Outputs.noop());      // 丢弃结果（用于测试或占位）
+ * w.input("src", new TypeToken<String>() {}).then("noop", Outputs.noop());  // 丢弃结果（用于测试或占位）
  * }</pre>
  */
 public final class Outputs {

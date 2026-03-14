@@ -4,18 +4,26 @@ package iarnet.workflow;
 
 import "iarnet/common/function.proto";
 import "iarnet/common/resource.proto";
+import "iarnet/common/type.proto";
 
 option java_package = "com.kekwy.iarnet.proto.workflow";
 option java_multiple_files = true;
 
 // ======================== 工作流图（顶层） ========================
 
+// 工作流输入参数定义（参数名 + 类型），实际值在提交时由用户提供
+message WorkflowInput {
+  string        name = 1;
+  common.Type   type = 2;
+}
+
 message WorkflowGraph {
   string   workflow_id      = 1;
   string   application_id   = 2;
   string   name             = 3;
   repeated Node nodes       = 4;
-  repeated Edge edges       = 5;
+  repeated Edge edges      = 5;
+  repeated WorkflowInput inputs = 6;
 }
 
 // ======================== 边 ========================
@@ -42,6 +50,8 @@ message Node {
   common.FunctionDescriptor function      = 3;
   NodeConfig nodeConfig = 4;
   NodeKind node_kind    = 5;
+  // 入口节点关联的工作流输入参数名（仅当该节点从 workflow input 接收数据时设置）
+  string   input_param = 6;
 }
 
 message NodeConfig {

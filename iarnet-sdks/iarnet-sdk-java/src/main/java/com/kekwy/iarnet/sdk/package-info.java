@@ -12,7 +12,6 @@
  *
  * @see com.kekwy.iarnet.sdk.Workflow
  * @see com.kekwy.iarnet.sdk.Flow
- * @see com.kekwy.iarnet.sdk.dsl.Inputs
  * @see com.kekwy.iarnet.sdk.dsl.Outputs
  * @see com.kekwy.iarnet.sdk.dsl.Tasks
  */

@@ -8,14 +8,23 @@ option java_package = "com.kekwy.iarnet.proto.actor";
 option java_multiple_files = true;
 
 message ActorEnvelope {
-  string target = 1; // 目标 actor id（由 Router 填写物理地址）
-  int32  output_port = 5; // 输出端口号，默认 0，由 actor 设置
-
   oneof payload {
     StartInputCommand start_input_command = 2;  // 命令 input Actor 开始产生输入
     RegisterActorRequest register_actor = 3;    // Actor 启动后向 Provider 报告 actor_id
-    DataRow row = 4;                            // Actor 产出的一行数据
+    InvokeResponse response = 4;                            // Actor 产出的一行数据
+    InvokeRequest request = 5;
   }
+}
+
+message InvokeResponse {
+  string sessionId = 1;
+  DataRow row = 2;
+  int32 port = 3;
+}
+
+message InvokeRequest {
+  string sessionId = 1;
+  DataRow row = 2;
 }
 
 // 命令 input Actor 开始产生输入
@@ -32,4 +41,3 @@ message DataRow {
   string rowId = 1;
   common.Value value = 2;
 }
-

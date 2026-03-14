@@ -20,6 +20,11 @@ public final class Signaling {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_iarnet_provider_SignalingEnvelope_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_iarnet_provider_ActorMessageForward_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_iarnet_provider_ActorMessageForward_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_iarnet_provider_ActorReadyReport_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -59,38 +64,40 @@ public final class Signaling {
   static {
     java.lang.String[] descriptorData = {
       "\n\037iarnet/provider/signaling.proto\022\017iarne" +
-      "t.provider\032\030iarnet/actor/actor.proto\"\321\003\n" +
+      "t.provider\032\030iarnet/actor/actor.proto\"\300\003\n" +
       "\021SignalingEnvelope\022\023\n\013provider_id\030\001 \001(\t\022" +
-      "\024\n\014timestamp_ms\030\002 \001(\003\022\027\n\017target_actor_id" +
-      "\030\024 \001(\t\022B\n\023connect_instruction\030\n \001(\0132#.ia" +
-      "rnet.provider.ConnectInstructionH\000\0224\n\014ic" +
-      "e_envelope\030\013 \001(\0132\034.iarnet.provider.IceEn" +
-      "velopeH\000\022<\n\020candidate_update\030\014 \001(\0132 .iar" +
-      "net.provider.CandidateUpdateH\000\022<\n\ractor_" +
-      "channel\030\r \001(\0132#.iarnet.provider.ActorCha" +
-      "nnelStatusH\000\0228\n\013actor_ready\030\016 \001(\0132!.iarn" +
-      "et.provider.ActorReadyReportH\000\022=\n\026actor_" +
-      "envelope_forward\030\017 \001(\0132\033.iarnet.actor.Ac" +
-      "torEnvelopeH\000B\t\n\007payload\"$\n\020ActorReadyRe" +
-      "port\022\020\n\010actor_id\030\001 \001(\t\"\204\001\n\022ActorChannelS" +
-      "tatus\022\023\n\013workflow_id\030\001 \001(\t\022\026\n\016applicatio" +
-      "n_id\030\002 \001(\t\022\026\n\016src_actor_addr\030\003 \001(\t\022\026\n\016ds" +
-      "t_actor_addr\030\004 \001(\t\022\021\n\tconnected\030\005 \001(\010\"k\n" +
-      "\022ConnectInstruction\022\022\n\nconnect_id\030\001 \001(\t\022" +
-      "\026\n\016src_actor_addr\030\002 \001(\t\022\026\n\016dst_actor_add" +
-      "r\030\003 \001(\t\022\021\n\tinitiator\030\004 \001(\010\"\200\001\n\013IceEnvelo" +
-      "pe\022\022\n\nconnect_id\030\001 \001(\t\022\030\n\020from_provider_" +
-      "id\030\002 \001(\t\022\026\n\016to_provider_id\030\003 \001(\t\022\023\n\013sign" +
-      "al_type\030\005 \001(\t\022\026\n\016signal_payload\030\006 \001(\014\"]\n" +
-      "\017CandidateUpdate\022\023\n\013provider_id\030\001 \001(\t\0225\n" +
-      "\ncandidates\030\002 \003(\0132!.iarnet.provider.Netw" +
-      "orkCandidate\"\327\001\n\020NetworkCandidate\022=\n\004typ" +
-      "e\030\001 \001(\0162/.iarnet.provider.NetworkCandida" +
-      "te.CandidateType\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003" +
-      " \001(\005\022\020\n\010priority\030\004 \001(\005\"V\n\rCandidateType\022" +
-      "\036\n\032CANDIDATE_TYPE_UNSPECIFIED\020\000\022\n\n\006DIREC" +
-      "T\020\001\022\016\n\nNAT_MAPPED\020\002\022\t\n\005RELAY\020\003B#\n\037com.ke" +
-      "kwy.iarnet.proto.providerP\001b\006proto3"
+      "\024\n\014timestamp_ms\030\002 \001(\003\022B\n\023connect_instruc" +
+      "tion\030\n \001(\0132#.iarnet.provider.ConnectInst" +
+      "ructionH\000\0224\n\014ice_envelope\030\013 \001(\0132\034.iarnet" +
+      ".provider.IceEnvelopeH\000\022<\n\020candidate_upd" +
+      "ate\030\014 \001(\0132 .iarnet.provider.CandidateUpd" +
+      "ateH\000\022<\n\ractor_channel\030\r \001(\0132#.iarnet.pr" +
+      "ovider.ActorChannelStatusH\000\0228\n\013actor_rea" +
+      "dy\030\016 \001(\0132!.iarnet.provider.ActorReadyRep" +
+      "ortH\000\022E\n\025actor_message_forward\030\017 \001(\0132$.i" +
+      "arnet.provider.ActorMessageForwardH\000B\t\n\007" +
+      "payload\"Z\n\023ActorMessageForward\022\016\n\006target" +
+      "\030\001 \001(\t\0223\n\016actor_envelope\030\002 \001(\0132\033.iarnet." +
+      "actor.ActorEnvelope\"$\n\020ActorReadyReport\022" +
+      "\020\n\010actor_id\030\001 \001(\t\"\204\001\n\022ActorChannelStatus" +
+      "\022\023\n\013workflow_id\030\001 \001(\t\022\026\n\016application_id\030" +
+      "\002 \001(\t\022\026\n\016src_actor_addr\030\003 \001(\t\022\026\n\016dst_act" +
+      "or_addr\030\004 \001(\t\022\021\n\tconnected\030\005 \001(\010\"k\n\022Conn" +
+      "ectInstruction\022\022\n\nconnect_id\030\001 \001(\t\022\026\n\016sr" +
+      "c_actor_addr\030\002 \001(\t\022\026\n\016dst_actor_addr\030\003 \001" +
+      "(\t\022\021\n\tinitiator\030\004 \001(\010\"\200\001\n\013IceEnvelope\022\022\n" +
+      "\nconnect_id\030\001 \001(\t\022\030\n\020from_provider_id\030\002 " +
+      "\001(\t\022\026\n\016to_provider_id\030\003 \001(\t\022\023\n\013signal_ty" +
+      "pe\030\005 \001(\t\022\026\n\016signal_payload\030\006 \001(\014\"]\n\017Cand" +
+      "idateUpdate\022\023\n\013provider_id\030\001 \001(\t\0225\n\ncand" +
+      "idates\030\002 \003(\0132!.iarnet.provider.NetworkCa" +
+      "ndidate\"\327\001\n\020NetworkCandidate\022=\n\004type\030\001 \001" +
+      "(\0162/.iarnet.provider.NetworkCandidate.Ca" +
+      "ndidateType\022\014\n\004host\030\002 \001(\t\022\014\n\004port\030\003 \001(\005\022" +
+      "\020\n\010priority\030\004 \001(\005\"V\n\rCandidateType\022\036\n\032CA" +
+      "NDIDATE_TYPE_UNSPECIFIED\020\000\022\n\n\006DIRECT\020\001\022\016" +
+      "\n\nNAT_MAPPED\020\002\022\t\n\005RELAY\020\003B#\n\037com.kekwy.i" +
+      "arnet.proto.providerP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -102,39 +109,45 @@ public final class Signaling {
     internal_static_iarnet_provider_SignalingEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_SignalingEnvelope_descriptor,
-        new java.lang.String[] { "ProviderId", "TimestampMs", "TargetActorId", "ConnectInstruction", "IceEnvelope", "CandidateUpdate", "ActorChannel", "ActorReady", "ActorEnvelopeForward", "Payload", });
-    internal_static_iarnet_provider_ActorReadyReport_descriptor =
+        new java.lang.String[] { "ProviderId", "TimestampMs", "ConnectInstruction", "IceEnvelope", "CandidateUpdate", "ActorChannel", "ActorReady", "ActorMessageForward", "Payload", });
+    internal_static_iarnet_provider_ActorMessageForward_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_iarnet_provider_ActorMessageForward_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_iarnet_provider_ActorMessageForward_descriptor,
+        new java.lang.String[] { "Target", "ActorEnvelope", });
+    internal_static_iarnet_provider_ActorReadyReport_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_iarnet_provider_ActorReadyReport_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_ActorReadyReport_descriptor,
         new java.lang.String[] { "ActorId", });
     internal_static_iarnet_provider_ActorChannelStatus_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_provider_ActorChannelStatus_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_ActorChannelStatus_descriptor,
         new java.lang.String[] { "WorkflowId", "ApplicationId", "SrcActorAddr", "DstActorAddr", "Connected", });
     internal_static_iarnet_provider_ConnectInstruction_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_iarnet_provider_ConnectInstruction_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_ConnectInstruction_descriptor,
         new java.lang.String[] { "ConnectId", "SrcActorAddr", "DstActorAddr", "Initiator", });
     internal_static_iarnet_provider_IceEnvelope_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_iarnet_provider_IceEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_IceEnvelope_descriptor,
         new java.lang.String[] { "ConnectId", "FromProviderId", "ToProviderId", "SignalType", "SignalPayload", });
     internal_static_iarnet_provider_CandidateUpdate_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_iarnet_provider_CandidateUpdate_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_CandidateUpdate_descriptor,
         new java.lang.String[] { "ProviderId", "Candidates", });
     internal_static_iarnet_provider_NetworkCandidate_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_iarnet_provider_NetworkCandidate_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_NetworkCandidate_descriptor,

@@ -2,7 +2,6 @@ package com.kekwy.iarnet.sdk;
 
 import com.google.protobuf.util.JsonFormat;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.sdk.dsl.Inputs;
 import com.kekwy.iarnet.sdk.dsl.Tasks;
 import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
 import com.kekwy.iarnet.sdk.function.TaskFunction;
@@ -63,10 +62,10 @@ class WorkflowBuildGraphTest {
     class LinearFlow {
 
         @Test
-        @DisplayName("input -> task -> output 三节点")
+        @DisplayName("input 参数 + task + output 两节点")
         void inputTaskOutput() {
             Workflow w = Workflow.create("linear");
-            w.input("src", Inputs.of(1, 2, 3))
+            w.input("src", new TypeToken<Integer>() {})
                     .then("double", (Integer x) -> x * 2)
                     .then("sink", (Integer x) -> {
                     });
@@ -76,44 +75,49 @@ class WorkflowBuildGraphTest {
             assertEquals("linear", graph.getName());
             assertEquals(APP_ID, graph.getApplicationId());
             assertFalse(graph.getWorkflowId().isBlank());
-            assertEquals(3, graph.getNodesCount());
-            assertEquals(2, graph.getEdgesCount());
+            assertEquals(2, graph.getNodesCount());
+            assertEquals(1, graph.getEdgesCount());
+            assertEquals(1, graph.getInputsCount());
+            assertEquals("src", graph.getInputs(0).getName());
 
-            assertTrue(graph.getNodesList().stream()
-                    .anyMatch(n -> "src".equals(n.getName())));
             assertTrue(graph.getNodesList().stream()
                     .anyMatch(n -> "double".equals(n.getName())));
             assertTrue(graph.getNodesList().stream()
                     .anyMatch(n -> "sink".equals(n.getName())));
+            assertTrue(graph.getNodesList().stream()
+                    .anyMatch(n -> "src".equals(n.getInputParam())));
         }
 
         @Test
-        @DisplayName("单 input -> output")
+        @DisplayName("单 input 参数 -> output")
         void inputToOutput() {
             Workflow w = Workflow.create("simple");
-            w.input("src", Inputs.of("hello")).then("print", s -> {
+            w.input("src", new TypeToken<String>() {}).then("print", (String s) -> {
             });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
 
-            assertEquals(2, graph.getNodesCount());
-            assertEquals(1, graph.getEdgesCount());
+            assertEquals(1, graph.getNodesCount());
+            assertEquals(0, graph.getEdgesCount());
+            assertEquals(1, graph.getInputsCount());
+            assertEquals("src", graph.getInputs(0).getName());
         }
 
         @Test
         @DisplayName("多段 task 链")
         void multiStageChain() {
             Workflow w = Workflow.create("chain");
-            w.input("src", Inputs.of(1))
-                    .then("add1", x -> x + 1)
-                    .then("mul2", x -> x * 2)
-                    .then("sink", x -> {
+            w.input("src", new TypeToken<Integer>() {})
+                    .then("add1", (Integer x) -> x + 1)
+                    .then("mul2", (Integer x) -> x * 2)
+                    .then("sink", (Integer x) -> {
                     });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
 
-            assertEquals(4, graph.getNodesCount());
-            assertEquals(3, graph.getEdgesCount());
+            assertEquals(3, graph.getNodesCount());
+            assertEquals(2, graph.getEdgesCount());
+            assertEquals(1, graph.getInputsCount());
         }
     }
 
@@ -128,9 +132,9 @@ class WorkflowBuildGraphTest {
             }
 
             Workflow w = Workflow.create("with-returns");
-            w.input("src", Inputs.of("x"))
+            w.input("src", new TypeToken<String>() {})
                     .then("toCustom", (TaskFunction<String, CustomOut>) CustomOut::new)
-                    .returns(new TypeToken<>() {
+                    .returns(new TypeToken<CustomOut>() {
                     })
                     .then("sink", (CustomOut o) -> {
                     });
@@ -146,20 +150,21 @@ class WorkflowBuildGraphTest {
     class JoinFlow {
 
         @Test
-        @DisplayName("双路 input join 后 output")
+        @DisplayName("双路 input 参数 join 后 output")
         void twoInputsJoin() {
             Workflow w = Workflow.create("join-demo");
-            var flow1 = w.input("a", Inputs.of(1, 2));
-            var flow2 = w.input("b", Inputs.of(3, 4));
+            var flow1 = w.input("a", new TypeToken<Integer>() {}).then("a-task", (Integer x) -> x);
+            var flow2 = w.input("b", new TypeToken<Integer>() {}).then("b-task", (Integer x) -> x);
             flow1.join("merge", flow2, (OptionalValue<Integer> a, OptionalValue<Integer> b) ->
                             a.isPresent() ? a.get() : b.get())
-                    .then("sink", x -> {
+                    .then("sink", (Integer x) -> {
                     });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
 
-            assertEquals(4, graph.getNodesCount()); // a, b, merge, sink
-            assertEquals(3, graph.getEdgesCount()); // a->merge, b->merge, merge->sink
+            assertEquals(4, graph.getNodesCount()); // a-task, b-task, merge, sink
+            assertEquals(3, graph.getEdgesCount()); // a-task->merge, b-task->merge, merge->sink
+            assertEquals(2, graph.getInputsCount());
         }
     }
 
@@ -171,16 +176,16 @@ class WorkflowBuildGraphTest {
         @DisplayName("when().then() 条件分流")
         void whenThen() {
             Workflow w = Workflow.create("conditional");
-            w.input("src", Inputs.of(1, 2, 3, 4, 5))
+            w.input("src", new TypeToken<Integer>() {})
+                    .then("first", (Integer x) -> x)
                     .when((Integer x) -> x % 2 == 0)
-                    .then("even-sink", x -> {
+                    .then("even-sink", (Integer x) -> {
                     });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
 
             assertEquals(2, graph.getNodesCount());
             assertEquals(1, graph.getEdgesCount());
-            // 边应带有 condition
             var edge = graph.getEdges(0);
             assertTrue(edge.hasConditionFunction());
         }
@@ -194,10 +199,10 @@ class WorkflowBuildGraphTest {
         @DisplayName("Python task 构建正确的 FunctionDescriptor")
         void pythonTask() {
             Workflow w = Workflow.create("python-demo");
-            w.input("src", Inputs.of("data"))
+            w.input("src", new TypeToken<String>() {})
                     .then("py-transform", Tasks.pythonTask("transform", new TypeToken<String>() {
                     }))
-                    .then("sink", s -> {
+                    .then("sink", (String s) -> {
                     });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
@@ -213,10 +218,10 @@ class WorkflowBuildGraphTest {
         @DisplayName("Go task 构建正确的 FunctionDescriptor")
         void goTask() {
             Workflow w = Workflow.create("go-demo");
-            w.input("src", Inputs.of(1))
+            w.input("src", new TypeToken<Integer>() {})
                     .then("go-process", Tasks.goTask("Process", new TypeToken<Integer>() {
                     }))
-                    .then("sink", x -> {
+                    .then("sink", (Integer x) -> {
                     });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
@@ -241,9 +246,9 @@ class WorkflowBuildGraphTest {
                     .replicas(3)
                     .resource(b -> b.cpu(2).memory("4Gi").gpu(1));
 
-            w.input("src", Inputs.of(1))
-                    .then("task", x -> x, config)
-                    .then("sink", x -> {
+            w.input("src", new TypeToken<Integer>() {})
+                    .then("task", (Integer x) -> x, config)
+                    .then("sink", (Integer x) -> {
                     });
 
             WorkflowGraph graph = buildAndMaybePrint(w);
@@ -264,12 +269,11 @@ class WorkflowBuildGraphTest {
         @Test
         @DisplayName("缺少 returns 且无法推断类型时抛出 IarnetValidationException")
         void missingReturnsThrows() {
-            // 构造无法从 lambda 推断输出类型的场景
             Workflow w = Workflow.create("need-returns");
-            w.input("src", Inputs.of(1))
-                    .then("erased", x -> (Object) x)  // 擦除为 Object
-                    .then("sink", o -> {
-                    });           // 有出边但无法推断
+            w.input("src", new TypeToken<Integer>() {})
+                    .then("erased", (Integer x) -> (Object) x)  // 擦除为 Object
+                    .then("sink", (Object o) -> {
+                    });
 
             assertThrows(IarnetValidationException.class, () -> w.buildGraph(APP_ID));
         }
@@ -284,7 +288,7 @@ class WorkflowBuildGraphTest {
         @DisplayName("buildGraph(String) 生成有效 workflowId")
         void buildGraphGeneratesWorkflowId() {
             Workflow w = Workflow.create("id-test");
-            w.input("src", Inputs.of(1)).then("sink", x -> {
+            w.input("src", new TypeToken<Integer>() {}).then("sink", (Integer x) -> {
             });
 
             WorkflowGraph graph = w.buildGraph(APP_ID);
@@ -297,7 +301,7 @@ class WorkflowBuildGraphTest {
         @DisplayName("多次 buildGraph 生成不同 workflowId")
         void eachBuildGeneratesNewId() {
             Workflow w = Workflow.create("multi-build");
-            w.input("src", Inputs.of(1)).then("sink", x -> {
+            w.input("src", new TypeToken<Integer>() {}).then("sink", (Integer x) -> {
             });
 
             WorkflowGraph g1 = w.buildGraph(APP_ID);

@@ -20,6 +20,16 @@ public final class Actor {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_iarnet_actor_ActorEnvelope_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_iarnet_actor_InvokeResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_iarnet_actor_InvokeResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_iarnet_actor_InvokeRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_iarnet_actor_InvokeRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_iarnet_actor_StartInputCommand_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -44,17 +54,22 @@ public final class Actor {
   static {
     java.lang.String[] descriptorData = {
       "\n\030iarnet/actor/actor.proto\022\014iarnet.actor" +
-      "\032\030iarnet/common/type.proto\"\343\001\n\rActorEnve" +
-      "lope\022\016\n\006target\030\001 \001(\t\022\023\n\013output_port\030\005 \001(" +
-      "\005\022>\n\023start_input_command\030\002 \001(\0132\037.iarnet." +
-      "actor.StartInputCommandH\000\022<\n\016register_ac" +
-      "tor\030\003 \001(\0132\".iarnet.actor.RegisterActorRe" +
-      "questH\000\022$\n\003row\030\004 \001(\0132\025.iarnet.actor.Data" +
-      "RowH\000B\t\n\007payload\"\023\n\021StartInputCommand\"(\n" +
-      "\024RegisterActorRequest\022\020\n\010actor_id\030\001 \001(\t\"" +
-      "=\n\007DataRow\022\r\n\005rowId\030\001 \001(\t\022#\n\005value\030\002 \001(\013" +
-      "2\024.iarnet.common.ValueB \n\034com.kekwy.iarn" +
-      "et.proto.actorP\001b\006proto3"
+      "\032\030iarnet/common/type.proto\"\372\001\n\rActorEnve" +
+      "lope\022>\n\023start_input_command\030\002 \001(\0132\037.iarn" +
+      "et.actor.StartInputCommandH\000\022<\n\016register" +
+      "_actor\030\003 \001(\0132\".iarnet.actor.RegisterActo" +
+      "rRequestH\000\0220\n\010response\030\004 \001(\0132\034.iarnet.ac" +
+      "tor.InvokeResponseH\000\022.\n\007request\030\005 \001(\0132\033." +
+      "iarnet.actor.InvokeRequestH\000B\t\n\007payload\"" +
+      "U\n\016InvokeResponse\022\021\n\tsessionId\030\001 \001(\t\022\"\n\003" +
+      "row\030\002 \001(\0132\025.iarnet.actor.DataRow\022\014\n\004port" +
+      "\030\003 \001(\005\"F\n\rInvokeRequest\022\021\n\tsessionId\030\001 \001" +
+      "(\t\022\"\n\003row\030\002 \001(\0132\025.iarnet.actor.DataRow\"\023" +
+      "\n\021StartInputCommand\"(\n\024RegisterActorRequ" +
+      "est\022\020\n\010actor_id\030\001 \001(\t\"=\n\007DataRow\022\r\n\005rowI" +
+      "d\030\001 \001(\t\022#\n\005value\030\002 \001(\0132\024.iarnet.common.V" +
+      "alueB \n\034com.kekwy.iarnet.proto.actorP\001b\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -66,21 +81,33 @@ public final class Actor {
     internal_static_iarnet_actor_ActorEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_actor_ActorEnvelope_descriptor,
-        new java.lang.String[] { "Target", "OutputPort", "StartInputCommand", "RegisterActor", "Row", "Payload", });
-    internal_static_iarnet_actor_StartInputCommand_descriptor =
+        new java.lang.String[] { "StartInputCommand", "RegisterActor", "Response", "Request", "Payload", });
+    internal_static_iarnet_actor_InvokeResponse_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_iarnet_actor_InvokeResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_iarnet_actor_InvokeResponse_descriptor,
+        new java.lang.String[] { "SessionId", "Row", "Port", });
+    internal_static_iarnet_actor_InvokeRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_iarnet_actor_InvokeRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_iarnet_actor_InvokeRequest_descriptor,
+        new java.lang.String[] { "SessionId", "Row", });
+    internal_static_iarnet_actor_StartInputCommand_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_actor_StartInputCommand_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_actor_StartInputCommand_descriptor,
         new java.lang.String[] { });
     internal_static_iarnet_actor_RegisterActorRequest_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_iarnet_actor_RegisterActorRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_actor_RegisterActorRequest_descriptor,
         new java.lang.String[] { "ActorId", });
     internal_static_iarnet_actor_DataRow_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_iarnet_actor_DataRow_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_actor_DataRow_descriptor,

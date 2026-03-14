@@ -30,26 +30,6 @@ public interface SignalingEnvelopeOrBuilder extends
   long getTimestampMs();
 
   /**
-   * <pre>
-   * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
-   * </pre>
-   *
-   * <code>string target_actor_id = 20;</code>
-   * @return The targetActorId.
-   */
-  java.lang.String getTargetActorId();
-  /**
-   * <pre>
-   * 当 payload 为 actor_envelope 时，表示目标 actor_id（由控制平面填写，Provider 据此转发）
-   * </pre>
-   *
-   * <code>string target_actor_id = 20;</code>
-   * @return The bytes for targetActorId.
-   */
-  com.google.protobuf.ByteString
-      getTargetActorIdBytes();
-
-  /**
    * <code>.iarnet.provider.ConnectInstruction connect_instruction = 10;</code>
    * @return Whether the connectInstruction field is set.
    */
@@ -125,19 +105,19 @@ public interface SignalingEnvelopeOrBuilder extends
   com.kekwy.iarnet.proto.provider.ActorReadyReportOrBuilder getActorReadyOrBuilder();
 
   /**
-   * <code>.iarnet.actor.ActorEnvelope actor_envelope_forward = 15;</code>
-   * @return Whether the actorEnvelopeForward field is set.
+   * <code>.iarnet.provider.ActorMessageForward actor_message_forward = 15;</code>
+   * @return Whether the actorMessageForward field is set.
    */
-  boolean hasActorEnvelopeForward();
+  boolean hasActorMessageForward();
   /**
-   * <code>.iarnet.actor.ActorEnvelope actor_envelope_forward = 15;</code>
-   * @return The actorEnvelopeForward.
+   * <code>.iarnet.provider.ActorMessageForward actor_message_forward = 15;</code>
+   * @return The actorMessageForward.
    */
-  com.kekwy.iarnet.proto.actor.ActorEnvelope getActorEnvelopeForward();
+  com.kekwy.iarnet.proto.provider.ActorMessageForward getActorMessageForward();
   /**
-   * <code>.iarnet.actor.ActorEnvelope actor_envelope_forward = 15;</code>
+   * <code>.iarnet.provider.ActorMessageForward actor_message_forward = 15;</code>
    */
-  com.kekwy.iarnet.proto.actor.ActorEnvelopeOrBuilder getActorEnvelopeForwardOrBuilder();
+  com.kekwy.iarnet.proto.provider.ActorMessageForwardOrBuilder getActorMessageForwardOrBuilder();
 
   public com.kekwy.iarnet.proto.provider.SignalingEnvelope.PayloadCase getPayloadCase();
 }

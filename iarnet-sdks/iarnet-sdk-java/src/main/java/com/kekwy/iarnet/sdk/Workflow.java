@@ -14,6 +14,7 @@ import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.proto.workflow.NodeConfig;
 import com.kekwy.iarnet.proto.workflow.NodeKind;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
+import com.kekwy.iarnet.proto.workflow.WorkflowInput;
 import com.kekwy.iarnet.sdk.exception.IarnetCommunicationException;
 import com.kekwy.iarnet.sdk.exception.IarnetConfigurationException;
 import com.kekwy.iarnet.sdk.exception.IarnetSubmissionException;
@@ -21,7 +22,6 @@ import com.kekwy.iarnet.sdk.exception.IarnetValidationException;
 import com.kekwy.iarnet.sdk.function.ConditionFunction;
 import com.kekwy.iarnet.sdk.function.Function;
 import com.kekwy.iarnet.sdk.function.GoTaskFunction;
-import com.kekwy.iarnet.sdk.function.InputFunction;
 import com.kekwy.iarnet.sdk.function.OutputFunction;
 import com.kekwy.iarnet.sdk.function.PythonTaskFunction;
 import com.kekwy.iarnet.sdk.function.TaskFunction;
@@ -55,15 +55,15 @@ import java.util.logging.Logger;
 /**
  * 工作流 DSL 入口。
  * <p>
- * 通过 {@link #create(String)} 创建实例，{@link #input(String, InputFunction)} 定义 Source，
- * 返回的 {@link Flow} 可链式追加任务、条件分支、合并与输出。{@link #buildGraph()} 构建图结构，
- * {@link #execute()} 或 {@link #submit(WorkflowGraph, String, int)} 提交至 control-plane。
+ * 通过 {@link #create(String)} 创建实例，{@link #input(String)} 或 {@link #input(String, TypeToken)} 注册工作流输入参数
+ *（名称与类型写入 WorkflowGraph，实际值在提交时由用户提供），返回的 {@link Flow} 可链式追加任务、条件分支、合并与输出。
+ * {@link #buildGraph()} 构建图结构，{@link #execute()} 或 {@link #submit(WorkflowGraph, String, int)} 提交至 control-plane。
  * <p>
  * 典型用法：
  * <pre>{@code
  * Workflow w = Workflow.create("example");
- * w.input("src", Inputs.of(1, 2, 3))
- *  .then("double", x -> x * 2)
+ * w.input("src", new TypeToken<Integer>() {})
+ *  .then("double", (Integer x) -> x * 2)
  *  .then("sink", Outputs.println());
  * w.execute();  // 需设置 IARNET_APP_ID、IARNET_GRPC_PORT
  * }</pre>
@@ -95,6 +95,12 @@ public class Workflow {
      */
     private final Map<String, java.lang.reflect.Type> nodeOutputTypeHints = new HashMap<>();
 
+    /** 工作流输入参数定义（名称 + 类型），写入 WorkflowGraph.inputs。 */
+    private final List<WorkflowInput> workflowInputs = new ArrayList<>();
+
+    /** 入口节点 ID -> 关联的工作流输入参数名，写入 Node.input_param。 */
+    private final Map<String, String> nodeInputParamMap = new HashMap<>();
+
     private Workflow(String name) {
         this.name = name;
     }
@@ -117,29 +123,33 @@ public class Workflow {
     }
 
     /**
-     * 定义输入源（Source）节点。
+     * 注册工作流输入参数，类型由下游 {@code then()} 推断。
      *
-     * @param name     节点名
-     * @param function 输入函数，按序产出元素
-     * @param <T>      输出元素类型
+     * @param name 参数名
+     * @param <T>  参数类型（由链式调用的下游函数推断）
      * @return Flow，可继续链式 then / join / when
      */
-    public <T> Flow<T> input(String name, InputFunction<T> function) {
-        return input(name, function, null);
+    public <T> Flow<T> input(String name) {
+        return new InputFlow<>(name, null);
     }
 
     /**
-     * 定义输入源节点，并指定执行配置。
+     * 注册工作流输入参数，并指定类型。
      *
-     * @param name     节点名
-     * @param function 输入函数
-     * @param config   副本数、资源等配置
-     * @param <T>      输出元素类型
-     * @return Flow
+     * @param name      参数名
+     * @param typeToken 参数类型
+     * @param <T>       参数类型
+     * @return Flow，可继续链式 then / join / when
      */
-    public <T> Flow<T> input(String name, InputFunction<T> function, ExecutionConfig config) {
-        Node node = addNode(name, null, function, config);
-        return new DefaultFlow<>(node);
+    public <T> Flow<T> input(String name, TypeToken<T> typeToken) {
+        java.lang.reflect.Type t = typeToken.getType();
+        if (t != null && t != Object.class) {
+            workflowInputs.add(WorkflowInput.newBuilder()
+                    .setName(name)
+                    .setType(com.kekwy.iarnet.proto.Types.fromType(t))
+                    .build());
+        }
+        return new InputFlow<>(name, t);
     }
 
     // ======================== 构建 WorkflowGraph ========================
@@ -170,7 +180,16 @@ public class Workflow {
      */
     public WorkflowGraph buildGraph(String applicationId) {
         List<Node> finalizedNodes = finalizeNodesWithTypes();
-        Set<Lang> externalLangs = collectExternalLangs(finalizedNodes);
+        List<Node> nodesWithInputParam = new ArrayList<>();
+        for (Node node : finalizedNodes) {
+            String inputParam = nodeInputParamMap.get(node.getId());
+            if (inputParam != null) {
+                nodesWithInputParam.add(node.toBuilder().setInputParam(inputParam).build());
+            } else {
+                nodesWithInputParam.add(node);
+            }
+        }
+        Set<Lang> externalLangs = collectExternalLangs(nodesWithInputParam);
         if (!externalLangs.isEmpty()) {
             ensureExternalSourcesExported(externalLangs);
         }
@@ -178,11 +197,12 @@ public class Workflow {
                 .setWorkflowId(IDUtil.genUUIDWith("wf"))
                 .setApplicationId(applicationId)
                 .setName(name)
-                .addAllNodes(finalizedNodes)
+                .addAllNodes(nodesWithInputParam)
                 .addAllEdges(edges)
+                .addAllInputs(workflowInputs)
                 .build();
-        LOG.log(Level.FINE, "Workflow graph built: name={0}, nodes={1}, edges={2}",
-                new Object[]{name, finalizedNodes.size(), edges.size()});
+        LOG.log(Level.FINE, "Workflow graph built: name={0}, nodes={1}, edges={2}, inputs={3}",
+                new Object[]{name, nodesWithInputParam.size(), edges.size(), workflowInputs.size()});
         return graph;
     }
 
@@ -294,6 +314,99 @@ public class Workflow {
         }
     }
 
+    // ======== InputFlow ========
+
+    private class InputFlow<T> implements Flow<T> {
+        private final String inputParamName;
+        private java.lang.reflect.Type inputType;
+
+        private InputFlow(String inputParamName, java.lang.reflect.Type inputType) {
+            this.inputParamName = inputParamName;
+            this.inputType = inputType;
+        }
+
+        private Type ensureInputTypeAndRegister(TaskFunction<T, ?> function) {
+            if (inputType == null) {
+                inputType = TypeExtractor.extractOutputType(function, TaskFunction.class, 0);
+            }
+            if (inputType == null || inputType == Object.class) {
+                throw new IarnetValidationException(
+                        "无法推断输入参数 " + inputParamName + " 的类型，请使用 input(name, new TypeToken<YourType>() {}) 显式指定");
+            }
+            // 仅当类型为推断时才注册，显式 TypeToken 已在 input(name, TypeToken) 中注册
+            if (!workflowInputs.stream().anyMatch(w -> inputParamName.equals(w.getName()))) {
+                workflowInputs.add(WorkflowInput.newBuilder()
+                        .setName(inputParamName)
+                        .setType(com.kekwy.iarnet.proto.Types.fromType(inputType))
+                        .build());
+            }
+            return com.kekwy.iarnet.proto.Types.fromType(inputType);
+        }
+
+        private Type ensureInputTypeAndRegisterFromHint(java.lang.reflect.Type hint) {
+            if (hint != null && hint != Object.class) {
+                inputType = hint;
+            }
+            if (inputType == null || inputType == Object.class) {
+                throw new IarnetValidationException(
+                        "无法推断输入参数 " + inputParamName + " 的类型，请使用 input(name, new TypeToken<YourType>() {}) 显式指定");
+            }
+            if (!workflowInputs.stream().anyMatch(w -> inputParamName.equals(w.getName()))) {
+                workflowInputs.add(WorkflowInput.newBuilder()
+                        .setName(inputParamName)
+                        .setType(com.kekwy.iarnet.proto.Types.fromType(inputType))
+                        .build());
+            }
+            return com.kekwy.iarnet.proto.Types.fromType(inputType);
+        }
+
+        @Override
+        public <R> Flow<R> then(String name, TaskFunction<T, R> function) {
+            return then(name, function, null);
+        }
+
+        @Override
+        public <R> Flow<R> then(String name, TaskFunction<T, R> function, ExecutionConfig config) {
+            Type paramType = ensureInputTypeAndRegister(function);
+            Node entry = addEntryNode(name, inputParamName, paramType, function, config);
+            return new DefaultFlow<>(entry);
+        }
+
+        @Override
+        public EndFlow<T> then(String name, OutputFunction<T> function) {
+            return then(name, function, null);
+        }
+
+        @Override
+        public EndFlow<T> then(String name, OutputFunction<T> function, ExecutionConfig config) {
+            java.lang.reflect.Type inType = TypeExtractor.extractOutputType(function, com.kekwy.iarnet.sdk.function.OutputFunction.class, 0);
+            Type paramType = ensureInputTypeAndRegisterFromHint(inType);
+            Node entry = addEntryNode(name, inputParamName, paramType, function, config);
+            return new DefaultEndFlow<>(entry);
+        }
+
+        @Override
+        public <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function) {
+            return join(name, other, function, null);
+        }
+
+        @Override
+        public <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function, ExecutionConfig config) {
+            throw new IarnetValidationException("input() 后请先调用 then() 添加入口节点，再进行 join()");
+        }
+
+        @Override
+        public ConditionalFlow<T> when(ConditionFunction<T> condition) {
+            throw new IarnetValidationException("input() 后暂不支持 when()，请先 then() 再 when()");
+        }
+
+        @Override
+        public Flow<T> returns(TypeToken<T> typeHint) {
+            inputType = typeHint.getType();
+            return this;
+        }
+    }
+
     // ======== DefaultFlow ========
 
     private class DefaultFlow<T> implements Flow<T> {
@@ -303,7 +416,6 @@ public class Workflow {
         private DefaultFlow(Node precursor) {
             this.precursor = precursor;
         }
-
 
         @Override
         public <R> Flow<R> then(String name, TaskFunction<T, R> function) {
@@ -332,6 +444,9 @@ public class Workflow {
 
         @Override
         public <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function, ExecutionConfig config) {
+            if (other instanceof InputFlow<U>) {
+                throw new IarnetValidationException("join() 时另一 flow 须先 then() 添加入口节点，不能直接使用 input() 返回值");
+            }
             if (!(other instanceof DefaultFlow<U> otherFlow)) {
                 throw new IarnetValidationException("join() 仅支持同一 workflow 中的 flow");
             }
@@ -427,6 +542,23 @@ public class Workflow {
             Type conditionInputType = precursor.getFunction().getOutputType();
             edges.add(buildEdge(precursor.getId(), nodeId, conditionFunction, conditionInputType));
         }
+        return node;
+    }
+
+    /** 添加入口节点（从工作流输入参数接收数据），无前驱、无边。 */
+    private Node addEntryNode(String name, String inputParamName, Type inputType,
+                              Function function, ExecutionConfig config) {
+        String nodeId = uniqueNodeId(name);
+        Type outputType = resolveOutputType(function, nodeId);
+        Node node = Node.newBuilder()
+                .setId(nodeId)
+                .setName(name)
+                .setFunction(buildFunctionDescriptor(function, inputType != null ? List.of(inputType) : List.of(), outputType, nodeId))
+                .setNodeConfig(buildNodeConfig(config))
+                .setNodeKind(nodeKindFromFunction(function))
+                .build();
+        nodes.add(node);
+        nodeInputParamMap.put(nodeId, inputParamName);
         return node;
     }
 
@@ -550,11 +682,8 @@ public class Workflow {
                 .build();
     }
 
-    /** 根据函数类型返回 NodeKind（Input/Task/Output，Join 在 addJoinNode 中直接设置）。 */
+    /** 根据函数类型返回 NodeKind（Task/Output，Join 在 addJoinNode 中直接设置）。 */
     private static NodeKind nodeKindFromFunction(Function function) {
-        if (function instanceof InputFunction) {
-            return NodeKind.NODE_KIND_INPUT;
-        }
         if (function instanceof OutputFunction) {
             return NodeKind.NODE_KIND_OUTPUT;
         }
@@ -582,8 +711,6 @@ public class Workflow {
             extracted = fn.getOutputTypeHint();
         } else if (function instanceof GoTaskFunction<?, ?> fn && fn.getOutputTypeHint() != null) {
             extracted = fn.getOutputTypeHint();
-        } else if (function instanceof InputFunction<?> fn) {
-            extracted = TypeExtractor.extractOutputType(fn, InputFunction.class, 0);
         } else if (function instanceof TaskFunction<?, ?> fn) {
             extracted = TypeExtractor.extractOutputType(fn, TaskFunction.class, 1);
         } else if (function instanceof JoinFunction<?, ?, ?> fn) {

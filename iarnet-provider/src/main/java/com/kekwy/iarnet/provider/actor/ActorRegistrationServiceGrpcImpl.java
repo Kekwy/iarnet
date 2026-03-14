@@ -43,7 +43,7 @@ public class ActorRegistrationServiceGrpcImpl extends ActorRegistrationServiceGr
                             signalingService.reportChannelEstablished(edge.fromActorId(), edge.toActorId());
                         }
                         break;
-                    case ROW:
+                    case RESPONSE:
                         if (registeredActorId != null) {
                             router.routeEnvelope(registeredActorId, msg);
                         } else {

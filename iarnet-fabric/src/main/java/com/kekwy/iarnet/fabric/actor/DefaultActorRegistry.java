@@ -3,6 +3,7 @@ package com.kekwy.iarnet.fabric.actor;
 import com.kekwy.iarnet.fabric.provider.ProviderConnection;
 import com.kekwy.iarnet.fabric.provider.ProviderRegistry;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
+import com.kekwy.iarnet.proto.provider.ActorMessageForward;
 import com.kekwy.iarnet.proto.provider.SignalingEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,9 +114,14 @@ public class DefaultActorRegistry implements ActorRegistry {
         if (conn == null || conn.isClosed()) {
             throw new IllegalStateException("Provider 无活跃连接: " + providerId + ", actorId=" + actorId);
         }
+
+        ActorMessageForward actorMessageForward = ActorMessageForward.newBuilder()
+                .setTarget(actorId)
+                .setActorEnvelope(envelope)
+                .build();
+
         SignalingEnvelope signaling = SignalingEnvelope.newBuilder()
-                .setTargetActorId(actorId)
-                .setActorEnvelopeForward(envelope)
+                .setActorMessageForward(actorMessageForward)
                 .setTimestampMs(System.currentTimeMillis())
                 .build();
         conn.sendSignaling(signaling);
