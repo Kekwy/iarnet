@@ -39,22 +39,23 @@ public class DockerEngine implements ProviderEngine {
     private final DockerClient dockerClient;
     private final ArtifactStore artifactStore;
     private final String network;
-    private final String actorAgentAddr;
-    private final String controlPlaneAddr;
+    private final String actorRegistryAddr;
 
-    /** actorId → containerId */
+    /**
+     * actorId → containerId
+     */
     private final Map<String, String> actorContainers = new ConcurrentHashMap<>();
-    /** actorId → 分配的资源 */
+    /**
+     * actorId → 分配的资源
+     */
     private final Map<String, ResourceSpec> actorResources = new ConcurrentHashMap<>();
 
     public DockerEngine(String dockerHost, String network,
                         ArtifactStore artifactStore,
-                        String actorAgentAddr,
-                        String controlPlaneAddr) {
+                        String actorRegistryAddr) {
         this.network = network != null ? network : "";
         this.artifactStore = artifactStore;
-        this.actorAgentAddr = actorAgentAddr != null ? actorAgentAddr : "127.0.0.1:10000";
-        this.controlPlaneAddr = controlPlaneAddr != null ? controlPlaneAddr : "";
+        this.actorRegistryAddr = actorRegistryAddr != null ? actorRegistryAddr : "127.0.0.1:10000";
 
         DockerClientConfig config = DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(dockerHost != null ? dockerHost : "unix:///var/run/docker.sock")
@@ -81,8 +82,7 @@ public class DockerEngine implements ProviderEngine {
         this.dockerClient = dockerClient;
         this.network = network != null ? network : "";
         this.artifactStore = artifactStore;
-        this.actorAgentAddr = "127.0.0.1:10000";
-        this.controlPlaneAddr = "127.0.0.1:10000";
+        this.actorRegistryAddr = "127.0.0.1:10000";
     }
 
     @Override
@@ -102,7 +102,7 @@ public class DockerEngine implements ProviderEngine {
 
     @Override
     public DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath,
-                                            Map<Integer, Path> conditionFunctionPaths) {
+                                           Map<Integer, Path> conditionFunctionPaths) {
         String actorId = request.getActorId();
         Lang lang = request.getLang();
         String image = resolveImageForLang(lang);
@@ -119,10 +119,8 @@ public class DockerEngine implements ProviderEngine {
 
             List<String> envList = new ArrayList<>();
             envList.add("IARNET_ACTOR_ID=" + actorId);
-            envList.add("IARNET_ACTOR_AGENT_ADDR=" + actorAgentAddr);
-            if (controlPlaneAddr != null && !controlPlaneAddr.isBlank()) {
-                envList.add("IARNET_CONTROL_PLANE_ADDR=" + controlPlaneAddr);
-            }
+            envList.add("IARNET_ACTOR_REGISTRY_ADDR=" + actorRegistryAddr);
+
             if (artifactLocalPath != null && java.nio.file.Files.isRegularFile(artifactLocalPath)) {
                 String inContainerPath = CONTAINER_ARTIFACT_DIR + "/" + artifactLocalPath.getFileName().toString();
                 envList.add("IARNET_ARTIFACT_PATH=" + inContainerPath);
@@ -142,7 +140,14 @@ public class DockerEngine implements ProviderEngine {
                     .withName(actorId)
                     .withEnv(envList)
                     .withLabels(labels)
-                    .withHostConfig(buildHostConfig(request, artifactLocalPath, functionDescriptorPath, hasConditions));
+                    .withHostConfig(
+                            buildHostConfig(
+                                    request,
+                                    artifactLocalPath,
+                                    functionDescriptorPath,
+                                    hasConditions
+                            )
+                    );
 
             CreateContainerResponse container = createCmd.exec();
             String containerId = container.getId();
@@ -270,8 +275,9 @@ public class DockerEngine implements ProviderEngine {
 
     // ======================== 内部方法 ========================
 
+    @SuppressWarnings("ConstantValue")
     private HostConfig buildHostConfig(DeployActorRequest request, Path artifactLocalPath,
-                                        Path functionDescriptorPath, boolean hasConditions) {
+                                       Path functionDescriptorPath, boolean hasConditions) {
         ResourceSpec resource = request.getResourceRequest();
         HostConfig hostConfig = HostConfig.newHostConfig();
 
@@ -291,7 +297,7 @@ public class DockerEngine implements ProviderEngine {
             binds.add(new Bind(hostDir, new Volume(CONTAINER_FUNCTION_DIR)));
         }
         if (hasConditions && functionDescriptorPath == null) {
-            Path actorFunctionDir = artifactStore.getArtifactDir("_functions").resolve(request.getActorId());
+            Path actorFunctionDir = artifactStore.getActorFunctionDir(request.getActorId());
             if (java.nio.file.Files.isDirectory(actorFunctionDir)) {
                 binds.add(new Bind(actorFunctionDir.toAbsolutePath().toString(), new Volume(CONTAINER_FUNCTION_DIR)));
             }

@@ -54,8 +54,8 @@ public class ProviderRuntimeConfig {
 
     @Bean(name = "actorRegistrationServer", destroyMethod = "shutdown")
     public Server actorRegistrationServer(ProviderProperties props,
-                                           ActorRegistrationServiceGrpcImpl actorRegistrationService) {
-        int port = props.getActorAgent().getPort();
+                                          ActorRegistrationServiceGrpcImpl actorRegistrationService) {
+        int port = props.getActorRegistry().getPort();
         Server server = ServerBuilder.forPort(port)
                 .addService(actorRegistrationService)
                 .build();
@@ -70,7 +70,7 @@ public class ProviderRuntimeConfig {
 
     @Bean(destroyMethod = "shutdown")
     public ManagedChannel controlPlaneChannel(ProviderProperties props) {
-        var cp = props.getControlPlane();
+        var cp = props.getRegistry();
         return ManagedChannelBuilder.forAddress(cp.getHost(), cp.getPort()).usePlaintext().build();
     }
 
@@ -99,7 +99,7 @@ public class ProviderRuntimeConfig {
                                                          ControlService controlService,
                                                          DeploymentService deploymentService,
                                                          SignalingService signalingService) {
-        var cp = props.getControlPlane();
+        var cp = props.getRegistry();
         ProviderRegistryClient client = new ProviderRegistryClient(
                 providerRegistryBlockingStub,
                 props,
@@ -116,19 +116,15 @@ public class ProviderRuntimeConfig {
     private static ProviderEngine createEngine(ProviderProperties props, ArtifactStore artifactStore) {
         String host = props.getHost() != null && !props.getHost().isBlank()
                 ? props.getHost() : "host.docker.internal";
-        String actorAgentAddr = host + ":" + props.getActorAgent().getPort();
-        var cp = props.getControlPlane();
-        String cpHost = ("127.0.0.1".equals(cp.getHost()) || "localhost".equalsIgnoreCase(cp.getHost()))
-                ? host : cp.getHost();
-        String controlPlaneAddr = cpHost + ":" + cp.getPort();
+        String actorRegistryAddr = host + ":" + props.getActorRegistry().getPort();
+        var cp = props.getRegistry();
 
         return switch (props.getType().toLowerCase()) {
             case "docker" -> new DockerEngine(
                     props.getDocker().getHost(),
                     props.getDocker().getNetwork(),
                     artifactStore,
-                    actorAgentAddr,
-                    controlPlaneAddr);
+                    actorRegistryAddr);
             case "k8s", "kubernetes" -> new KubernetesEngine(
                     props.getK8s().getKubeconfig(),
                     props.getK8s().isInCluster(),

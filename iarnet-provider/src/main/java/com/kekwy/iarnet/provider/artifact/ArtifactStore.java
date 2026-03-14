@@ -68,6 +68,13 @@ public class ArtifactStore {
     private static final String FUNCTIONS_SUBDIR = "_functions";
 
     /**
+     * 获取该 Actor 的函数目录（主 function.pb 与 conditions/ 所在目录），用于部署时挂载。
+     */
+    public Path getActorFunctionDir(String actorId) {
+        return baseDir.resolve(FUNCTIONS_SUBDIR).resolve(actorId);
+    }
+
+    /**
      * 将函数描述（Proto 二进制）写入 Actor 专属文件，供部署时挂载到容器。
      *
      * @param actorId  Actor ID

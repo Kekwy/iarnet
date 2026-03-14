@@ -11,7 +11,7 @@ iarnet:
     # 可选：拓扑/区域信息，例如 "edge-a" / "az-1"
     zone: ""
     # control-plane 连接信息（Provider 主动连接，无需暴露本地端口）
-    control-plane:
+    registry:
       host: 127.0.0.1
       port: 9090
     # 资源标签
@@ -37,6 +37,6 @@ iarnet:
       in-cluster: false
       namespace: default
 
-    # ===== 本地 Actor 连接 =====
-    actor-agent:
+    # ===== 本地 Actor 注册中心连接 =====
+    actor-registry:
       port: 10000

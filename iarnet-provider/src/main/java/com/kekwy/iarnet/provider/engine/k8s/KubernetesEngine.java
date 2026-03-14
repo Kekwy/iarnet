@@ -26,6 +26,7 @@ public class KubernetesEngine implements ProviderEngine {
 
     private static final String CONTAINER_FUNCTION_DIR = "/opt/iarnet/function";
     private static final String CONTAINER_FUNCTION_FILE = CONTAINER_FUNCTION_DIR + "/function.pb";
+    private static final String CONTAINER_CONDITIONS_DIR = CONTAINER_FUNCTION_DIR + "/conditions";
     private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
 
     private final KubernetesClient kubeClient;
@@ -66,18 +67,24 @@ public class KubernetesEngine implements ProviderEngine {
     }
 
     @Override
-    public DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath) {
+    public DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath,
+                                            Map<Integer, Path> conditionFunctionPaths) {
         String actorId = request.getActorId();
         String podName = sanitizePodName(actorId);
-        log.info("部署 K8s Pod: actorId={}, podName={}, lang={}, hasArtifact={}, hasFunctionDescriptor={}",
-                actorId, podName, request.getLang(), artifactLocalPath != null, request.hasFunctionDescriptor());
+        boolean hasConditions = conditionFunctionPaths != null && !conditionFunctionPaths.isEmpty();
+        log.info("部署 K8s Pod: actorId={}, podName={}, lang={}, hasArtifact={}, hasFunctionDescriptor={}, hasConditions={}",
+                actorId, podName, request.getLang(), artifactLocalPath != null, request.hasFunctionDescriptor(), hasConditions);
 
         try {
             String functionConfigMapName = null;
             if (request.hasFunctionDescriptor()) {
                 functionConfigMapName = createFunctionDescriptorConfigMap(actorId, request.getFunctionDescriptor());
             }
-            Pod pod = buildPod(podName, request, artifactLocalPath, functionConfigMapName);
+            String conditionsConfigMapName = null;
+            if (hasConditions) {
+                conditionsConfigMapName = createConditionsConfigMap(actorId, conditionFunctionPaths);
+            }
+            Pod pod = buildPod(podName, request, artifactLocalPath, functionConfigMapName, conditionsConfigMapName, hasConditions);
             if (pod == null) {
                 throw new UnsupportedOperationException("buildPod 尚未实现，请补全 Pod 构建逻辑");
             }
@@ -215,12 +222,34 @@ public class KubernetesEngine implements ProviderEngine {
         return name;
     }
 
+    private String createConditionsConfigMap(String actorId, Map<Integer, Path> conditionFunctionPaths) {
+        String name = "iarnet-conditions-" + sanitizePodName(actorId);
+        ConfigMapBuilder builder = new ConfigMapBuilder()
+                .withNewMetadata()
+                    .withName(name)
+                    .withNamespace(namespace)
+                .endMetadata();
+        for (Map.Entry<Integer, Path> e : conditionFunctionPaths.entrySet()) {
+            try {
+                byte[] bytes = java.nio.file.Files.readAllBytes(e.getValue());
+                builder.addToBinaryData("condition_port_" + e.getKey() + ".pb", Arrays.toString(bytes));
+            } catch (java.io.IOException ex) {
+                log.warn("读取条件函数文件失败: port={}, path={}", e.getKey(), e.getValue(), ex);
+            }
+        }
+        ConfigMap cm = builder.build();
+        kubeClient.configMaps().inNamespace(namespace).resource(cm).create();
+        log.info("已创建条件函数 ConfigMap: actorId={}, name={}, ports={}", actorId, name, conditionFunctionPaths.keySet());
+        return name;
+    }
+
     /**
      * TODO: 补全 Pod 构建逻辑（镜像、资源、volume 挂载、env 等）。
+     * 当 conditionsConfigMapName 非空时，挂载至 CONTAINER_CONDITIONS_DIR 并设置 IARNET_CONDITION_FUNCTIONS_DIR。
      */
     private Pod buildPod(String podName, DeployActorRequest request, Path artifactLocalPath,
-                         String functionConfigMapName) {
-        // TODO: 实现完整的 Pod 构建
+                         String functionConfigMapName, String conditionsConfigMapName, boolean hasConditions) {
+        // TODO: 实现完整的 Pod 构建（含 conditions ConfigMap 挂载与 IARNET_CONDITION_FUNCTIONS_DIR）
         return null;
     }
 
