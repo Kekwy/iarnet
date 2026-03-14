@@ -58,7 +58,7 @@ public interface EdgeOrBuilder extends
 
   /**
    * <pre>
-   * 目标节点的输入端口（Join: 0=left, 1=right；其他节点=0）
+   * 目标节点的输入端口（Combine: 0=left, 1=right；其他节点=0）
    * </pre>
    *
    * <code>int32 input_port = 5;</code>

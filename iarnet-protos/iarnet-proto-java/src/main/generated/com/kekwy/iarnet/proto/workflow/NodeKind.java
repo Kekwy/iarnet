@@ -25,9 +25,9 @@ public enum NodeKind
    */
   NODE_KIND_OUTPUT(3),
   /**
-   * <code>NODE_KIND_JOIN = 4;</code>
+   * <code>NODE_KIND_COMBINE = 4;</code>
    */
-  NODE_KIND_JOIN(4),
+  NODE_KIND_COMBINE(4),
   UNRECOGNIZED(-1),
   ;
 
@@ -48,9 +48,9 @@ public enum NodeKind
    */
   public static final int NODE_KIND_OUTPUT_VALUE = 3;
   /**
-   * <code>NODE_KIND_JOIN = 4;</code>
+   * <code>NODE_KIND_COMBINE = 4;</code>
    */
-  public static final int NODE_KIND_JOIN_VALUE = 4;
+  public static final int NODE_KIND_COMBINE_VALUE = 4;
 
 
   public final int getNumber() {
@@ -81,7 +81,7 @@ public enum NodeKind
       case 1: return NODE_KIND_INPUT;
       case 2: return NODE_KIND_TASK;
       case 3: return NODE_KIND_OUTPUT;
-      case 4: return NODE_KIND_JOIN;
+      case 4: return NODE_KIND_COMBINE;
       default: return null;
     }
   }

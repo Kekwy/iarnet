@@ -137,9 +137,9 @@ public final class ActorChannelClient {
                     }
                 }
                 case OUTPUT -> invoker.runOutput(value);
-                case JOIN -> {
-                    // Join 需两路输入，此处简化为单行：当作一路有值、一路空
-                    Value out = invoker.runJoin(value, null);
+                case COMBINE -> {
+                    // Combine 需两路输入，此处简化为单行：当作一路有值、一路空
+                    Value out = invoker.runCombine(value, null);
                     Object outObj = ValueCodec.decode(out);
                     for (Integer port : conditionEvaluator.evaluate(outObj)) {
                         sendRow(out, port);

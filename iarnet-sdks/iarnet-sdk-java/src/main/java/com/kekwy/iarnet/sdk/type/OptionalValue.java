@@ -10,7 +10,7 @@ import java.util.function.Supplier;
  * 可序列化的“可选值”容器。
  * <p>
  * 语义类似 {@link java.util.Optional}，但实现 {@link Serializable}，
- * 用于 {@link com.kekwy.iarnet.sdk.function.JoinFunction} 的两路输入：
+ * 用于 {@link com.kekwy.iarnet.sdk.function.CombineFunction} 的两路输入：
  * 每路可能“有值”或“无值”（对应分支暂无数据到达）。
  *
  * @param <T> 值类型

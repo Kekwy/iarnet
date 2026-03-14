@@ -55,11 +55,11 @@ export IARNET_GRPC_PORT=9090
 |------|------|
 | `then(name, TaskFunction)` | 追加任务节点（单输入单输出） |
 | `then(name, OutputFunction)` | 连接到 Sink，形成 `EndFlow` |
-| `join(name, otherFlow, JoinFunction)` | 合并两路数据流 |
+| `combine(name, otherFlow, CombineFunction)` | 合并两路数据流 |
 | `when(ConditionFunction)` | 条件分支 |
 | `returns(TypeToken)` | 提供输出类型提示（类型推断失败时使用） |
 
-所有 `then` / `join` 方法均支持附加 `ExecutionConfig` 参数指定副本数与资源。
+所有 `then` / `combine` 方法均支持附加 `ExecutionConfig` 参数指定副本数与资源。
 
 ### 函数接口
 
@@ -70,7 +70,7 @@ export IARNET_GRPC_PORT=9090
 | `InputFunction<O>` | `Optional<O> next()` | 数据源，按序产出元素 |
 | `TaskFunction<I, O>` | `O apply(I input)` | 单输入单输出转换 |
 | `OutputFunction<I>` | `void accept(I input)` | Sink，消费元素 |
-| `JoinFunction<T, U, V>` | `V join(OptionalValue<T>, OptionalValue<U>)` | 合并两路输入 |
+| `CombineFunction<T, U, V>` | `V combine(OptionalValue<T>, OptionalValue<U>)` | 合并两路输入 |
 | `ConditionFunction<T>` | `boolean test(T input)` | 条件分支判定 |
 
 ### DSL 工厂
@@ -157,7 +157,7 @@ com.kekwy.iarnet.sdk
 │   ├── InputFunction     # 数据源
 │   ├── TaskFunction      # 任务
 │   ├── OutputFunction    # Sink
-│   ├── JoinFunction      # 合并
+│   ├── CombineFunction   # 合并
 │   ├── ConditionFunction # 条件
 │   ├── PythonTaskFunction# Python 任务描述符
 │   └── GoTaskFunction    # Go 任务描述符

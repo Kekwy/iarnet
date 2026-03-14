@@ -33,7 +33,7 @@ message Edge {
   string   to_node_id   = 2;
   optional common.FunctionDescriptor conditionFunction = 3;
   int32    output_port  = 4;   // 源节点的输出端口（无条件=0，条件分支从 1 自增）
-  int32    input_port   = 5;   // 目标节点的输入端口（Join: 0=left, 1=right；其他节点=0）
+  int32    input_port   = 5;   // 目标节点的输入端口（Combine: 0=left, 1=right；其他节点=0）
 }
 
 // ======================== 节点 ========================
@@ -43,7 +43,7 @@ enum NodeKind {
   NODE_KIND_INPUT       = 1;
   NODE_KIND_TASK        = 2;
   NODE_KIND_OUTPUT      = 3;
-  NODE_KIND_JOIN        = 4;
+  NODE_KIND_COMBINE     = 4;
 }
 
 message Node {

@@ -7,7 +7,7 @@ import com.kekwy.iarnet.sdk.type.TypeToken;
  * 工作流中间/末端节点的链式 DSL 接口。
  * <p>
  * 表示从 Source 或某一中间节点出发的数据流，可继续追加任务（{@code then}）、
- * 合并分支（{@code join}）、条件分支（{@code when}），或连接到 Sink 形成 {@link EndFlow}。
+ * 合并分支（{@code combine}）、条件分支（{@code when}），或连接到 Sink 形成 {@link EndFlow}。
  *
  * @param <T> 当前 flow 携带的数据类型
  */
@@ -65,7 +65,7 @@ public interface Flow<T> {
      * @return 合并后的 Flow
      * @throws com.kekwy.iarnet.sdk.exception.IarnetValidationException 若 other 来自不同 workflow
      */
-    <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function);
+    <U, V> Flow<V> combine(String name, Flow<U> other, CombineFunction<T, U, V> function);
 
     /**
      * 与另一 flow 合并，并指定执行配置。
@@ -78,7 +78,7 @@ public interface Flow<T> {
      * @param <V>      合并后的输出类型
      * @return 合并后的 Flow
      */
-    <U, V> Flow<V> join(String name, Flow<U> other, JoinFunction<T, U, V> function, ExecutionConfig config);
+    <U, V> Flow<V> combine(String name, Flow<U> other, CombineFunction<T, U, V> function, ExecutionConfig config);
 
     /**
      * 引入条件分支，后续的 {@code then} 仅在条件满足时传递数据。

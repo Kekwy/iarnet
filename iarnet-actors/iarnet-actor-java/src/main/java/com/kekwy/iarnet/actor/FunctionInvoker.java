@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * 根据 FunctionDescriptor 反序列化用户函数，并按类型（Input/Task/Output/Join）反射调用。
+ * 根据 FunctionDescriptor 反序列化用户函数，并按类型（Input/Task/Output/Combine）反射调用。
  * 不依赖 SDK 接口，仅通过元数据推断类型。
  */
 public final class FunctionInvoker {
@@ -36,18 +36,18 @@ public final class FunctionInvoker {
     private final Class<?> taskInputClass;
     private final Method outputAccept;
     private final Class<?> outputInputClass;
-    private final Class<?> joinOptionalValueClass;
-    private final Method joinOfNullable;
-    private final Method joinEmpty;
-    private final Method joinJoin;
-    private final Class<?> joinLeftInputClass;
-    private final Class<?> joinRightInputClass;
+    private final Class<?> combineOptionalValueClass;
+    private final Method combineOfNullable;
+    private final Method combineEmpty;
+    private final Method combineCombine;
+    private final Class<?> combineLeftInputClass;
+    private final Class<?> combineRightInputClass;
 
     public enum Kind {
         INPUT,   // 0 inputs, has output -> next()
         TASK,    // 1 input, has output -> apply(I)
         OUTPUT,  // 1 input, no output -> accept(I)
-        JOIN     // 2 inputs, has output -> join(OptionalValue, OptionalValue)
+        COMBINE  // 2 inputs, has output -> combine(OptionalValue, OptionalValue)
     }
 
     /**
@@ -72,9 +72,9 @@ public final class FunctionInvoker {
         Class<?> taskInputClass0 = null;
         Method outputAccept0 = null;
         Class<?> outputInputClass0 = null;
-        Class<?> joinOptionalValueClass0 = null;
-        Method joinOfNullable0 = null, joinEmpty0 = null, joinJoin0 = null;
-        Class<?> joinLeftInputClass0 = null, joinRightInputClass0 = null;
+        Class<?> combineOptionalValueClass0 = null;
+        Method combineOfNullable0 = null, combineEmpty0 = null, combineCombine0 = null;
+        Class<?> combineLeftInputClass0 = null, combineRightInputClass0 = null;
         Class<?> fnClass = this.function.getClass();
         switch (this.kind) {
             case INPUT -> {
@@ -90,15 +90,15 @@ public final class FunctionInvoker {
                 outputAccept0 = fnClass.getMethod("accept", Object.class);
                 outputInputClass0 = outputAccept0.getParameterTypes()[0];
             }
-            case JOIN -> {
+            case COMBINE -> {
                 ClassLoader cl = fnClass.getClassLoader();
-                joinOptionalValueClass0 = cl.loadClass(OPTIONAL_VALUE_CLASS);
-                joinOfNullable0 = joinOptionalValueClass0.getMethod("ofNullable", Object.class);
-                joinEmpty0 = joinOptionalValueClass0.getMethod("empty");
-                joinJoin0 = fnClass.getMethod("join", joinOptionalValueClass0, joinOptionalValueClass0);
-                Type[] genericParams = joinJoin0.getGenericParameterTypes();
-                joinLeftInputClass0 = toRawClass(firstTypeArgument(genericParams[0]));
-                joinRightInputClass0 = toRawClass(firstTypeArgument(genericParams[1]));
+                combineOptionalValueClass0 = cl.loadClass(OPTIONAL_VALUE_CLASS);
+                combineOfNullable0 = combineOptionalValueClass0.getMethod("ofNullable", Object.class);
+                combineEmpty0 = combineOptionalValueClass0.getMethod("empty");
+                combineCombine0 = fnClass.getMethod("combine", combineOptionalValueClass0, combineOptionalValueClass0);
+                Type[] genericParams = combineCombine0.getGenericParameterTypes();
+                combineLeftInputClass0 = toRawClass(firstTypeArgument(genericParams[0]));
+                combineRightInputClass0 = toRawClass(firstTypeArgument(genericParams[1]));
             }
         }
         this.inputNext = inputNext0;
@@ -108,12 +108,12 @@ public final class FunctionInvoker {
         this.taskInputClass = taskInputClass0;
         this.outputAccept = outputAccept0;
         this.outputInputClass = outputInputClass0;
-        this.joinOptionalValueClass = joinOptionalValueClass0;
-        this.joinOfNullable = joinOfNullable0;
-        this.joinEmpty = joinEmpty0;
-        this.joinJoin = joinJoin0;
-        this.joinLeftInputClass = joinLeftInputClass0;
-        this.joinRightInputClass = joinRightInputClass0;
+        this.combineOptionalValueClass = combineOptionalValueClass0;
+        this.combineOfNullable = combineOfNullable0;
+        this.combineEmpty = combineEmpty0;
+        this.combineCombine = combineCombine0;
+        this.combineLeftInputClass = combineLeftInputClass0;
+        this.combineRightInputClass = combineRightInputClass0;
         log.debug("FunctionInvoker 已创建: kind={}, identifier={}", kind, descriptor.getFunctionIdentifier());
     }
 
@@ -138,7 +138,7 @@ public final class FunctionInvoker {
             return Kind.OUTPUT;
         }
         if (inputCount == 2 && hasOutput) {
-            return Kind.JOIN;
+            return Kind.COMBINE;
         }
         throw new IllegalArgumentException("无法推断函数类型: inputs=" + inputCount + ", hasOutput=" + hasOutput);
     }
@@ -188,21 +188,21 @@ public final class FunctionInvoker {
     }
 
     /**
-     * Join 函数：两路输入（可为空），解码后包装为 OptionalValue 调用 join。
+     * Combine 函数：两路输入（可为空），解码后包装为 OptionalValue 调用 combine。
      */
-    public Value runJoin(Value input1, Value input2) throws Throwable {
-        if (kind != Kind.JOIN) {
-            throw new IllegalStateException("非 Join 函数");
+    public Value runCombine(Value input1, Value input2) throws Throwable {
+        if (kind != Kind.COMBINE) {
+            throw new IllegalStateException("非 Combine 函数");
         }
         Object left = input1 == null || input1.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
-                : ValueCodec.decode(input1, joinLeftInputClass);
+                : ValueCodec.decode(input1, combineLeftInputClass);
         Object right = input2 == null || input2.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
-                : ValueCodec.decode(input2, joinRightInputClass);
-        Object optLeft = left == null ? joinEmpty.invoke(null) : joinOfNullable.invoke(null, left);
-        Object optRight = right == null ? joinEmpty.invoke(null) : joinOfNullable.invoke(null, right);
-        Object result = joinJoin.invoke(function, optLeft, optRight);
+                : ValueCodec.decode(input2, combineRightInputClass);
+        Object optLeft = left == null ? combineEmpty.invoke(null) : combineOfNullable.invoke(null, left);
+        Object optRight = right == null ? combineEmpty.invoke(null) : combineOfNullable.invoke(null, right);
+        Object result = combineCombine.invoke(function, optLeft, optRight);
         return ValueCodec.encode(result);
     }
 

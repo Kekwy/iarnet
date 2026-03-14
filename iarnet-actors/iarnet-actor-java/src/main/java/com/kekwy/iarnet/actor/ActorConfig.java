@@ -81,7 +81,7 @@ public final class ActorConfig {
             case "NODE_KIND_INPUT" -> FunctionInvoker.Kind.INPUT;
             case "NODE_KIND_TASK" -> FunctionInvoker.Kind.TASK;
             case "NODE_KIND_OUTPUT" -> FunctionInvoker.Kind.OUTPUT;
-            case "NODE_KIND_JOIN" -> FunctionInvoker.Kind.JOIN;
+            case "NODE_KIND_COMBINE" -> FunctionInvoker.Kind.COMBINE;
             default -> null;
         };
     }

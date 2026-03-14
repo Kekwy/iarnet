@@ -148,16 +148,16 @@ class WorkflowBuildGraphTest {
     }
 
     @Nested
-    @DisplayName("Join 汇合")
-    class JoinFlow {
+    @DisplayName("Combine 汇合")
+    class CombineFlow {
 
         @Test
-        @DisplayName("双路 input 参数 join 后 output")
-        void twoInputsJoin() {
-            Workflow w = Workflow.create("join-demo");
+        @DisplayName("双路 input 参数 combine 后 output")
+        void twoInputsCombine() {
+            Workflow w = Workflow.create("combine-demo");
             var flow1 = w.input("a", new TypeToken<Integer>() {}).then("a-task", (Integer x) -> x);
             var flow2 = w.input("b", new TypeToken<Integer>() {}).then("b-task", (Integer x) -> x);
-            flow1.join("merge", flow2, (OptionalValue<Integer> a, OptionalValue<Integer> b) ->
+            flow1.combine("merge", flow2, (OptionalValue<Integer> a, OptionalValue<Integer> b) ->
                             a.isPresent() ? a.get() : b.get())
                     .then("sink", (Integer x) -> {
                     });
@@ -168,19 +168,19 @@ class WorkflowBuildGraphTest {
             assertEquals(3, graph.getEdgesCount()); // a-task->merge, b-task->merge, merge->sink
             assertEquals(2, graph.getInputsCount());
 
-            // Join 左路 input_port=0，右路 input_port=1；普通边 output_port=0
+            // Combine 左路 input_port=0，右路 input_port=1；普通边 output_port=0
             String mergeNodeId = graph.getEdgesList().stream()
                     .filter(e -> e.getToNodeId().contains("merge"))
                     .map(e -> e.getToNodeId())
                     .findFirst().orElse(null);
             assertNotNull(mergeNodeId);
-            var joinEdges = graph.getEdgesList().stream()
+            var combineEdges = graph.getEdgesList().stream()
                     .filter(e -> e.getToNodeId().equals(mergeNodeId))
                     .toList();
-            assertEquals(2, joinEdges.size());
-            var inputPorts = joinEdges.stream().map(e -> e.getInputPort()).sorted().toList();
+            assertEquals(2, combineEdges.size());
+            var inputPorts = combineEdges.stream().map(e -> e.getInputPort()).sorted().toList();
             assertEquals(List.of(0, 1), inputPorts);
-            joinEdges.forEach(e -> assertEquals(0, e.getOutputPort()));
+            combineEdges.forEach(e -> assertEquals(0, e.getOutputPort()));
         }
     }
 
