@@ -80,12 +80,13 @@ public class SignalingService {
 
     // --- 业务方法，供 SignalingMessageDispatcher 委托调用 ---
 
-    public void forwardEnvelopeToActor(String targetActorId, ActorEnvelope envelope) {
-        if (targetActorId == null || targetActorId.isBlank()) {
+    public void forwardEnvelopeToActor(ActorEnvelope envelope) {
+        String targetActorId = envelope.getTarget();
+        if (targetActorId.isBlank()) {
             log.warn("SignalingEnvelope actor_envelope_forward 缺少 target_actor_id，无法转发");
             return;
         }
-        actorRouter.forwardEnvelopeToActor(targetActorId, envelope);
+        actorRouter.routeEnvelope(envelope);
     }
 
     public void handleConnectInstruction(ConnectInstruction instruction) {

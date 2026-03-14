@@ -1,5 +1,7 @@
 package com.kekwy.iarnet.adapter.artifact;
 
+import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
+import com.kekwy.iarnet.provider.artifact.ArtifactStore;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
