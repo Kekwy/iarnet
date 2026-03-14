@@ -1,14 +1,11 @@
 package com.kekwy.iarnet.application;
 
-import com.google.protobuf.ByteString;
-import com.kekwy.iarnet.application.executor.Executor;
 import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.service.ApplicationInfoService;
 import com.kekwy.iarnet.application.service.LaunchService;
 import com.kekwy.iarnet.application.service.WorkspaceService;
 import com.kekwy.iarnet.common.model.ApplicationInfo;
 import com.kekwy.iarnet.common.model.ID;
-import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 import com.kekwy.iarnet.common.util.IDUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +27,14 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     private ApplicationInfoService applicationInfoService;
     private WorkspaceService workspaceService;
     private LaunchService launchService;
-    private Executor executor;
 
     @Value("${grpc.server.port:9090}")
     private int grpcPort;
 
+    private static final String INPUT_FILE_NAME = "input.json";
+
     @Override
-    public void launchApplicationWithJar(byte[] content) {
+    public void launchApplicationWithJar(byte[] content, Map<String, String> inputs) {
         // 1. 为本次 JAR 启动生成应用 ID
         ID appId = IDUtil.genAppID();
         String appIdValue = appId.getValue();
@@ -72,6 +70,20 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         }
         log.info("已保存 JAR 到 workspace: {}", jarPath.toAbsolutePath());
 
+        // 4b. 若有输入，写入工作空间下的 input.json 并供进程通过 IARNET_INPUT_FILE 读取
+        Path inputFile = null;
+        if (inputs != null && !inputs.isEmpty()) {
+            Path wsDir = workspace.getWorkspaceDir();
+            inputFile = wsDir.resolve(INPUT_FILE_NAME);
+            String json = toSimpleJson(inputs);
+            try {
+                Files.writeString(inputFile, json, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new IllegalStateException("写入输入文件失败: " + inputFile, e);
+            }
+            log.info("已写入测试输入到: {}", inputFile.toAbsolutePath());
+        }
+
         // 5. 参考 JavaLauncher 中的实现，直接通过 java -jar 启动该 JAR
         Path appLogFile = workspace.getAppLogFile();
         try {
@@ -90,6 +102,9 @@ public class DefaultApplicationFacade implements ApplicationFacade {
                 pb.environment().put("IARNET_APP_ID", appIdValue);
             }
             pb.environment().put("IARNET_GRPC_PORT", String.valueOf(grpcPort));
+            if (inputFile != null) {
+                pb.environment().put("IARNET_INPUT_FILE", inputFile.toAbsolutePath().toString());
+            }
             pb.directory(workspace.getWorkspaceDir().toFile());
             pb.redirectErrorStream(true);
             pb.redirectOutput(ProcessBuilder.Redirect.appendTo(appLogFile.toFile()));
@@ -100,6 +115,29 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         } catch (IOException e) {
             throw new IllegalStateException("启动 JAR 进程失败: " + jarPath, e);
         }
+    }
+
+    private static String toSimpleJson(Map<String, String> map) {
+        StringBuilder sb = new StringBuilder().append('{');
+        boolean first = true;
+        for (Map.Entry<String, String> e : map.entrySet()) {
+            if (!first) sb.append(',');
+            first = false;
+            sb.append('"').append(escapeJson(e.getKey())).append("\":\"")
+                    .append(escapeJson(e.getValue())).append('"');
+        }
+        return sb.append('}').toString();
+    }
+
+    private static String escapeJson(String s) {
+        if (s == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"' || c == '\\') sb.append('\\');
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     @Autowired
@@ -115,11 +153,6 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     @Autowired
     public void setLaunchService(LaunchService launchService) {
         this.launchService = launchService;
-    }
-
-    @Autowired
-    public void setExecutor(Executor executor) {
-        this.executor = executor;
     }
 
 
@@ -222,72 +255,6 @@ public class DefaultApplicationFacade implements ApplicationFacade {
             log.error("读取应用 {} 构建日志失败: {}", id.getValue(), e.getMessage(), e);
             throw new IllegalStateException("读取构建日志失败", e);
         }
-    }
-
-    @Override
-    public void submitWorkflow(WorkflowGraph graph) {
-        log.info("提交工作流: workflowId={}, applicationId={}",
-                graph.getWorkflowId(), graph.getApplicationId());
-        executor.submit(graph);
-    }
-
-    /**
-     * 支持从客户端直接携带打包好的 artifact（二进制）一并提交：
-     * <ul>
-     *     <li>根据 graph.application_id 找到对应 Workspace；</li>
-     *     <li>若 artifact 非空，则将其写入 Workspace 的 artifacts/ 目录；</li>
-     *     <li>随后调用原有 {@link #submitWorkflow(WorkflowGraph)}，走统一调度流程。</li>
-     * </ul>
-     */
-    @Override
-    public void submitWorkflow(WorkflowGraph graph, ByteString artifact, String artifactName) {
-        String applicationId = graph.getApplicationId();
-        WorkflowGraph graphToSubmit = graph;
-
-        // 若 applicationId 为空，认为是通过 CLI / shell 直接上传 JAR 的场景，
-        // 由控制平面自动生成 appId 并创建对应的空 Workspace。
-        if (applicationId == null || applicationId.isBlank()) {
-            ID newAppId = IDUtil.genAppID();
-            applicationId = newAppId.getValue();
-            log.info("检测到 CLI JAR 提交流程，自动为其创建应用与工作空间: applicationId={}", applicationId);
-
-            // 为该应用创建一个不带源码的空 Workspace，仅用于保存 artifact / 运行进程
-            workspaceService.createEmptyWorkspace(applicationId);
-
-            graphToSubmit = graph.toBuilder()
-                    .setApplicationId(applicationId)
-                    .build();
-        }
-
-        if (artifact != null && !artifact.isEmpty()) {
-            Workspace workspace = workspaceService.getByApplicationID(ID.of(applicationId));
-            Path artifactDir = workspace.getArtifactDir();
-            try {
-                Files.createDirectories(artifactDir);
-            } catch (IOException e) {
-                throw new IllegalStateException("创建 artifact 目录失败: " + artifactDir, e);
-            }
-
-            String fileName = (artifactName != null && !artifactName.isBlank())
-                    ? artifactName
-                    : "artifact-" + graph.getWorkflowId() + ".jar";
-            Path target = artifactDir.resolve(fileName);
-
-            try (var out = Files.newOutputStream(target)) {
-                artifact.writeTo(out);
-            } catch (IOException e) {
-                throw new IllegalStateException("写入 artifact 文件失败: " + target, e);
-            }
-
-            log.info("已接收客户端提交的 artifact 并保存到 Workspace: applicationId={}, workflowId={}, path={}",
-                    applicationId, graph.getWorkflowId(), target.toAbsolutePath());
-        } else {
-            log.info("本次提交未携带 artifact，直接提交工作流调度: workflowId={}, applicationId={}",
-                    graphToSubmit.getWorkflowId(), graphToSubmit.getApplicationId());
-        }
-
-        // 继续走原有调度流程
-        submitWorkflow(graphToSubmit);
     }
 }
 

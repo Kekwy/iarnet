@@ -26,12 +26,8 @@ public class MainApplication {
         @Override
         public void run(ApplicationArguments args) {
             log.info("IARNet 控制面启动完成");
-            // 启动时初始化数据库
-            // 创建管理员用户
-            // 创建默认应用
         }
 
     }
-
 
 }

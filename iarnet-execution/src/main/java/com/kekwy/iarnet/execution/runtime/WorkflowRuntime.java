@@ -43,7 +43,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -68,7 +70,16 @@ public class WorkflowRuntime {
     /** workflowId -> token，提交时生成，供用户调用 execute(workflowId, token, inputs) 时校验 */
     private final ConcurrentMap<String, String> workflowTokens = new ConcurrentHashMap<>();
 
+    /** workflow 就绪前到达的 execute 请求：workflowId -> 待处理请求队列，就绪后按序执行并完成对应的 Future */
+    private final ConcurrentMap<String, ConcurrentLinkedQueue<PendingExecuteRequest>> pendingExecuteRequests = new ConcurrentHashMap<>();
+
     // TODO: 提供一些监测工作流运行情况的端点
+
+    private record PendingExecuteRequest(
+            String token,
+            Map<String, Object> inputs,
+            CompletableFuture<String> resultFuture
+    ) {}
 
     private record SubmitRequest(
             WorkflowGraph workflowGraph,
@@ -112,11 +123,31 @@ public class WorkflowRuntime {
             throw new IllegalArgumentException("无效的 workflowId 或 token，无法执行工作流");
         }
         RuntimeSession session = runtimeSessions.get(workflowId);
-        if (session == null) {
-            throw new IllegalStateException("工作流尚未就绪或已结束: workflowId=" + workflowId);
+        if (session != null) {
+            validateInputsAgainstWorkflow(session, inputs != null ? inputs : Map.of());
+            return session.execute(inputs != null ? inputs : Map.of());
         }
-        validateInputsAgainstWorkflow(session, inputs != null ? inputs : Map.of());
-        return session.execute(inputs != null ? inputs : Map.of());
+        // 工作流尚未就绪，放入待处理队列并阻塞等待就绪后由部署回调统一处理
+        Map<String, Object> inputMap = inputs != null ? inputs : Map.of();
+        CompletableFuture<String> resultFuture = new CompletableFuture<>();
+        PendingExecuteRequest pending = new PendingExecuteRequest(token, inputMap, resultFuture);
+        pendingExecuteRequests.computeIfAbsent(workflowId, k -> new ConcurrentLinkedQueue<>()).offer(pending);
+        log.info("execute 请求已缓存，等待 workflow 就绪: workflowId={}", workflowId);
+        try {
+            return resultFuture.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("等待工作流就绪时被中断: workflowId=" + workflowId, e);
+        } catch (java.util.concurrent.ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException re) {
+                throw re;
+            }
+            if (cause instanceof Error err) {
+                throw err;
+            }
+            throw new RuntimeException(cause != null ? cause : e);
+        }
     }
 
     /**
@@ -292,14 +323,55 @@ public class WorkflowRuntime {
                 RuntimeSession session = new RuntimeSession(runtimeGraph, workflowInputs, nodeIdToInputParamName);
                 runtimeSessions.put(workflowId, session);
                 session.start();
+                drainPendingExecuteRequests(workflowId, session);
             }
 
             @Override
             public void onFailure(Exception e) {
+                drainPendingExecuteRequestsWithFailure(workflowId, e);
                 throw new RuntimeException(e);
             }
         });
 
+    }
+
+    /** workflow 就绪后，处理该 workflowId 下所有缓存的 execute 请求 */
+    private void drainPendingExecuteRequests(String workflowId, RuntimeSession session) {
+        ConcurrentLinkedQueue<PendingExecuteRequest> queue = pendingExecuteRequests.remove(workflowId);
+        if (queue == null) return;
+        PendingExecuteRequest req;
+        while ((req = queue.poll()) != null) {
+            try {
+                if (!workflowTokens.get(workflowId).equals(req.token())) {
+                    req.resultFuture().completeExceptionally(
+                            new IllegalArgumentException("无效的 workflowId 或 token，无法执行工作流"));
+                    continue;
+                }
+                validateInputsAgainstWorkflow(session, req.inputs());
+                String submissionId = session.execute(req.inputs());
+                req.resultFuture().complete(submissionId);
+                log.info("已处理缓存的 execute 请求: workflowId={}, submissionId={}", workflowId, submissionId);
+            } catch (Throwable t) {
+                req.resultFuture().completeExceptionally(t);
+                log.warn("处理缓存的 execute 请求失败: workflowId={}", workflowId, t);
+            }
+        }
+    }
+
+    /** workflow 部署失败时，对该 workflowId 下所有缓存的 execute 请求完成异常 */
+    private void drainPendingExecuteRequestsWithFailure(String workflowId, Exception failure) {
+        ConcurrentLinkedQueue<PendingExecuteRequest> queue = pendingExecuteRequests.remove(workflowId);
+        if (queue == null) return;
+        RuntimeException wrap = new RuntimeException("工作流部署失败: workflowId=" + workflowId, failure);
+        int count = 0;
+        PendingExecuteRequest req;
+        while ((req = queue.poll()) != null) {
+            req.resultFuture().completeExceptionally(wrap);
+            count++;
+        }
+        if (count > 0) {
+            log.info("已对 {} 个缓存的 execute 请求完成异常: workflowId={}", count, workflowId);
+        }
     }
 
     private final ConcurrentMap<String, RuntimeSession> runtimeSessions = new ConcurrentHashMap<>();

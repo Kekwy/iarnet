@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.proto.api;
+package com.kekwy.iarnet.proto.application;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
@@ -12,38 +12,69 @@ public final class ApplicationServiceGrpc {
 
   private ApplicationServiceGrpc() {}
 
-  public static final java.lang.String SERVICE_NAME = "iarnet.api.ApplicationService";
+  public static final java.lang.String SERVICE_NAME = "iarnet.application.ApplicationService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.api.SubmitJarRequest,
-      com.kekwy.iarnet.proto.api.SubmitJarResponse> getSubmitJarMethod;
+  private static volatile io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.application.SubmitJarRequest,
+      com.kekwy.iarnet.proto.application.SubmitJarResponse> getSubmitJarMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "submitJar",
-      requestType = com.kekwy.iarnet.proto.api.SubmitJarRequest.class,
-      responseType = com.kekwy.iarnet.proto.api.SubmitJarResponse.class,
+      requestType = com.kekwy.iarnet.proto.application.SubmitJarRequest.class,
+      responseType = com.kekwy.iarnet.proto.application.SubmitJarResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.api.SubmitJarRequest,
-      com.kekwy.iarnet.proto.api.SubmitJarResponse> getSubmitJarMethod() {
-    io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.api.SubmitJarRequest, com.kekwy.iarnet.proto.api.SubmitJarResponse> getSubmitJarMethod;
+  public static io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.application.SubmitJarRequest,
+      com.kekwy.iarnet.proto.application.SubmitJarResponse> getSubmitJarMethod() {
+    io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.application.SubmitJarRequest, com.kekwy.iarnet.proto.application.SubmitJarResponse> getSubmitJarMethod;
     if ((getSubmitJarMethod = ApplicationServiceGrpc.getSubmitJarMethod) == null) {
       synchronized (ApplicationServiceGrpc.class) {
         if ((getSubmitJarMethod = ApplicationServiceGrpc.getSubmitJarMethod) == null) {
           ApplicationServiceGrpc.getSubmitJarMethod = getSubmitJarMethod =
-              io.grpc.MethodDescriptor.<com.kekwy.iarnet.proto.api.SubmitJarRequest, com.kekwy.iarnet.proto.api.SubmitJarResponse>newBuilder()
+              io.grpc.MethodDescriptor.<com.kekwy.iarnet.proto.application.SubmitJarRequest, com.kekwy.iarnet.proto.application.SubmitJarResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(SERVICE_NAME, "submitJar"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.kekwy.iarnet.proto.api.SubmitJarRequest.getDefaultInstance()))
+                  com.kekwy.iarnet.proto.application.SubmitJarRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.kekwy.iarnet.proto.api.SubmitJarResponse.getDefaultInstance()))
+                  com.kekwy.iarnet.proto.application.SubmitJarResponse.getDefaultInstance()))
               .setSchemaDescriptor(new ApplicationServiceMethodDescriptorSupplier("submitJar"))
               .build();
         }
       }
     }
     return getSubmitJarMethod;
+  }
+
+  private static volatile io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest,
+      com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse> getSubmitJarWithInputMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "submitJarWithInput",
+      requestType = com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest.class,
+      responseType = com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest,
+      com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse> getSubmitJarWithInputMethod() {
+    io.grpc.MethodDescriptor<com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest, com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse> getSubmitJarWithInputMethod;
+    if ((getSubmitJarWithInputMethod = ApplicationServiceGrpc.getSubmitJarWithInputMethod) == null) {
+      synchronized (ApplicationServiceGrpc.class) {
+        if ((getSubmitJarWithInputMethod = ApplicationServiceGrpc.getSubmitJarWithInputMethod) == null) {
+          ApplicationServiceGrpc.getSubmitJarWithInputMethod = getSubmitJarWithInputMethod =
+              io.grpc.MethodDescriptor.<com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest, com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "submitJarWithInput"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse.getDefaultInstance()))
+              .setSchemaDescriptor(new ApplicationServiceMethodDescriptorSupplier("submitJarWithInput"))
+              .build();
+        }
+      }
+    }
+    return getSubmitJarWithInputMethod;
   }
 
   /**
@@ -96,9 +127,19 @@ public final class ApplicationServiceGrpc {
 
     /**
      */
-    default void submitJar(com.kekwy.iarnet.proto.api.SubmitJarRequest request,
-        io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.api.SubmitJarResponse> responseObserver) {
+    default void submitJar(com.kekwy.iarnet.proto.application.SubmitJarRequest request,
+        io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.application.SubmitJarResponse> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSubmitJarMethod(), responseObserver);
+    }
+
+    /**
+     * <pre>
+     * 提交 JAR 并携带输入，便于测试：输入会写入工作空间 input.json，进程可读取
+     * </pre>
+     */
+    default void submitJarWithInput(com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest request,
+        io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSubmitJarWithInputMethod(), responseObserver);
     }
   }
 
@@ -131,10 +172,21 @@ public final class ApplicationServiceGrpc {
 
     /**
      */
-    public void submitJar(com.kekwy.iarnet.proto.api.SubmitJarRequest request,
-        io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.api.SubmitJarResponse> responseObserver) {
+    public void submitJar(com.kekwy.iarnet.proto.application.SubmitJarRequest request,
+        io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.application.SubmitJarResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getSubmitJarMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     * <pre>
+     * 提交 JAR 并携带输入，便于测试：输入会写入工作空间 input.json，进程可读取
+     * </pre>
+     */
+    public void submitJarWithInput(com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest request,
+        io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getSubmitJarWithInputMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -156,9 +208,19 @@ public final class ApplicationServiceGrpc {
 
     /**
      */
-    public com.kekwy.iarnet.proto.api.SubmitJarResponse submitJar(com.kekwy.iarnet.proto.api.SubmitJarRequest request) {
+    public com.kekwy.iarnet.proto.application.SubmitJarResponse submitJar(com.kekwy.iarnet.proto.application.SubmitJarRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getSubmitJarMethod(), getCallOptions(), request);
+    }
+
+    /**
+     * <pre>
+     * 提交 JAR 并携带输入，便于测试：输入会写入工作空间 input.json，进程可读取
+     * </pre>
+     */
+    public com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse submitJarWithInput(com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getSubmitJarWithInputMethod(), getCallOptions(), request);
     }
   }
 
@@ -180,14 +242,26 @@ public final class ApplicationServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.kekwy.iarnet.proto.api.SubmitJarResponse> submitJar(
-        com.kekwy.iarnet.proto.api.SubmitJarRequest request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.kekwy.iarnet.proto.application.SubmitJarResponse> submitJar(
+        com.kekwy.iarnet.proto.application.SubmitJarRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getSubmitJarMethod(), getCallOptions()), request);
+    }
+
+    /**
+     * <pre>
+     * 提交 JAR 并携带输入，便于测试：输入会写入工作空间 input.json，进程可读取
+     * </pre>
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse> submitJarWithInput(
+        com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getSubmitJarWithInputMethod(), getCallOptions()), request);
     }
   }
 
   private static final int METHODID_SUBMIT_JAR = 0;
+  private static final int METHODID_SUBMIT_JAR_WITH_INPUT = 1;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -207,8 +281,12 @@ public final class ApplicationServiceGrpc {
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_SUBMIT_JAR:
-          serviceImpl.submitJar((com.kekwy.iarnet.proto.api.SubmitJarRequest) request,
-              (io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.api.SubmitJarResponse>) responseObserver);
+          serviceImpl.submitJar((com.kekwy.iarnet.proto.application.SubmitJarRequest) request,
+              (io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.application.SubmitJarResponse>) responseObserver);
+          break;
+        case METHODID_SUBMIT_JAR_WITH_INPUT:
+          serviceImpl.submitJarWithInput((com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest) request,
+              (io.grpc.stub.StreamObserver<com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -232,9 +310,16 @@ public final class ApplicationServiceGrpc {
           getSubmitJarMethod(),
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
-              com.kekwy.iarnet.proto.api.SubmitJarRequest,
-              com.kekwy.iarnet.proto.api.SubmitJarResponse>(
+              com.kekwy.iarnet.proto.application.SubmitJarRequest,
+              com.kekwy.iarnet.proto.application.SubmitJarResponse>(
                 service, METHODID_SUBMIT_JAR)))
+        .addMethod(
+          getSubmitJarWithInputMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest,
+              com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse>(
+                service, METHODID_SUBMIT_JAR_WITH_INPUT)))
         .build();
   }
 
@@ -244,7 +329,7 @@ public final class ApplicationServiceGrpc {
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
-      return com.kekwy.iarnet.proto.api.ApplicationServiceOuterClass.getDescriptor();
+      return com.kekwy.iarnet.proto.application.ApplicationServiceOuterClass.getDescriptor();
     }
 
     @java.lang.Override
@@ -284,6 +369,7 @@ public final class ApplicationServiceGrpc {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
               .setSchemaDescriptor(new ApplicationServiceFileDescriptorSupplier())
               .addMethod(getSubmitJarMethod())
+              .addMethod(getSubmitJarWithInputMethod())
               .build();
         }
       }

@@ -13,7 +13,7 @@
 
     <artifactId>iarnet-server</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-control-plane</name>
+    <name>iarnet-server</name>
     <description>iarnet 控制台</description>
 
     <dependencies>

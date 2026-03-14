@@ -1,9 +1,7 @@
 package com.kekwy.iarnet.application;
 
-import com.google.protobuf.ByteString;
 import com.kekwy.iarnet.common.model.ApplicationInfo;
 import com.kekwy.iarnet.common.model.ID;
-import com.kekwy.iarnet.proto.ir.WorkflowGraph;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +14,21 @@ public interface ApplicationFacade {
     // TOOD: 通过 shell 导入的应用也需要在 web 上可见
     void createApplicationWithJar(byte[] content);
 
-    void launchApplicationWithJar(byte[] content);
+    /**
+     * 提交 JAR 并启动进程，不携带输入。
+     */
+    default void launchApplicationWithJar(byte[] content) {
+        launchApplicationWithJar(content, null);
+    }
+
+    /**
+     * 提交 JAR 并携带输入（便于测试）。与无参重载相同地创建并启动进程，
+     * 若 inputs 非空则写入工作空间下的 input.json，并设置环境变量 IARNET_INPUT_FILE。
+     *
+     * @param content JAR 字节
+     * @param inputs  键值对输入，可为 null 或空，等效于 {@link #launchApplicationWithJar(byte[])}
+     */
+    void launchApplicationWithJar(byte[] content, Map<String, String> inputs);
 
     ApplicationInfo createApplication(ApplicationInfo input);
 
@@ -35,25 +47,4 @@ public interface ApplicationFacade {
      * @return 日志全文（可能为空字符串）
      */
     Optional<String> getBuildLog(ID id);
-
-    /**
-     * 提交工作流图到执行器进行调度处理。
-     *
-     * @param graph 工作流图 IR
-     */
-    void submitWorkflow(WorkflowGraph graph);
-
-    /**
-     * 提交工作流图及其打包好的 artifact（如 JAR / tar.gz）。
-     * <p>
-     * 默认实现忽略二进制内容，仅委托到 {@link #submitWorkflow(WorkflowGraph)}，
-     * 具体实现类可根据需要将 artifact 落盘到 Workspace。
-     *
-     * @param graph         工作流图 IR
-     * @param artifact      工件字节（可以为空）
-     * @param artifactName  工件文件名提示（可以为空）
-     */
-    default void submitWorkflow(WorkflowGraph graph, ByteString artifact, String artifactName) {
-        submitWorkflow(graph);
-    }
 }

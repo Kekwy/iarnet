@@ -1,14 +1,16 @@
 syntax = "proto3";
 
-package iarnet.api;
+package iarnet.application;
 
 // import "iarnet/ir/workflow.proto";
 
-option java_package = "com.kekwy.iarnet.proto.api";
+option java_package = "com.kekwy.iarnet.proto.application";
 option java_multiple_files = true;
 
 service ApplicationService {
   rpc submitJar(SubmitJarRequest) returns (SubmitJarResponse);
+  // 提交 JAR 并携带输入，便于测试：输入会写入工作空间 input.json，进程可读取
+  rpc submitJarWithInput(SubmitJarWithInputRequest) returns (SubmitJarWithInputResponse);
 }
 
 message SubmitJarRequest {
@@ -16,5 +18,19 @@ message SubmitJarRequest {
 }
 
 message SubmitJarResponse {
+  string msg = 1;
+}
+
+message SubmitJarWithInputRequest {
+  bytes content = 1;
+  repeated InputEntry inputs = 2;
+}
+
+message InputEntry {
+  string key = 1;
+  string value = 2;
+}
+
+message SubmitJarWithInputResponse {
   string msg = 1;
 }
