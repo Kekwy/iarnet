@@ -20,10 +20,10 @@
     </properties>
 
     <dependencies>
-        <!-- Actor / DeviceAgent proto definitions -->
+        <!-- Actor / proto definitions (ValueCodec, FunctionDescriptor, ActorEnvelope, etc.) -->
         <dependency>
             <groupId>com.kekwy.iarnet</groupId>
-            <artifactId>iarnet-proto</artifactId>
+            <artifactId>iarnet-proto-java</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
