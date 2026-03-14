@@ -58,21 +58,22 @@ public final class Workflow {
       "\n\005nodes\030\004 \003(\0132\025.iarnet.workflow.Node\022$\n\005" +
       "edges\030\005 \003(\0132\025.iarnet.workflow.Edge\022.\n\006in" +
       "puts\030\006 \003(\0132\036.iarnet.workflow.WorkflowInp" +
-      "ut\"\211\001\n\004Edge\022\024\n\014from_node_id\030\001 \001(\t\022\022\n\nto_" +
+      "ut\"\262\001\n\004Edge\022\024\n\014from_node_id\030\001 \001(\t\022\022\n\nto_" +
       "node_id\030\002 \001(\t\022A\n\021conditionFunction\030\003 \001(\013" +
       "2!.iarnet.common.FunctionDescriptorH\000\210\001\001" +
-      "B\024\n\022_conditionFunction\"\311\001\n\004Node\022\n\n\002id\030\001 " +
-      "\001(\t\022\014\n\004name\030\002 \001(\t\0223\n\010function\030\003 \001(\0132!.ia" +
-      "rnet.common.FunctionDescriptor\022/\n\nnodeCo" +
-      "nfig\030\004 \001(\0132\033.iarnet.workflow.NodeConfig\022" +
-      ",\n\tnode_kind\030\005 \001(\0162\031.iarnet.workflow.Nod" +
-      "eKind\022\023\n\013input_param\030\006 \001(\t\"R\n\nNodeConfig" +
-      "\022\020\n\010replicas\030\001 \001(\005\0222\n\rresource_spec\030\002 \001(" +
-      "\0132\033.iarnet.common.ResourceSpec*x\n\010NodeKi" +
-      "nd\022\031\n\025NODE_KIND_UNSPECIFIED\020\000\022\023\n\017NODE_KI" +
-      "ND_INPUT\020\001\022\022\n\016NODE_KIND_TASK\020\002\022\024\n\020NODE_K" +
-      "IND_OUTPUT\020\003\022\022\n\016NODE_KIND_JOIN\020\004B#\n\037com." +
-      "kekwy.iarnet.proto.workflowP\001b\006proto3"
+      "\022\023\n\013output_port\030\004 \001(\005\022\022\n\ninput_port\030\005 \001(" +
+      "\005B\024\n\022_conditionFunction\"\311\001\n\004Node\022\n\n\002id\030\001" +
+      " \001(\t\022\014\n\004name\030\002 \001(\t\0223\n\010function\030\003 \001(\0132!.i" +
+      "arnet.common.FunctionDescriptor\022/\n\nnodeC" +
+      "onfig\030\004 \001(\0132\033.iarnet.workflow.NodeConfig" +
+      "\022,\n\tnode_kind\030\005 \001(\0162\031.iarnet.workflow.No" +
+      "deKind\022\023\n\013input_param\030\006 \001(\t\"R\n\nNodeConfi" +
+      "g\022\020\n\010replicas\030\001 \001(\005\0222\n\rresource_spec\030\002 \001" +
+      "(\0132\033.iarnet.common.ResourceSpec*x\n\010NodeK" +
+      "ind\022\031\n\025NODE_KIND_UNSPECIFIED\020\000\022\023\n\017NODE_K" +
+      "IND_INPUT\020\001\022\022\n\016NODE_KIND_TASK\020\002\022\024\n\020NODE_" +
+      "KIND_OUTPUT\020\003\022\022\n\016NODE_KIND_JOIN\020\004B#\n\037com" +
+      ".kekwy.iarnet.proto.workflowP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -98,7 +99,7 @@ public final class Workflow {
     internal_static_iarnet_workflow_Edge_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_Edge_descriptor,
-        new java.lang.String[] { "FromNodeId", "ToNodeId", "ConditionFunction", "ConditionFunction", });
+        new java.lang.String[] { "FromNodeId", "ToNodeId", "ConditionFunction", "OutputPort", "InputPort", "ConditionFunction", });
     internal_static_iarnet_workflow_Node_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_workflow_Node_fieldAccessorTable = new

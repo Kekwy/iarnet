@@ -3,6 +3,7 @@ package com.kekwy.iarnet.actor;
 import com.kekwy.iarnet.proto.ValueCodec;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.DataRow;
+import com.kekwy.iarnet.proto.actor.InvokeResponse;
 import com.kekwy.iarnet.proto.actor.RegisterActorRequest;
 import com.kekwy.iarnet.proto.common.Value;
 import com.kekwy.iarnet.proto.provider.ActorRegistrationServiceGrpc;
@@ -96,8 +97,8 @@ public final class ActorChannelClient {
                             }
                         });
                         break;
-                    case ROW:
-                        handleRow(msg.getRow());
+                    case REQUEST:
+                        handleRow(msg.getRequest().getRow(), msg.getRequest().getInputPort());
                         break;
                     default:
                         log.debug("收到: {}", msg.getPayloadCase());
@@ -124,7 +125,7 @@ public final class ActorChannelClient {
         log.info("已向 Provider 注册: actorId={}, registry={}", actorId, registryAddr);
     }
 
-    private void handleRow(DataRow row) {
+    private void handleRow(DataRow row, int inputPort) {
         Value value = row.getValue();
         try {
             switch (invoker.getKind()) {
@@ -160,9 +161,12 @@ public final class ActorChannelClient {
                 .setRowId(UUID.randomUUID().toString())
                 .setValue(value)
                 .build();
-        ActorEnvelope env = ActorEnvelope.newBuilder()
+        InvokeResponse response = InvokeResponse.newBuilder()
                 .setRow(row)
-                .setOutputPort(outputPort)
+                .setPort(outputPort)
+                .build();
+        ActorEnvelope env = ActorEnvelope.newBuilder()
+                .setResponse(response)
                 .build();
         sendObserver.onNext(env);
     }

@@ -425,10 +425,7 @@ public class WorkflowRuntime {
                     .add(edge.getFromNodeId());
         }
 
-        // 每个源节点下一条条件边的 output_port 从 1 自增
-        Map<String, Integer> nextConditionalPortByNodeId = new HashMap<>();
-
-        // 将 node 级边展开为 actor 级边：源节点所有实例与后继节点所有实例全连接
+        // 将 node 级边展开为 actor 级边：output_port/input_port 由 SDK 写入 Edge，此处透传
         List<ActorEdge> actorEdges = new ArrayList<>();
         for (Edge edge : workflowGraph.getEdgesList()) {
             String srcNodeId = edge.getFromNodeId();
@@ -436,10 +433,8 @@ public class WorkflowRuntime {
             int srcReplicas = replicasByNodeId.getOrDefault(srcNodeId, 1);
             int dstReplicas = replicasByNodeId.getOrDefault(dstNodeId, 1);
             var conditionFn = edge.hasConditionFunction() ? edge.getConditionFunction() : null;
-
-            int outputPort = conditionFn != null
-                    ? nextConditionalPortByNodeId.merge(srcNodeId, 1, Integer::sum)
-                    : 0;
+            int outputPort = edge.getOutputPort();
+            int inputPort = edge.getInputPort();
 
             Set<String> sources = sourceNodesByDstNode.get(dstNodeId);
             RoutingStrategy routingStrategy = (sources != null && sources.size() > 1)
@@ -450,7 +445,7 @@ public class WorkflowRuntime {
                 String fromActorId = "actor-" + srcNodeId + "-" + i;
                 for (int j = 0; j < dstReplicas; j++) {
                     String toActorId = "actor-" + dstNodeId + "-" + j;
-                    actorEdges.add(new ActorEdge(fromActorId, toActorId, conditionFn, outputPort, routingStrategy));
+                    actorEdges.add(new ActorEdge(fromActorId, toActorId, conditionFn, outputPort, routingStrategy, inputPort));
                 }
             }
         }

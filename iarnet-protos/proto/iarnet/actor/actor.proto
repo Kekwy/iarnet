@@ -25,6 +25,7 @@ message InvokeResponse {
 message InvokeRequest {
   string sessionId = 1;
   DataRow row = 2;
+  int32   input_port = 3;   // 数据对应目标节点的哪个输入端口
 }
 
 // 命令 input Actor 开始产生输入

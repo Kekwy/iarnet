@@ -2,6 +2,7 @@ package com.kekwy.iarnet.execution.runtime;
 
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.DataRow;
+import com.kekwy.iarnet.proto.actor.InvokeRequest;
 import com.kekwy.iarnet.proto.actor.StartInputCommand;
 import com.kekwy.iarnet.proto.workflow.WorkflowInput;
 import com.kekwy.iarnet.proto.ValueCodec;
@@ -73,8 +74,12 @@ public class RuntimeSession {
                     .setRowId(submissionId)
                     .setValue(encoded)
                     .build();
-            ActorEnvelope envelope = ActorEnvelope.newBuilder()
+            InvokeRequest request = InvokeRequest.newBuilder()
                     .setRow(row)
+                    .setInputPort(0)
+                    .build();
+            ActorEnvelope envelope = ActorEnvelope.newBuilder()
+                    .setRequest(request)
                     .build();
 
             List<ActorInstanceRef> refs = inputNode.actorInstanceRefs();

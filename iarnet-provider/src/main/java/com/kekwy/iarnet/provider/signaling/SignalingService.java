@@ -5,6 +5,7 @@ import com.kekwy.iarnet.provider.config.ProviderIdentity;
 import com.kekwy.iarnet.provider.registry.DelegatingObserver;
 import com.kekwy.iarnet.provider.registry.ProviderRegistryClient;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
+import com.kekwy.iarnet.proto.provider.ActorMessageForward;
 import com.kekwy.iarnet.proto.fabric.ProviderRegistryServiceGrpc;
 import com.kekwy.iarnet.proto.provider.ActorChannelStatus;
 import com.kekwy.iarnet.proto.provider.ActorReadyReport;
@@ -80,14 +81,15 @@ public class SignalingService {
 
     // --- 业务方法，供 SignalingMessageDispatcher 委托调用 ---
 
-    /** 跨 Provider 转发：envelope 已带物理 target，直接投递到本地 actor。 */
-    public void forwardEnvelopeToActor(ActorEnvelope envelope) {
-        String targetActorId = envelope.getTarget();
-        if (targetActorId.isBlank()) {
-            log.warn("SignalingEnvelope actor_envelope_forward 缺少 target，无法转发");
+    /** 跨 Provider 转发：从 ActorMessageForward 取 target 与 envelope，投递到本地 actor。 */
+    public void forwardEnvelopeToActor(ActorMessageForward forward) {
+        if (forward == null) return;
+        String targetActorId = forward.getTarget();
+        if (targetActorId == null || targetActorId.isBlank()) {
+            log.warn("ActorMessageForward 缺少 target，无法转发");
             return;
         }
-        actorRouter.deliverToTarget(targetActorId, envelope);
+        actorRouter.deliverToTarget(targetActorId, forward.getActorEnvelope());
     }
 
     public void handleConnectInstruction(ConnectInstruction instruction) {

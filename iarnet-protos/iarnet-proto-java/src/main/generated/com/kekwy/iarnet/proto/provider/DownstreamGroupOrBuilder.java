@@ -115,4 +115,14 @@ public interface DownstreamGroupOrBuilder extends
    * <code>optional .iarnet.common.FunctionDescriptor condition_function = 5;</code>
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getConditionFunctionOrBuilder();
+
+  /**
+   * <pre>
+   * 下游节点的输入端口
+   * </pre>
+   *
+   * <code>int32 input_port = 6;</code>
+   * @return The inputPort.
+   */
+  int getInputPort();
 }

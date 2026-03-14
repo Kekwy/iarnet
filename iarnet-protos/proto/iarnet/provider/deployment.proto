@@ -38,6 +38,7 @@ message DownstreamGroup {
   RoutingStrategy routing_strategy = 3;
   int32 output_port = 4;            // 对应 actor 的哪个输出端口
   optional iarnet.common.FunctionDescriptor condition_function = 5;  // 该端口对应的条件函数；output_port=0 可不设
+  int32 input_port  = 6;            // 下游节点的输入端口
 }
 
 message DeployActorRequest {

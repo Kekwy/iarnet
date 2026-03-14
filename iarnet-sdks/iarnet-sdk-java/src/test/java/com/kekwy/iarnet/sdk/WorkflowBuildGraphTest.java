@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -165,6 +167,20 @@ class WorkflowBuildGraphTest {
             assertEquals(4, graph.getNodesCount()); // a-task, b-task, merge, sink
             assertEquals(3, graph.getEdgesCount()); // a-task->merge, b-task->merge, merge->sink
             assertEquals(2, graph.getInputsCount());
+
+            // Join 左路 input_port=0，右路 input_port=1；普通边 output_port=0
+            String mergeNodeId = graph.getEdgesList().stream()
+                    .filter(e -> e.getToNodeId().contains("merge"))
+                    .map(e -> e.getToNodeId())
+                    .findFirst().orElse(null);
+            assertNotNull(mergeNodeId);
+            var joinEdges = graph.getEdgesList().stream()
+                    .filter(e -> e.getToNodeId().equals(mergeNodeId))
+                    .toList();
+            assertEquals(2, joinEdges.size());
+            var inputPorts = joinEdges.stream().map(e -> e.getInputPort()).sorted().toList();
+            assertEquals(List.of(0, 1), inputPorts);
+            joinEdges.forEach(e -> assertEquals(0, e.getOutputPort()));
         }
     }
 

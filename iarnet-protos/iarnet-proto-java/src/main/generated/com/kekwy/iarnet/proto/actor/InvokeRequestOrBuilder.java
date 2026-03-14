@@ -33,4 +33,14 @@ public interface InvokeRequestOrBuilder extends
    * <code>.iarnet.actor.DataRow row = 2;</code>
    */
   com.kekwy.iarnet.proto.actor.DataRowOrBuilder getRowOrBuilder();
+
+  /**
+   * <pre>
+   * 数据对应目标节点的哪个输入端口
+   * </pre>
+   *
+   * <code>int32 input_port = 3;</code>
+   * @return The inputPort.
+   */
+  int getInputPort();
 }

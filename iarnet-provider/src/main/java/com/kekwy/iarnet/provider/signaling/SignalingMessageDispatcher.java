@@ -29,8 +29,8 @@ public class SignalingMessageDispatcher implements StreamObserver<SignalingEnvel
         if (value == null) return;
 
         switch (value.getPayloadCase()) {
-            case ACTOR_ENVELOPE_FORWARD:
-                service.forwardEnvelopeToActor(value.getActorEnvelopeForward());
+            case ACTOR_MESSAGE_FORWARD:
+                service.forwardEnvelopeToActor(value.getActorMessageForward());
                 break;
             case CONNECT_INSTRUCTION:
                 service.handleConnectInstruction(value.getConnectInstruction());

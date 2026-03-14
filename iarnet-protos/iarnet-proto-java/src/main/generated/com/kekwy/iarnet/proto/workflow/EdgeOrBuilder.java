@@ -45,4 +45,24 @@ public interface EdgeOrBuilder extends
    * <code>optional .iarnet.common.FunctionDescriptor conditionFunction = 3;</code>
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getConditionFunctionOrBuilder();
+
+  /**
+   * <pre>
+   * 源节点的输出端口（无条件=0，条件分支从 1 自增）
+   * </pre>
+   *
+   * <code>int32 output_port = 4;</code>
+   * @return The outputPort.
+   */
+  int getOutputPort();
+
+  /**
+   * <pre>
+   * 目标节点的输入端口（Join: 0=left, 1=right；其他节点=0）
+   * </pre>
+   *
+   * <code>int32 input_port = 5;</code>
+   * @return The inputPort.
+   */
+  int getInputPort();
 }

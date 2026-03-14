@@ -96,10 +96,10 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
     }
 
     /**
-     * 按 (outputPort, 目标 nodeId) 将边分组，构建 DownstreamGroup 列表。
+     * 按 (outputPort, 目标 nodeId, inputPort) 将边分组，构建 DownstreamGroup 列表。
      */
     private static List<DownstreamGroup> buildDownstreamGroups(String sourceActorId, List<ActorEdge> edges) {
-        // key: (outputPort, logicalOperatorId) -> (actor_addrs, routingStrategy, conditionFn)
+        // key: outputPort:logicalId:inputPort -> (actor_addrs, routingStrategy, conditionFn)
         Map<String, List<String>> addrsByKey = new HashMap<>();
         Map<String, RoutingStrategy> strategyByKey = new HashMap<>();
         Map<String, FunctionDescriptor> conditionByKey = new HashMap<>();
@@ -109,7 +109,7 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
                 continue;
             }
             String logicalId = extractNodeIdFromActorId(edge.toActorId());
-            String key = edge.outputPort() + ":" + logicalId;
+            String key = edge.outputPort() + ":" + logicalId + ":" + edge.inputPort();
 
             addrsByKey.computeIfAbsent(key, k -> new ArrayList<>()).add(edge.toActorId());
             strategyByKey.putIfAbsent(key, edge.routingStrategy());
@@ -120,14 +120,16 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
 
         List<DownstreamGroup> result = new ArrayList<>();
         for (Map.Entry<String, List<String>> e : addrsByKey.entrySet()) {
-            String[] parts = e.getKey().split(":", 2);
+            String[] parts = e.getKey().split(":", 3);
             int outputPort = Integer.parseInt(parts[0]);
             String logicalOperatorId = parts[1];
+            int inputPort = parts.length > 2 ? Integer.parseInt(parts[2]) : 0;
             DownstreamGroup.Builder builder = DownstreamGroup.newBuilder()
                     .setLogicalOperatorId(logicalOperatorId)
                     .addAllActorAddrs(e.getValue())
                     .setRoutingStrategy(strategyByKey.get(e.getKey()))
-                    .setOutputPort(outputPort);
+                    .setOutputPort(outputPort)
+                    .setInputPort(inputPort);
             FunctionDescriptor cond = conditionByKey.get(e.getKey());
             if (cond != null) {
                 builder.setConditionFunction(cond);

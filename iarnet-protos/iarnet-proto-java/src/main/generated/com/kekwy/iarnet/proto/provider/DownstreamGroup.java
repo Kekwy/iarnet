@@ -217,6 +217,21 @@ private static final long serialVersionUID = 0L;
     return conditionFunction_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : conditionFunction_;
   }
 
+  public static final int INPUT_PORT_FIELD_NUMBER = 6;
+  private int inputPort_ = 0;
+  /**
+   * <pre>
+   * 下游节点的输入端口
+   * </pre>
+   *
+   * <code>int32 input_port = 6;</code>
+   * @return The inputPort.
+   */
+  @java.lang.Override
+  public int getInputPort() {
+    return inputPort_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -245,6 +260,9 @@ private static final long serialVersionUID = 0L;
     }
     if (((bitField0_ & 0x00000001) != 0)) {
       output.writeMessage(5, getConditionFunction());
+    }
+    if (inputPort_ != 0) {
+      output.writeInt32(6, inputPort_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -278,6 +296,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(5, getConditionFunction());
     }
+    if (inputPort_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(6, inputPort_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -305,6 +327,8 @@ private static final long serialVersionUID = 0L;
       if (!getConditionFunction()
           .equals(other.getConditionFunction())) return false;
     }
+    if (getInputPort()
+        != other.getInputPort()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -330,6 +354,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + CONDITION_FUNCTION_FIELD_NUMBER;
       hash = (53 * hash) + getConditionFunction().hashCode();
     }
+    hash = (37 * hash) + INPUT_PORT_FIELD_NUMBER;
+    hash = (53 * hash) + getInputPort();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -475,6 +501,7 @@ private static final long serialVersionUID = 0L;
         conditionFunctionBuilder_.dispose();
         conditionFunctionBuilder_ = null;
       }
+      inputPort_ = 0;
       return this;
     }
 
@@ -532,6 +559,9 @@ private static final long serialVersionUID = 0L;
             ? conditionFunction_
             : conditionFunctionBuilder_.build();
         to_bitField0_ |= 0x00000001;
+      }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
+        result.inputPort_ = inputPort_;
       }
       result.bitField0_ |= to_bitField0_;
     }
@@ -604,6 +634,9 @@ private static final long serialVersionUID = 0L;
       if (other.hasConditionFunction()) {
         mergeConditionFunction(other.getConditionFunction());
       }
+      if (other.getInputPort() != 0) {
+        setInputPort(other.getInputPort());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -658,6 +691,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000010;
               break;
             } // case 42
+            case 48: {
+              inputPort_ = input.readInt32();
+              bitField0_ |= 0x00000020;
+              break;
+            } // case 48
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1157,6 +1195,50 @@ private static final long serialVersionUID = 0L;
         conditionFunction_ = null;
       }
       return conditionFunctionBuilder_;
+    }
+
+    private int inputPort_ ;
+    /**
+     * <pre>
+     * 下游节点的输入端口
+     * </pre>
+     *
+     * <code>int32 input_port = 6;</code>
+     * @return The inputPort.
+     */
+    @java.lang.Override
+    public int getInputPort() {
+      return inputPort_;
+    }
+    /**
+     * <pre>
+     * 下游节点的输入端口
+     * </pre>
+     *
+     * <code>int32 input_port = 6;</code>
+     * @param value The inputPort to set.
+     * @return This builder for chaining.
+     */
+    public Builder setInputPort(int value) {
+      
+      inputPort_ = value;
+      bitField0_ |= 0x00000020;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 下游节点的输入端口
+     * </pre>
+     *
+     * <code>int32 input_port = 6;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearInputPort() {
+      bitField0_ = (bitField0_ & ~0x00000020);
+      inputPort_ = 0;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

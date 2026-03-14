@@ -1,6 +1,8 @@
 package com.kekwy.iarnet.provider.actor;
 
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
+import com.kekwy.iarnet.proto.actor.InvokeRequest;
+import com.kekwy.iarnet.proto.actor.InvokeResponse;
 import com.kekwy.iarnet.proto.provider.DownstreamGroup;
 import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import io.grpc.stub.StreamObserver;
@@ -30,7 +32,8 @@ public class ActorRouter {
             String logicalOperatorId,
             List<String> actorAddrs,
             RoutingStrategy routingStrategy,
-            int outputPort
+            int outputPort,
+            int inputPort
     ) {
     }
 
@@ -85,10 +88,11 @@ public class ActorRouter {
     }
 
     /**
-     * 根据 sourceActorId 与 envelope.output_port 解析下游组，按策略选择目标并转发。
+     * 根据 sourceActorId 与 InvokeResponse.port 解析下游组，按策略选择目标，构造 InvokeRequest（带 input_port）并转发。
      */
     public void routeEnvelope(String sourceActorId, ActorEnvelope envelope) {
-        if (envelope == null) return;
+        if (envelope == null || envelope.getPayloadCase() != ActorEnvelope.PayloadCase.RESPONSE) return;
+        InvokeResponse response = envelope.getResponse();
         ActorRoutingConfig config;
         synchronized (connectedActors) {
             config = routingConfigs.get(sourceActorId);
@@ -98,7 +102,7 @@ public class ActorRouter {
             return;
         }
 
-        int port = envelope.getOutputPort();
+        int port = response.getPort();
         List<DownstreamGroupInfo> groups = config.downstreamGroups().stream()
                 .filter(g -> g.outputPort() == port)
                 .toList();
@@ -111,7 +115,12 @@ public class ActorRouter {
             }
 
             String target = selectTarget(sourceActorId, envelope, group, alive);
-            ActorEnvelope toSend = envelope.toBuilder().setTarget(target).build();
+            InvokeRequest request = InvokeRequest.newBuilder()
+                    .setSessionId(response.getSessionId())
+                    .setRow(response.getRow())
+                    .setInputPort(group.inputPort())
+                    .build();
+            ActorEnvelope toSend = ActorEnvelope.newBuilder().setRequest(request).build();
             deliverTo(target, toSend);
         }
     }
@@ -148,7 +157,8 @@ public class ActorRouter {
     }
 
     private String hashSelect(ActorEnvelope envelope, List<String> alive) {
-        String rowId = envelope.hasRow() ? envelope.getRow().getRowId() : "";
+        String rowId = (envelope.getPayloadCase() == ActorEnvelope.PayloadCase.RESPONSE && envelope.getResponse().hasRow())
+                ? envelope.getResponse().getRow().getRowId() : "";
         int hash = murmur3_32(rowId.getBytes(StandardCharsets.UTF_8));
         int idx = Math.floorMod(hash, alive.size());
         return alive.get(idx);
@@ -239,7 +249,8 @@ public class ActorRouter {
                     g.getLogicalOperatorId(),
                     List.copyOf(addrs),
                     g.getRoutingStrategy(),
-                    g.getOutputPort()
+                    g.getOutputPort(),
+                    g.getInputPort()
             ));
         }
 

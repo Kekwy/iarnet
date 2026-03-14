@@ -101,6 +101,9 @@ public class Workflow {
     /** 入口节点 ID -> 关联的工作流输入参数名，写入 Node.input_param。 */
     private final Map<String, String> nodeInputParamMap = new HashMap<>();
 
+    /** 每个源节点下一条条件边的 output_port 从 1 自增（与 Runtime 原逻辑一致，现上移到 SDK）。 */
+    private final Map<String, Integer> nextConditionalPort = new HashMap<>();
+
     private Workflow(String name) {
         this.name = name;
     }
@@ -540,7 +543,10 @@ public class Workflow {
         nodes.add(node);
         if (precursor != null) {
             Type conditionInputType = precursor.getFunction().getOutputType();
-            edges.add(buildEdge(precursor.getId(), nodeId, conditionFunction, conditionInputType));
+            int outputPort = conditionFunction != null
+                    ? nextConditionalPort.merge(precursor.getId(), 1, Integer::sum)
+                    : 0;
+            edges.add(buildEdge(precursor.getId(), nodeId, conditionFunction, conditionInputType, outputPort, 0));
         }
         return node;
     }
@@ -578,8 +584,8 @@ public class Workflow {
                 .setNodeKind(NodeKind.NODE_KIND_JOIN)
                 .build();
         nodes.add(node);
-        edges.add(buildEdge(precursor1.getId(), nodeId, null, inputType1));
-        edges.add(buildEdge(precursor2.getId(), nodeId, null, inputType2));
+        edges.add(buildEdge(precursor1.getId(), nodeId, null, inputType1, 0, 0));  // left
+        edges.add(buildEdge(precursor2.getId(), nodeId, null, inputType2, 0, 1));  // right
         return node;
     }
 
@@ -658,9 +664,10 @@ public class Workflow {
         });
     }
 
-    /** 构建边，可选附带条件函数。 */
+    /** 构建边，可选附带条件函数；output_port/input_port 由 SDK 统一分配。 */
     private static Edge buildEdge(String fromNodeId, String toNodeId,
-                                  ConditionFunction<?> conditionFunction, Type conditionInputType) {
+                                  ConditionFunction<?> conditionFunction, Type conditionInputType,
+                                  int outputPort, int inputPort) {
         FunctionDescriptor conditionFn = conditionFunction != null
                 ? buildFunctionDescriptorForCondition(conditionFunction, conditionInputType)
                 : FunctionDescriptor.getDefaultInstance();
@@ -668,6 +675,8 @@ public class Workflow {
                 .setFromNodeId(fromNodeId)
                 .setToNodeId(toNodeId)
                 .setConditionFunction(conditionFn)
+                .setOutputPort(outputPort)
+                .setInputPort(inputPort)
                 .build();
     }
 

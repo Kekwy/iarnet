@@ -109,6 +109,21 @@ private static final long serialVersionUID = 0L;
     return row_ == null ? com.kekwy.iarnet.proto.actor.DataRow.getDefaultInstance() : row_;
   }
 
+  public static final int INPUT_PORT_FIELD_NUMBER = 3;
+  private int inputPort_ = 0;
+  /**
+   * <pre>
+   * 数据对应目标节点的哪个输入端口
+   * </pre>
+   *
+   * <code>int32 input_port = 3;</code>
+   * @return The inputPort.
+   */
+  @java.lang.Override
+  public int getInputPort() {
+    return inputPort_;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -129,6 +144,9 @@ private static final long serialVersionUID = 0L;
     if (row_ != null) {
       output.writeMessage(2, getRow());
     }
+    if (inputPort_ != 0) {
+      output.writeInt32(3, inputPort_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -144,6 +162,10 @@ private static final long serialVersionUID = 0L;
     if (row_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(2, getRow());
+    }
+    if (inputPort_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(3, inputPort_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -167,6 +189,8 @@ private static final long serialVersionUID = 0L;
       if (!getRow()
           .equals(other.getRow())) return false;
     }
+    if (getInputPort()
+        != other.getInputPort()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -184,6 +208,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + ROW_FIELD_NUMBER;
       hash = (53 * hash) + getRow().hashCode();
     }
+    hash = (37 * hash) + INPUT_PORT_FIELD_NUMBER;
+    hash = (53 * hash) + getInputPort();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -319,6 +345,7 @@ private static final long serialVersionUID = 0L;
         rowBuilder_.dispose();
         rowBuilder_ = null;
       }
+      inputPort_ = 0;
       return this;
     }
 
@@ -359,6 +386,9 @@ private static final long serialVersionUID = 0L;
         result.row_ = rowBuilder_ == null
             ? row_
             : rowBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.inputPort_ = inputPort_;
       }
     }
 
@@ -414,6 +444,9 @@ private static final long serialVersionUID = 0L;
       if (other.hasRow()) {
         mergeRow(other.getRow());
       }
+      if (other.getInputPort() != 0) {
+        setInputPort(other.getInputPort());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -452,6 +485,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000002;
               break;
             } // case 18
+            case 24: {
+              inputPort_ = input.readInt32();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 24
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -658,6 +696,50 @@ private static final long serialVersionUID = 0L;
         row_ = null;
       }
       return rowBuilder_;
+    }
+
+    private int inputPort_ ;
+    /**
+     * <pre>
+     * 数据对应目标节点的哪个输入端口
+     * </pre>
+     *
+     * <code>int32 input_port = 3;</code>
+     * @return The inputPort.
+     */
+    @java.lang.Override
+    public int getInputPort() {
+      return inputPort_;
+    }
+    /**
+     * <pre>
+     * 数据对应目标节点的哪个输入端口
+     * </pre>
+     *
+     * <code>int32 input_port = 3;</code>
+     * @param value The inputPort to set.
+     * @return This builder for chaining.
+     */
+    public Builder setInputPort(int value) {
+      
+      inputPort_ = value;
+      bitField0_ |= 0x00000004;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 数据对应目标节点的哪个输入端口
+     * </pre>
+     *
+     * <code>int32 input_port = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearInputPort() {
+      bitField0_ = (bitField0_ & ~0x00000004);
+      inputPort_ = 0;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

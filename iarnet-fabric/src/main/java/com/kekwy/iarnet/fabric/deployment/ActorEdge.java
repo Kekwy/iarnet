@@ -8,6 +8,7 @@ public record ActorEdge(
         String toActorId,
         FunctionDescriptor functionDescriptor,
         int outputPort,
-        RoutingStrategy routingStrategy
+        RoutingStrategy routingStrategy,
+        int inputPort
 ) {
 }
