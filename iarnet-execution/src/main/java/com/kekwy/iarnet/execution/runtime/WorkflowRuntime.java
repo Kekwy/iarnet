@@ -304,7 +304,8 @@ public class WorkflowRuntime {
                         function,
                         resourceSpec,
                         langArtifactUrlMap.get(function.getLang()),
-                        i
+                        i,
+                        node.getNodeKind()
                 );
                 actorSpecs.add(spec);
             }

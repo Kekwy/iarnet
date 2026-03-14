@@ -33,7 +33,14 @@ public final class FunctionInvoker {
         UNION    // 2 inputs, has output -> union(OptionalValue, OptionalValue)
     }
 
-    public FunctionInvoker(FunctionDescriptor descriptor, UserJarLoader jarLoader)
+    /**
+     * 使用环境变量或描述符推断的节点类型创建。
+     *
+     * @param descriptor   函数描述符
+     * @param jarLoader    用户 JAR ClassLoader
+     * @param explicitKind 若非 null 则直接使用（如来自 IARNET_NODE_KIND），否则根据 descriptor 推断
+     */
+    public FunctionInvoker(FunctionDescriptor descriptor, UserJarLoader jarLoader, Kind explicitKind)
             throws IOException, ClassNotFoundException {
         this.descriptor = descriptor;
         this.jarLoader = jarLoader;
@@ -42,8 +49,14 @@ public final class FunctionInvoker {
         } else {
             throw new IllegalArgumentException("FunctionDescriptor 缺少 serialized_function");
         }
-        this.kind = inferKind(descriptor);
+        this.kind = explicitKind != null ? explicitKind : inferKind(descriptor);
         log.debug("FunctionInvoker 已创建: kind={}, identifier={}", kind, descriptor.getFunctionIdentifier());
+    }
+
+    /** 等价于 {@code new FunctionInvoker(descriptor, jarLoader, null)}，完全由描述符推断类型。 */
+    public FunctionInvoker(FunctionDescriptor descriptor, UserJarLoader jarLoader)
+            throws IOException, ClassNotFoundException {
+        this(descriptor, jarLoader, null);
     }
 
     private static Kind inferKind(FunctionDescriptor fd) {

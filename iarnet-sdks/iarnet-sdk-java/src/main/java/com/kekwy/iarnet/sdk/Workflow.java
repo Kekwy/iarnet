@@ -12,6 +12,7 @@ import com.kekwy.iarnet.proto.common.TypeKind;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.proto.workflow.NodeConfig;
+import com.kekwy.iarnet.proto.workflow.NodeKind;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
 import com.kekwy.iarnet.sdk.exception.IarnetCommunicationException;
 import com.kekwy.iarnet.sdk.exception.IarnetConfigurationException;
@@ -419,6 +420,7 @@ public class Workflow {
                 .setName(name)
                 .setFunction(buildFunctionDescriptor(function, inputType, outputType, nodeId))
                 .setNodeConfig(buildNodeConfig(config))
+                .setNodeKind(nodeKindFromFunction(function))
                 .build();
         nodes.add(node);
         if (precursor != null) {
@@ -441,6 +443,7 @@ public class Workflow {
                 .setName(name)
                 .setFunction(buildFunctionDescriptor(function, List.of(inputType1, inputType2), outputType, nodeId))
                 .setNodeConfig(buildNodeConfig(config))
+                .setNodeKind(NodeKind.NODE_KIND_UNION)
                 .build();
         nodes.add(node);
         edges.add(buildEdge(precursor1.getId(), nodeId, null, inputType1));
@@ -545,6 +548,20 @@ public class Workflow {
                 .setReplicas(config.getReplicas())
                 .setResourceSpec(config.getResourceSpec())
                 .build();
+    }
+
+    /** 根据函数类型返回 NodeKind（Input/Task/Output，Union 在 addUnionNode 中直接设置）。 */
+    private static NodeKind nodeKindFromFunction(Function function) {
+        if (function instanceof InputFunction) {
+            return NodeKind.NODE_KIND_INPUT;
+        }
+        if (function instanceof OutputFunction) {
+            return NodeKind.NODE_KIND_OUTPUT;
+        }
+        if (function instanceof TaskFunction || function instanceof PythonTaskFunction || function instanceof GoTaskFunction) {
+            return NodeKind.NODE_KIND_TASK;
+        }
+        return NodeKind.NODE_KIND_UNSPECIFIED;
     }
 
     /**

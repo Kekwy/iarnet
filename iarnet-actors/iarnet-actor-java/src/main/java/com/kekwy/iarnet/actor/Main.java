@@ -25,7 +25,7 @@ public final class Main {
                     : Map.of();
 
             UserJarLoader jarLoader = UserJarLoader.create(config.getArtifactPath());
-            FunctionInvoker invoker = new FunctionInvoker(mainFd, jarLoader);
+            FunctionInvoker invoker = new FunctionInvoker(mainFd, jarLoader, config.getNodeKind());
             ConditionEvaluator conditionEvaluator = ConditionEvaluator.fromDescriptors(conditions, jarLoader);
 
             ActorChannelClient client = new ActorChannelClient(

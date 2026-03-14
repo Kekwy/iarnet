@@ -60,4 +60,15 @@ public interface NodeOrBuilder extends
    * <code>.iarnet.workflow.NodeConfig nodeConfig = 4;</code>
    */
   com.kekwy.iarnet.proto.workflow.NodeConfigOrBuilder getNodeConfigOrBuilder();
+
+  /**
+   * <code>.iarnet.workflow.NodeKind node_kind = 5;</code>
+   * @return The enum numeric value on the wire for nodeKind.
+   */
+  int getNodeKindValue();
+  /**
+   * <code>.iarnet.workflow.NodeKind node_kind = 5;</code>
+   * @return The nodeKind.
+   */
+  com.kekwy.iarnet.proto.workflow.NodeKind getNodeKind();
 }

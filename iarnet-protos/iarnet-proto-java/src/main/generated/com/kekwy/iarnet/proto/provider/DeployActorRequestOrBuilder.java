@@ -194,4 +194,23 @@ public interface DeployActorRequestOrBuilder extends
    */
   com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder getDownstreamGroupsOrBuilder(
       int index);
+
+  /**
+   * <pre>
+   * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+   * </pre>
+   *
+   * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+   * @return The enum numeric value on the wire for nodeKind.
+   */
+  int getNodeKindValue();
+  /**
+   * <pre>
+   * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+   * </pre>
+   *
+   * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+   * @return The nodeKind.
+   */
+  com.kekwy.iarnet.proto.workflow.NodeKind getNodeKind();
 }

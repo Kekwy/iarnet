@@ -131,6 +131,7 @@ public class DockerEngine implements ProviderEngine {
             if (hasConditions) {
                 envList.add("IARNET_CONDITION_FUNCTIONS_DIR=" + CONTAINER_CONDITIONS_DIR);
             }
+            envList.add("IARNET_NODE_KIND=" + request.getNodeKind().name());
 
             Map<String, String> labels = new HashMap<>();
             labels.put("iarnet.managed", "true");

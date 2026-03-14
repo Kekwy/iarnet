@@ -53,13 +53,17 @@ public final class Workflow {
       "node_id\030\001 \001(\t\022\022\n\nto_node_id\030\002 \001(\t\022A\n\021con" +
       "ditionFunction\030\003 \001(\0132!.iarnet.common.Fun" +
       "ctionDescriptorH\000\210\001\001B\024\n\022_conditionFuncti" +
-      "on\"\206\001\n\004Node\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\0223\n" +
+      "on\"\264\001\n\004Node\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\0223\n" +
       "\010function\030\003 \001(\0132!.iarnet.common.Function" +
       "Descriptor\022/\n\nnodeConfig\030\004 \001(\0132\033.iarnet." +
-      "workflow.NodeConfig\"R\n\nNodeConfig\022\020\n\010rep" +
-      "licas\030\001 \001(\005\0222\n\rresource_spec\030\002 \001(\0132\033.iar" +
-      "net.common.ResourceSpecB#\n\037com.kekwy.iar" +
-      "net.proto.workflowP\001b\006proto3"
+      "workflow.NodeConfig\022,\n\tnode_kind\030\005 \001(\0162\031" +
+      ".iarnet.workflow.NodeKind\"R\n\nNodeConfig\022" +
+      "\020\n\010replicas\030\001 \001(\005\0222\n\rresource_spec\030\002 \001(\013" +
+      "2\033.iarnet.common.ResourceSpec*y\n\010NodeKin" +
+      "d\022\031\n\025NODE_KIND_UNSPECIFIED\020\000\022\023\n\017NODE_KIN" +
+      "D_INPUT\020\001\022\022\n\016NODE_KIND_TASK\020\002\022\024\n\020NODE_KI" +
+      "ND_OUTPUT\020\003\022\023\n\017NODE_KIND_UNION\020\004B#\n\037com." +
+      "kekwy.iarnet.proto.workflowP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -84,7 +88,7 @@ public final class Workflow {
     internal_static_iarnet_workflow_Node_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_workflow_Node_descriptor,
-        new java.lang.String[] { "Id", "Name", "Function", "NodeConfig", });
+        new java.lang.String[] { "Id", "Name", "Function", "NodeConfig", "NodeKind", });
     internal_static_iarnet_workflow_NodeConfig_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_workflow_NodeConfig_fieldAccessorTable = new

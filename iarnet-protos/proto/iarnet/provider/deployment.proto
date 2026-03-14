@@ -4,6 +4,7 @@ package iarnet.provider;
 
 import "iarnet/common/function.proto";
 import "iarnet/common/resource.proto";
+import "iarnet/workflow/workflow.proto";
 
 option java_package = "com.kekwy.iarnet.proto.provider";
 option java_multiple_files = true;
@@ -49,6 +50,7 @@ message DeployActorRequest {
   iarnet.common.FunctionDescriptor function_descriptor = 7;  // 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
   int32 instance_index = 8;  // 该实例在逻辑组内的全局序号，用于 round-robin 偏移
   repeated DownstreamGroup downstream_groups = 9;
+  iarnet.workflow.NodeKind node_kind = 10;  // 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
 }
 
 message DeployActorResponse {

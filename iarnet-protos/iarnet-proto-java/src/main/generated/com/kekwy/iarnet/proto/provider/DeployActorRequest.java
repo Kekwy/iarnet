@@ -21,6 +21,7 @@ private static final long serialVersionUID = 0L;
     lang_ = 0;
     upstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
     downstreamGroups_ = java.util.Collections.emptyList();
+    nodeKind_ = 0;
   }
 
   @java.lang.Override
@@ -352,6 +353,32 @@ private static final long serialVersionUID = 0L;
     return downstreamGroups_.get(index);
   }
 
+  public static final int NODE_KIND_FIELD_NUMBER = 10;
+  private int nodeKind_ = 0;
+  /**
+   * <pre>
+   * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+   * </pre>
+   *
+   * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+   * @return The enum numeric value on the wire for nodeKind.
+   */
+  @java.lang.Override public int getNodeKindValue() {
+    return nodeKind_;
+  }
+  /**
+   * <pre>
+   * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+   * </pre>
+   *
+   * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+   * @return The nodeKind.
+   */
+  @java.lang.Override public com.kekwy.iarnet.proto.workflow.NodeKind getNodeKind() {
+    com.kekwy.iarnet.proto.workflow.NodeKind result = com.kekwy.iarnet.proto.workflow.NodeKind.forNumber(nodeKind_);
+    return result == null ? com.kekwy.iarnet.proto.workflow.NodeKind.UNRECOGNIZED : result;
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -389,6 +416,9 @@ private static final long serialVersionUID = 0L;
     }
     for (int i = 0; i < downstreamGroups_.size(); i++) {
       output.writeMessage(9, downstreamGroups_.get(i));
+    }
+    if (nodeKind_ != com.kekwy.iarnet.proto.workflow.NodeKind.NODE_KIND_UNSPECIFIED.getNumber()) {
+      output.writeEnum(10, nodeKind_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -433,6 +463,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(9, downstreamGroups_.get(i));
     }
+    if (nodeKind_ != com.kekwy.iarnet.proto.workflow.NodeKind.NODE_KIND_UNSPECIFIED.getNumber()) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeEnumSize(10, nodeKind_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -469,6 +503,7 @@ private static final long serialVersionUID = 0L;
         != other.getInstanceIndex()) return false;
     if (!getDownstreamGroupsList()
         .equals(other.getDownstreamGroupsList())) return false;
+    if (nodeKind_ != other.nodeKind_) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -504,6 +539,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + DOWNSTREAM_GROUPS_FIELD_NUMBER;
       hash = (53 * hash) + getDownstreamGroupsList().hashCode();
     }
+    hash = (37 * hash) + NODE_KIND_FIELD_NUMBER;
+    hash = (53 * hash) + nodeKind_;
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -656,6 +693,7 @@ private static final long serialVersionUID = 0L;
         downstreamGroupsBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00000080);
+      nodeKind_ = 0;
       return this;
     }
 
@@ -728,6 +766,9 @@ private static final long serialVersionUID = 0L;
       }
       if (((from_bitField0_ & 0x00000040) != 0)) {
         result.instanceIndex_ = instanceIndex_;
+      }
+      if (((from_bitField0_ & 0x00000100) != 0)) {
+        result.nodeKind_ = nodeKind_;
       }
     }
 
@@ -833,6 +874,9 @@ private static final long serialVersionUID = 0L;
           }
         }
       }
+      if (other.nodeKind_ != 0) {
+        setNodeKindValue(other.getNodeKindValue());
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -912,6 +956,11 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 74
+            case 80: {
+              nodeKind_ = input.readEnum();
+              bitField0_ |= 0x00000100;
+              break;
+            } // case 80
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1918,6 +1967,79 @@ private static final long serialVersionUID = 0L;
         downstreamGroups_ = null;
       }
       return downstreamGroupsBuilder_;
+    }
+
+    private int nodeKind_ = 0;
+    /**
+     * <pre>
+     * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+     * </pre>
+     *
+     * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+     * @return The enum numeric value on the wire for nodeKind.
+     */
+    @java.lang.Override public int getNodeKindValue() {
+      return nodeKind_;
+    }
+    /**
+     * <pre>
+     * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+     * </pre>
+     *
+     * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+     * @param value The enum numeric value on the wire for nodeKind to set.
+     * @return This builder for chaining.
+     */
+    public Builder setNodeKindValue(int value) {
+      nodeKind_ = value;
+      bitField0_ |= 0x00000100;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+     * </pre>
+     *
+     * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+     * @return The nodeKind.
+     */
+    @java.lang.Override
+    public com.kekwy.iarnet.proto.workflow.NodeKind getNodeKind() {
+      com.kekwy.iarnet.proto.workflow.NodeKind result = com.kekwy.iarnet.proto.workflow.NodeKind.forNumber(nodeKind_);
+      return result == null ? com.kekwy.iarnet.proto.workflow.NodeKind.UNRECOGNIZED : result;
+    }
+    /**
+     * <pre>
+     * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+     * </pre>
+     *
+     * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+     * @param value The nodeKind to set.
+     * @return This builder for chaining.
+     */
+    public Builder setNodeKind(com.kekwy.iarnet.proto.workflow.NodeKind value) {
+      if (value == null) {
+        throw new NullPointerException();
+      }
+      bitField0_ |= 0x00000100;
+      nodeKind_ = value.getNumber();
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 节点类型，由 SDK 填入，Provider 通过环境变量传给 Actor
+     * </pre>
+     *
+     * <code>.iarnet.workflow.NodeKind node_kind = 10;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearNodeKind() {
+      bitField0_ = (bitField0_ & ~0x00000100);
+      nodeKind_ = 0;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

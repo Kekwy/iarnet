@@ -13,6 +13,7 @@ public final class ActorConfig {
     private static final String ENV_ACTOR_FUNCTION_FILE = "IARNET_ACTOR_FUNCTION_FILE";
     private static final String ENV_ARTIFACT_PATH = "IARNET_ARTIFACT_PATH";
     private static final String ENV_CONDITION_FUNCTIONS_DIR = "IARNET_CONDITION_FUNCTIONS_DIR";
+    private static final String ENV_NODE_KIND = "IARNET_NODE_KIND";
 
     private static final String DEFAULT_REGISTRY_ADDR = "127.0.0.1:10000";
 
@@ -21,14 +22,16 @@ public final class ActorConfig {
     private final Path functionFile;
     private final Path artifactPath;
     private final Path conditionFunctionsDir;
+    private final FunctionInvoker.Kind nodeKind;
 
     private ActorConfig(String actorId, String registryAddr, Path functionFile,
-                        Path artifactPath, Path conditionFunctionsDir) {
+                        Path artifactPath, Path conditionFunctionsDir, FunctionInvoker.Kind nodeKind) {
         this.actorId = actorId;
         this.registryAddr = registryAddr;
         this.functionFile = functionFile;
         this.artifactPath = artifactPath;
         this.conditionFunctionsDir = conditionFunctionsDir;
+        this.nodeKind = nodeKind;
     }
 
     /**
@@ -66,7 +69,21 @@ public final class ActorConfig {
             conditionFunctionsDir = Path.of(conditionDirStr);
         }
 
-        return new ActorConfig(actorId, registryAddr, functionFile, artifactPath, conditionFunctionsDir);
+        FunctionInvoker.Kind nodeKind = parseNodeKind(System.getenv(ENV_NODE_KIND));
+
+        return new ActorConfig(actorId, registryAddr, functionFile, artifactPath, conditionFunctionsDir, nodeKind);
+    }
+
+    /** 解析 IARNET_NODE_KIND 环境变量（如 NODE_KIND_INPUT），未设置或无效时返回 null，由 FunctionInvoker 回退到元数据推断。 */
+    private static FunctionInvoker.Kind parseNodeKind(String value) {
+        if (value == null || value.isBlank()) return null;
+        return switch (value.trim().toUpperCase()) {
+            case "NODE_KIND_INPUT" -> FunctionInvoker.Kind.INPUT;
+            case "NODE_KIND_TASK" -> FunctionInvoker.Kind.TASK;
+            case "NODE_KIND_OUTPUT" -> FunctionInvoker.Kind.OUTPUT;
+            case "NODE_KIND_UNION" -> FunctionInvoker.Kind.UNION;
+            default -> null;
+        };
     }
 
     public String getActorId() {
@@ -97,5 +114,10 @@ public final class ActorConfig {
 
     public boolean hasConditionFunctions() {
         return conditionFunctionsDir != null;
+    }
+
+    /** 节点类型（由 Provider 通过 IARNET_NODE_KIND 传入），可为 null 表示由 FunctionInvoker 根据描述符推断。 */
+    public FunctionInvoker.Kind getNodeKind() {
+        return nodeKind;
     }
 }

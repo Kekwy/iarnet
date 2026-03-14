@@ -85,65 +85,68 @@ public final class Deployment {
     java.lang.String[] descriptorData = {
       "\n iarnet/provider/deployment.proto\022\017iarn" +
       "et.provider\032\034iarnet/common/function.prot" +
-      "o\032\034iarnet/common/resource.proto\"\201\005\n\022Depl" +
-      "oymentEnvelope\022\022\n\nmessage_id\030\001 \001(\t\022\026\n\016co" +
-      "rrelation_id\030\002 \001(\t\022C\n\024deploy_actor_reque" +
-      "st\030\003 \001(\0132#.iarnet.provider.DeployActorRe" +
-      "questH\000\022E\n\025deploy_actor_response\030\004 \001(\0132$" +
-      ".iarnet.provider.DeployActorResponseH\000\022?" +
-      "\n\022stop_actor_request\030\005 \001(\0132!.iarnet.prov" +
-      "ider.StopActorRequestH\000\022A\n\023stop_actor_re" +
-      "sponse\030\006 \001(\0132\".iarnet.provider.StopActor" +
-      "ResponseH\000\022C\n\024remove_actor_request\030\007 \001(\013" +
-      "2#.iarnet.provider.RemoveActorRequestH\000\022" +
-      "E\n\025remove_actor_response\030\010 \001(\0132$.iarnet." +
-      "provider.RemoveActorResponseH\000\022J\n\030get_ac" +
-      "tor_status_request\030\t \001(\0132&.iarnet.provid" +
-      "er.GetActorStatusRequestH\000\022L\n\031get_actor_" +
-      "status_response\030\n \001(\0132\'.iarnet.provider." +
-      "GetActorStatusResponseH\000B\t\n\007message\"\357\001\n\017" +
-      "DownstreamGroup\022\033\n\023logical_operator_id\030\001" +
-      " \001(\t\022\023\n\013actor_addrs\030\002 \003(\t\022:\n\020routing_str" +
-      "ategy\030\003 \001(\0162 .iarnet.provider.RoutingStr" +
-      "ategy\022\023\n\013output_port\030\004 \001(\005\022B\n\022condition_" +
-      "function\030\005 \001(\0132!.iarnet.common.FunctionD" +
-      "escriptorH\000\210\001\001B\025\n\023_condition_function\"\317\002" +
-      "\n\022DeployActorRequest\022\020\n\010actor_id\030\001 \001(\t\022\024" +
-      "\n\014artifact_url\030\002 \001(\t\0225\n\020resource_request" +
-      "\030\003 \001(\0132\033.iarnet.common.ResourceSpec\022!\n\004l" +
-      "ang\030\004 \001(\0162\023.iarnet.common.Lang\022\034\n\024upstre" +
-      "am_actor_addrs\030\005 \003(\t\022>\n\023function_descrip" +
-      "tor\030\007 \001(\0132!.iarnet.common.FunctionDescri" +
-      "ptor\022\026\n\016instance_index\030\010 \001(\005\022;\n\021downstre" +
-      "am_groups\030\t \003(\0132 .iarnet.provider.Downst" +
-      "reamGroupJ\004\010\006\020\007\"@\n\023DeployActorResponse\022)" +
-      "\n\005actor\030\001 \001(\0132\032.iarnet.provider.ActorInf" +
-      "o\"$\n\020StopActorRequest\022\020\n\010actor_id\030\001 \001(\t\"" +
-      "5\n\021StopActorResponse\022\017\n\007success\030\001 \001(\010\022\017\n" +
-      "\007message\030\002 \001(\t\"&\n\022RemoveActorRequest\022\020\n\010" +
-      "actor_id\030\001 \001(\t\"7\n\023RemoveActorResponse\022\017\n" +
-      "\007success\030\001 \001(\010\022\017\n\007message\030\002 \001(\t\")\n\025GetAc" +
-      "torStatusRequest\022\020\n\010actor_id\030\001 \001(\t\"C\n\026Ge" +
-      "tActorStatusResponse\022)\n\005actor\030\001 \001(\0132\032.ia" +
-      "rnet.provider.ActorInfo\"\231\001\n\020ResourceCapa" +
-      "city\022*\n\005total\030\001 \001(\0132\033.iarnet.common.Reso" +
-      "urceSpec\022)\n\004used\030\002 \001(\0132\033.iarnet.common.R" +
-      "esourceSpec\022.\n\tavailable\030\003 \001(\0132\033.iarnet." +
-      "common.ResourceSpec\"\\\n\tActorInfo\022\020\n\010acto" +
-      "r_id\030\001 \001(\t\022,\n\006status\030\002 \001(\0162\034.iarnet.prov" +
-      "ider.ActorStatus\022\017\n\007message\030\003 \001(\t*X\n\017Rou" +
-      "tingStrategy\022 \n\034ROUTING_STRATEGY_UNSPECI" +
-      "FIED\020\000\022\017\n\013ROUND_ROBIN\020\001\022\022\n\016HASH_BY_ROW_I" +
-      "D\020\002*k\n\013ActorStatus\022\034\n\030ACTOR_STATUS_UNSPE" +
-      "CIFIED\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNNING\020\002\022\013\n\007ST" +
-      "OPPED\020\003\022\n\n\006FAILED\020\004\022\013\n\007REMOVED\020\005B#\n\037com." +
-      "kekwy.iarnet.proto.providerP\001b\006proto3"
+      "o\032\034iarnet/common/resource.proto\032\036iarnet/" +
+      "workflow/workflow.proto\"\201\005\n\022DeploymentEn" +
+      "velope\022\022\n\nmessage_id\030\001 \001(\t\022\026\n\016correlatio" +
+      "n_id\030\002 \001(\t\022C\n\024deploy_actor_request\030\003 \001(\013" +
+      "2#.iarnet.provider.DeployActorRequestH\000\022" +
+      "E\n\025deploy_actor_response\030\004 \001(\0132$.iarnet." +
+      "provider.DeployActorResponseH\000\022?\n\022stop_a" +
+      "ctor_request\030\005 \001(\0132!.iarnet.provider.Sto" +
+      "pActorRequestH\000\022A\n\023stop_actor_response\030\006" +
+      " \001(\0132\".iarnet.provider.StopActorResponse" +
+      "H\000\022C\n\024remove_actor_request\030\007 \001(\0132#.iarne" +
+      "t.provider.RemoveActorRequestH\000\022E\n\025remov" +
+      "e_actor_response\030\010 \001(\0132$.iarnet.provider" +
+      ".RemoveActorResponseH\000\022J\n\030get_actor_stat" +
+      "us_request\030\t \001(\0132&.iarnet.provider.GetAc" +
+      "torStatusRequestH\000\022L\n\031get_actor_status_r" +
+      "esponse\030\n \001(\0132\'.iarnet.provider.GetActor" +
+      "StatusResponseH\000B\t\n\007message\"\357\001\n\017Downstre" +
+      "amGroup\022\033\n\023logical_operator_id\030\001 \001(\t\022\023\n\013" +
+      "actor_addrs\030\002 \003(\t\022:\n\020routing_strategy\030\003 " +
+      "\001(\0162 .iarnet.provider.RoutingStrategy\022\023\n" +
+      "\013output_port\030\004 \001(\005\022B\n\022condition_function" +
+      "\030\005 \001(\0132!.iarnet.common.FunctionDescripto" +
+      "rH\000\210\001\001B\025\n\023_condition_function\"\375\002\n\022Deploy" +
+      "ActorRequest\022\020\n\010actor_id\030\001 \001(\t\022\024\n\014artifa" +
+      "ct_url\030\002 \001(\t\0225\n\020resource_request\030\003 \001(\0132\033" +
+      ".iarnet.common.ResourceSpec\022!\n\004lang\030\004 \001(" +
+      "\0162\023.iarnet.common.Lang\022\034\n\024upstream_actor" +
+      "_addrs\030\005 \003(\t\022>\n\023function_descriptor\030\007 \001(" +
+      "\0132!.iarnet.common.FunctionDescriptor\022\026\n\016" +
+      "instance_index\030\010 \001(\005\022;\n\021downstream_group" +
+      "s\030\t \003(\0132 .iarnet.provider.DownstreamGrou" +
+      "p\022,\n\tnode_kind\030\n \001(\0162\031.iarnet.workflow.N" +
+      "odeKindJ\004\010\006\020\007\"@\n\023DeployActorResponse\022)\n\005" +
+      "actor\030\001 \001(\0132\032.iarnet.provider.ActorInfo\"" +
+      "$\n\020StopActorRequest\022\020\n\010actor_id\030\001 \001(\t\"5\n" +
+      "\021StopActorResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007m" +
+      "essage\030\002 \001(\t\"&\n\022RemoveActorRequest\022\020\n\010ac" +
+      "tor_id\030\001 \001(\t\"7\n\023RemoveActorResponse\022\017\n\007s" +
+      "uccess\030\001 \001(\010\022\017\n\007message\030\002 \001(\t\")\n\025GetActo" +
+      "rStatusRequest\022\020\n\010actor_id\030\001 \001(\t\"C\n\026GetA" +
+      "ctorStatusResponse\022)\n\005actor\030\001 \001(\0132\032.iarn" +
+      "et.provider.ActorInfo\"\231\001\n\020ResourceCapaci" +
+      "ty\022*\n\005total\030\001 \001(\0132\033.iarnet.common.Resour" +
+      "ceSpec\022)\n\004used\030\002 \001(\0132\033.iarnet.common.Res" +
+      "ourceSpec\022.\n\tavailable\030\003 \001(\0132\033.iarnet.co" +
+      "mmon.ResourceSpec\"\\\n\tActorInfo\022\020\n\010actor_" +
+      "id\030\001 \001(\t\022,\n\006status\030\002 \001(\0162\034.iarnet.provid" +
+      "er.ActorStatus\022\017\n\007message\030\003 \001(\t*X\n\017Routi" +
+      "ngStrategy\022 \n\034ROUTING_STRATEGY_UNSPECIFI" +
+      "ED\020\000\022\017\n\013ROUND_ROBIN\020\001\022\022\n\016HASH_BY_ROW_ID\020" +
+      "\002*k\n\013ActorStatus\022\034\n\030ACTOR_STATUS_UNSPECI" +
+      "FIED\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNNING\020\002\022\013\n\007STOP" +
+      "PED\020\003\022\n\n\006FAILED\020\004\022\013\n\007REMOVED\020\005B#\n\037com.ke" +
+      "kwy.iarnet.proto.providerP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           com.kekwy.iarnet.proto.common.Function.getDescriptor(),
           com.kekwy.iarnet.proto.common.Resource.getDescriptor(),
+          com.kekwy.iarnet.proto.workflow.Workflow.getDescriptor(),
         });
     internal_static_iarnet_provider_DeploymentEnvelope_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -162,7 +165,7 @@ public final class Deployment {
     internal_static_iarnet_provider_DeployActorRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_DeployActorRequest_descriptor,
-        new java.lang.String[] { "ActorId", "ArtifactUrl", "ResourceRequest", "Lang", "UpstreamActorAddrs", "FunctionDescriptor", "InstanceIndex", "DownstreamGroups", });
+        new java.lang.String[] { "ActorId", "ArtifactUrl", "ResourceRequest", "Lang", "UpstreamActorAddrs", "FunctionDescriptor", "InstanceIndex", "DownstreamGroups", "NodeKind", });
     internal_static_iarnet_provider_DeployActorResponse_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_provider_DeployActorResponse_fieldAccessorTable = new
@@ -219,6 +222,7 @@ public final class Deployment {
         new java.lang.String[] { "ActorId", "Status", "Message", });
     com.kekwy.iarnet.proto.common.Function.getDescriptor();
     com.kekwy.iarnet.proto.common.Resource.getDescriptor();
+    com.kekwy.iarnet.proto.workflow.Workflow.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

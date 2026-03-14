@@ -165,7 +165,8 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
                 .setLang(spec.function().getLang())
                 .addAllUpstreamActorAddrs(upstreamActorIds)
                 .setInstanceIndex(spec.instanceIndex())
-                .addAllDownstreamGroups(downstreamGroups);
+                .addAllDownstreamGroups(downstreamGroups)
+                .setNodeKind(spec.nodeKind());
 
         if (spec.artifactUrl() != null && !spec.artifactUrl().isBlank()) {
             reqBuilder.setArtifactUrl(spec.artifactUrl());
