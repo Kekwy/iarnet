@@ -4,7 +4,10 @@ import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
 import com.kekwy.iarnet.fabric.actor.ActorRegistry;
 import com.kekwy.iarnet.fabric.actor.ActorLifecycleListener;
 import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
+import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.provider.DeployActorRequest;
+import com.kekwy.iarnet.proto.provider.DownstreamGroup;
+import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -85,11 +88,65 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
 
         for (ActorSpec spec : specs) {
             List<String> upstreams = upstreamsByActorId.getOrDefault(spec.actorId(), List.of());
-            List<String> downstreams = downstreamsByActorId.getOrDefault(spec.actorId(), List.of());
-            sendDeployActorRequest(deploymentId, spec, upstreams, downstreams);
+            List<DownstreamGroup> downstreamGroups = buildDownstreamGroups(spec.actorId(), edges);
+            sendDeployActorRequest(deploymentId, spec, upstreams, downstreamGroups);
         }
 
         log.info("部署请求已发出: deploymentId={}, actors={}", deploymentId, allActorIds.size());
+    }
+
+    /**
+     * 按 (outputPort, 目标 nodeId) 将边分组，构建 DownstreamGroup 列表。
+     */
+    private static List<DownstreamGroup> buildDownstreamGroups(String sourceActorId, List<ActorEdge> edges) {
+        // key: (outputPort, logicalOperatorId) -> (actor_addrs, routingStrategy, conditionFn)
+        Map<String, List<String>> addrsByKey = new HashMap<>();
+        Map<String, RoutingStrategy> strategyByKey = new HashMap<>();
+        Map<String, FunctionDescriptor> conditionByKey = new HashMap<>();
+
+        for (ActorEdge edge : edges) {
+            if (!edge.fromActorId().equals(sourceActorId)) {
+                continue;
+            }
+            String logicalId = extractNodeIdFromActorId(edge.toActorId());
+            String key = edge.outputPort() + ":" + logicalId;
+
+            addrsByKey.computeIfAbsent(key, k -> new ArrayList<>()).add(edge.toActorId());
+            strategyByKey.putIfAbsent(key, edge.routingStrategy());
+            if (edge.functionDescriptor() != null) {
+                conditionByKey.putIfAbsent(key, edge.functionDescriptor());
+            }
+        }
+
+        List<DownstreamGroup> result = new ArrayList<>();
+        for (Map.Entry<String, List<String>> e : addrsByKey.entrySet()) {
+            String[] parts = e.getKey().split(":", 2);
+            int outputPort = Integer.parseInt(parts[0]);
+            String logicalOperatorId = parts[1];
+            DownstreamGroup.Builder builder = DownstreamGroup.newBuilder()
+                    .setLogicalOperatorId(logicalOperatorId)
+                    .addAllActorAddrs(e.getValue())
+                    .setRoutingStrategy(strategyByKey.get(e.getKey()))
+                    .setOutputPort(outputPort);
+            FunctionDescriptor cond = conditionByKey.get(e.getKey());
+            if (cond != null) {
+                builder.setConditionFunction(cond);
+            }
+            result.add(builder.build());
+        }
+        return result;
+    }
+
+    private static String extractNodeIdFromActorId(String actorId) {
+        if (actorId == null || !actorId.startsWith("actor-")) {
+            return actorId != null ? actorId : "";
+        }
+        int prefixLen = "actor-".length();
+        int lastHyphen = actorId.lastIndexOf('-');
+        if (lastHyphen <= prefixLen) {
+            return actorId.substring(prefixLen);
+        }
+        return actorId.substring(prefixLen, lastHyphen);
     }
 
     /**
@@ -101,13 +158,14 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
     private void sendDeployActorRequest(String deploymentId,
                                         ActorSpec spec,
                                         List<String> upstreamActorIds,
-                                        List<String> downstreamActorIds) {
+                                        List<DownstreamGroup> downstreamGroups) {
         DeployActorRequest.Builder reqBuilder = DeployActorRequest.newBuilder()
                 .setActorId(spec.actorId())
                 .setResourceRequest(spec.resourceSpec())
                 .setLang(spec.function().getLang())
                 .addAllUpstreamActorAddrs(upstreamActorIds)
-                .addAllDownstreamActorAddrs(downstreamActorIds);
+                .setInstanceIndex(spec.instanceIndex())
+                .addAllDownstreamGroups(downstreamGroups);
 
         if (spec.artifactUrl() != null && !spec.artifactUrl().isBlank()) {
             reqBuilder.setArtifactUrl(spec.artifactUrl());
@@ -119,8 +177,8 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
         DeployActorRequest request = reqBuilder.build();
 
         // TODO: 通过 ProviderRegistryService.DeploymentChannel 发送 DeploymentEnvelope
-        log.info("发送部署请求: deploymentId={}, actorId={}, upstreams={}, downstreams={}",
-                deploymentId, spec.actorId(), upstreamActorIds, downstreamActorIds);
+        log.info("发送部署请求: deploymentId={}, actorId={}, upstreams={}, downstreamGroups={}",
+                deploymentId, spec.actorId(), upstreamActorIds, downstreamGroups.size());
     }
 
     // ======================== Actor 生命周期事件路由 ========================

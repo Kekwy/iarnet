@@ -161,7 +161,7 @@ public enum ActorStatus
   }
   public static final com.google.protobuf.Descriptors.EnumDescriptor
       getDescriptor() {
-    return com.kekwy.iarnet.proto.provider.Deployment.getDescriptor().getEnumTypes().get(0);
+    return com.kekwy.iarnet.proto.provider.Deployment.getDescriptor().getEnumTypes().get(1);
   }
 
   private static final ActorStatus[] VALUES = values();

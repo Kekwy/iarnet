@@ -20,7 +20,7 @@ private static final long serialVersionUID = 0L;
     artifactUrl_ = "";
     lang_ = 0;
     upstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-    downstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    downstreamGroups_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -258,58 +258,6 @@ private static final long serialVersionUID = 0L;
     return upstreamActorAddrs_.getByteString(index);
   }
 
-  public static final int DOWNSTREAM_ACTOR_ADDRS_FIELD_NUMBER = 6;
-  @SuppressWarnings("serial")
-  private com.google.protobuf.LazyStringList downstreamActorAddrs_;
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @return A list containing the downstreamActorAddrs.
-   */
-  public com.google.protobuf.ProtocolStringList
-      getDownstreamActorAddrsList() {
-    return downstreamActorAddrs_;
-  }
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @return The count of downstreamActorAddrs.
-   */
-  public int getDownstreamActorAddrsCount() {
-    return downstreamActorAddrs_.size();
-  }
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @param index The index of the element to return.
-   * @return The downstreamActorAddrs at the given index.
-   */
-  public java.lang.String getDownstreamActorAddrs(int index) {
-    return downstreamActorAddrs_.get(index);
-  }
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @param index The index of the value to return.
-   * @return The bytes of the downstreamActorAddrs at the given index.
-   */
-  public com.google.protobuf.ByteString
-      getDownstreamActorAddrsBytes(int index) {
-    return downstreamActorAddrs_.getByteString(index);
-  }
-
   public static final int FUNCTION_DESCRIPTOR_FIELD_NUMBER = 7;
   private com.kekwy.iarnet.proto.common.FunctionDescriptor functionDescriptor_;
   /**
@@ -348,6 +296,62 @@ private static final long serialVersionUID = 0L;
     return functionDescriptor_ == null ? com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance() : functionDescriptor_;
   }
 
+  public static final int INSTANCE_INDEX_FIELD_NUMBER = 8;
+  private int instanceIndex_ = 0;
+  /**
+   * <pre>
+   * 该实例在逻辑组内的全局序号，用于 round-robin 偏移
+   * </pre>
+   *
+   * <code>int32 instance_index = 8;</code>
+   * @return The instanceIndex.
+   */
+  @java.lang.Override
+  public int getInstanceIndex() {
+    return instanceIndex_;
+  }
+
+  public static final int DOWNSTREAM_GROUPS_FIELD_NUMBER = 9;
+  @SuppressWarnings("serial")
+  private java.util.List<com.kekwy.iarnet.proto.provider.DownstreamGroup> downstreamGroups_;
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  @java.lang.Override
+  public java.util.List<com.kekwy.iarnet.proto.provider.DownstreamGroup> getDownstreamGroupsList() {
+    return downstreamGroups_;
+  }
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder> 
+      getDownstreamGroupsOrBuilderList() {
+    return downstreamGroups_;
+  }
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  @java.lang.Override
+  public int getDownstreamGroupsCount() {
+    return downstreamGroups_.size();
+  }
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.provider.DownstreamGroup getDownstreamGroups(int index) {
+    return downstreamGroups_.get(index);
+  }
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  @java.lang.Override
+  public com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder getDownstreamGroupsOrBuilder(
+      int index) {
+    return downstreamGroups_.get(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -377,11 +381,14 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < upstreamActorAddrs_.size(); i++) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 5, upstreamActorAddrs_.getRaw(i));
     }
-    for (int i = 0; i < downstreamActorAddrs_.size(); i++) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 6, downstreamActorAddrs_.getRaw(i));
-    }
     if (functionDescriptor_ != null) {
       output.writeMessage(7, getFunctionDescriptor());
+    }
+    if (instanceIndex_ != 0) {
+      output.writeInt32(8, instanceIndex_);
+    }
+    for (int i = 0; i < downstreamGroups_.size(); i++) {
+      output.writeMessage(9, downstreamGroups_.get(i));
     }
     getUnknownFields().writeTo(output);
   }
@@ -414,17 +421,17 @@ private static final long serialVersionUID = 0L;
       size += dataSize;
       size += 1 * getUpstreamActorAddrsList().size();
     }
-    {
-      int dataSize = 0;
-      for (int i = 0; i < downstreamActorAddrs_.size(); i++) {
-        dataSize += computeStringSizeNoTag(downstreamActorAddrs_.getRaw(i));
-      }
-      size += dataSize;
-      size += 1 * getDownstreamActorAddrsList().size();
-    }
     if (functionDescriptor_ != null) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(7, getFunctionDescriptor());
+    }
+    if (instanceIndex_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(8, instanceIndex_);
+    }
+    for (int i = 0; i < downstreamGroups_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(9, downstreamGroups_.get(i));
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -453,13 +460,15 @@ private static final long serialVersionUID = 0L;
     if (lang_ != other.lang_) return false;
     if (!getUpstreamActorAddrsList()
         .equals(other.getUpstreamActorAddrsList())) return false;
-    if (!getDownstreamActorAddrsList()
-        .equals(other.getDownstreamActorAddrsList())) return false;
     if (hasFunctionDescriptor() != other.hasFunctionDescriptor()) return false;
     if (hasFunctionDescriptor()) {
       if (!getFunctionDescriptor()
           .equals(other.getFunctionDescriptor())) return false;
     }
+    if (getInstanceIndex()
+        != other.getInstanceIndex()) return false;
+    if (!getDownstreamGroupsList()
+        .equals(other.getDownstreamGroupsList())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -485,13 +494,15 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + UPSTREAM_ACTOR_ADDRS_FIELD_NUMBER;
       hash = (53 * hash) + getUpstreamActorAddrsList().hashCode();
     }
-    if (getDownstreamActorAddrsCount() > 0) {
-      hash = (37 * hash) + DOWNSTREAM_ACTOR_ADDRS_FIELD_NUMBER;
-      hash = (53 * hash) + getDownstreamActorAddrsList().hashCode();
-    }
     if (hasFunctionDescriptor()) {
       hash = (37 * hash) + FUNCTION_DESCRIPTOR_FIELD_NUMBER;
       hash = (53 * hash) + getFunctionDescriptor().hashCode();
+    }
+    hash = (37 * hash) + INSTANCE_INDEX_FIELD_NUMBER;
+    hash = (53 * hash) + getInstanceIndex();
+    if (getDownstreamGroupsCount() > 0) {
+      hash = (37 * hash) + DOWNSTREAM_GROUPS_FIELD_NUMBER;
+      hash = (53 * hash) + getDownstreamGroupsList().hashCode();
     }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
@@ -632,13 +643,19 @@ private static final long serialVersionUID = 0L;
       lang_ = 0;
       upstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
       bitField0_ = (bitField0_ & ~0x00000010);
-      downstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000020);
       functionDescriptor_ = null;
       if (functionDescriptorBuilder_ != null) {
         functionDescriptorBuilder_.dispose();
         functionDescriptorBuilder_ = null;
       }
+      instanceIndex_ = 0;
+      if (downstreamGroupsBuilder_ == null) {
+        downstreamGroups_ = java.util.Collections.emptyList();
+      } else {
+        downstreamGroups_ = null;
+        downstreamGroupsBuilder_.clear();
+      }
+      bitField0_ = (bitField0_ & ~0x00000080);
       return this;
     }
 
@@ -677,11 +694,15 @@ private static final long serialVersionUID = 0L;
         bitField0_ = (bitField0_ & ~0x00000010);
       }
       result.upstreamActorAddrs_ = upstreamActorAddrs_;
-      if (((bitField0_ & 0x00000020) != 0)) {
-        downstreamActorAddrs_ = downstreamActorAddrs_.getUnmodifiableView();
-        bitField0_ = (bitField0_ & ~0x00000020);
+      if (downstreamGroupsBuilder_ == null) {
+        if (((bitField0_ & 0x00000080) != 0)) {
+          downstreamGroups_ = java.util.Collections.unmodifiableList(downstreamGroups_);
+          bitField0_ = (bitField0_ & ~0x00000080);
+        }
+        result.downstreamGroups_ = downstreamGroups_;
+      } else {
+        result.downstreamGroups_ = downstreamGroupsBuilder_.build();
       }
-      result.downstreamActorAddrs_ = downstreamActorAddrs_;
     }
 
     private void buildPartial0(com.kekwy.iarnet.proto.provider.DeployActorRequest result) {
@@ -700,10 +721,13 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000008) != 0)) {
         result.lang_ = lang_;
       }
-      if (((from_bitField0_ & 0x00000040) != 0)) {
+      if (((from_bitField0_ & 0x00000020) != 0)) {
         result.functionDescriptor_ = functionDescriptorBuilder_ == null
             ? functionDescriptor_
             : functionDescriptorBuilder_.build();
+      }
+      if (((from_bitField0_ & 0x00000040) != 0)) {
+        result.instanceIndex_ = instanceIndex_;
       }
     }
 
@@ -777,18 +801,37 @@ private static final long serialVersionUID = 0L;
         }
         onChanged();
       }
-      if (!other.downstreamActorAddrs_.isEmpty()) {
-        if (downstreamActorAddrs_.isEmpty()) {
-          downstreamActorAddrs_ = other.downstreamActorAddrs_;
-          bitField0_ = (bitField0_ & ~0x00000020);
-        } else {
-          ensureDownstreamActorAddrsIsMutable();
-          downstreamActorAddrs_.addAll(other.downstreamActorAddrs_);
-        }
-        onChanged();
-      }
       if (other.hasFunctionDescriptor()) {
         mergeFunctionDescriptor(other.getFunctionDescriptor());
+      }
+      if (other.getInstanceIndex() != 0) {
+        setInstanceIndex(other.getInstanceIndex());
+      }
+      if (downstreamGroupsBuilder_ == null) {
+        if (!other.downstreamGroups_.isEmpty()) {
+          if (downstreamGroups_.isEmpty()) {
+            downstreamGroups_ = other.downstreamGroups_;
+            bitField0_ = (bitField0_ & ~0x00000080);
+          } else {
+            ensureDownstreamGroupsIsMutable();
+            downstreamGroups_.addAll(other.downstreamGroups_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.downstreamGroups_.isEmpty()) {
+          if (downstreamGroupsBuilder_.isEmpty()) {
+            downstreamGroupsBuilder_.dispose();
+            downstreamGroupsBuilder_ = null;
+            downstreamGroups_ = other.downstreamGroups_;
+            bitField0_ = (bitField0_ & ~0x00000080);
+            downstreamGroupsBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getDownstreamGroupsFieldBuilder() : null;
+          } else {
+            downstreamGroupsBuilder_.addAllMessages(other.downstreamGroups_);
+          }
+        }
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -844,19 +887,31 @@ private static final long serialVersionUID = 0L;
               upstreamActorAddrs_.add(s);
               break;
             } // case 42
-            case 50: {
-              java.lang.String s = input.readStringRequireUtf8();
-              ensureDownstreamActorAddrsIsMutable();
-              downstreamActorAddrs_.add(s);
-              break;
-            } // case 50
             case 58: {
               input.readMessage(
                   getFunctionDescriptorFieldBuilder().getBuilder(),
                   extensionRegistry);
-              bitField0_ |= 0x00000040;
+              bitField0_ |= 0x00000020;
               break;
             } // case 58
+            case 64: {
+              instanceIndex_ = input.readInt32();
+              bitField0_ |= 0x00000040;
+              break;
+            } // case 64
+            case 74: {
+              com.kekwy.iarnet.proto.provider.DownstreamGroup m =
+                  input.readMessage(
+                      com.kekwy.iarnet.proto.provider.DownstreamGroup.parser(),
+                      extensionRegistry);
+              if (downstreamGroupsBuilder_ == null) {
+                ensureDownstreamGroupsIsMutable();
+                downstreamGroups_.add(m);
+              } else {
+                downstreamGroupsBuilder_.addMessage(m);
+              }
+              break;
+            } // case 74
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1426,146 +1481,6 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private com.google.protobuf.LazyStringList downstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-    private void ensureDownstreamActorAddrsIsMutable() {
-      if (!((bitField0_ & 0x00000020) != 0)) {
-        downstreamActorAddrs_ = new com.google.protobuf.LazyStringArrayList(downstreamActorAddrs_);
-        bitField0_ |= 0x00000020;
-       }
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @return A list containing the downstreamActorAddrs.
-     */
-    public com.google.protobuf.ProtocolStringList
-        getDownstreamActorAddrsList() {
-      return downstreamActorAddrs_.getUnmodifiableView();
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @return The count of downstreamActorAddrs.
-     */
-    public int getDownstreamActorAddrsCount() {
-      return downstreamActorAddrs_.size();
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @param index The index of the element to return.
-     * @return The downstreamActorAddrs at the given index.
-     */
-    public java.lang.String getDownstreamActorAddrs(int index) {
-      return downstreamActorAddrs_.get(index);
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @param index The index of the value to return.
-     * @return The bytes of the downstreamActorAddrs at the given index.
-     */
-    public com.google.protobuf.ByteString
-        getDownstreamActorAddrsBytes(int index) {
-      return downstreamActorAddrs_.getByteString(index);
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @param index The index to set the value at.
-     * @param value The downstreamActorAddrs to set.
-     * @return This builder for chaining.
-     */
-    public Builder setDownstreamActorAddrs(
-        int index, java.lang.String value) {
-      if (value == null) { throw new NullPointerException(); }
-      ensureDownstreamActorAddrsIsMutable();
-      downstreamActorAddrs_.set(index, value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @param value The downstreamActorAddrs to add.
-     * @return This builder for chaining.
-     */
-    public Builder addDownstreamActorAddrs(
-        java.lang.String value) {
-      if (value == null) { throw new NullPointerException(); }
-      ensureDownstreamActorAddrsIsMutable();
-      downstreamActorAddrs_.add(value);
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @param values The downstreamActorAddrs to add.
-     * @return This builder for chaining.
-     */
-    public Builder addAllDownstreamActorAddrs(
-        java.lang.Iterable<java.lang.String> values) {
-      ensureDownstreamActorAddrsIsMutable();
-      com.google.protobuf.AbstractMessageLite.Builder.addAll(
-          values, downstreamActorAddrs_);
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @return This builder for chaining.
-     */
-    public Builder clearDownstreamActorAddrs() {
-      downstreamActorAddrs_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000020);
-      onChanged();
-      return this;
-    }
-    /**
-     * <pre>
-     * 下游 Actor 的虚拟地址列表
-     * </pre>
-     *
-     * <code>repeated string downstream_actor_addrs = 6;</code>
-     * @param value The bytes of the downstreamActorAddrs to add.
-     * @return This builder for chaining.
-     */
-    public Builder addDownstreamActorAddrsBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) { throw new NullPointerException(); }
-      checkByteStringIsUtf8(value);
-      ensureDownstreamActorAddrsIsMutable();
-      downstreamActorAddrs_.add(value);
-      onChanged();
-      return this;
-    }
-
     private com.kekwy.iarnet.proto.common.FunctionDescriptor functionDescriptor_;
     private com.google.protobuf.SingleFieldBuilderV3<
         com.kekwy.iarnet.proto.common.FunctionDescriptor, com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder, com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder> functionDescriptorBuilder_;
@@ -1578,7 +1493,7 @@ private static final long serialVersionUID = 0L;
      * @return Whether the functionDescriptor field is set.
      */
     public boolean hasFunctionDescriptor() {
-      return ((bitField0_ & 0x00000040) != 0);
+      return ((bitField0_ & 0x00000020) != 0);
     }
     /**
      * <pre>
@@ -1611,7 +1526,7 @@ private static final long serialVersionUID = 0L;
       } else {
         functionDescriptorBuilder_.setMessage(value);
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -1629,7 +1544,7 @@ private static final long serialVersionUID = 0L;
       } else {
         functionDescriptorBuilder_.setMessage(builderForValue.build());
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -1642,7 +1557,7 @@ private static final long serialVersionUID = 0L;
      */
     public Builder mergeFunctionDescriptor(com.kekwy.iarnet.proto.common.FunctionDescriptor value) {
       if (functionDescriptorBuilder_ == null) {
-        if (((bitField0_ & 0x00000040) != 0) &&
+        if (((bitField0_ & 0x00000020) != 0) &&
           functionDescriptor_ != null &&
           functionDescriptor_ != com.kekwy.iarnet.proto.common.FunctionDescriptor.getDefaultInstance()) {
           getFunctionDescriptorBuilder().mergeFrom(value);
@@ -1652,7 +1567,7 @@ private static final long serialVersionUID = 0L;
       } else {
         functionDescriptorBuilder_.mergeFrom(value);
       }
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -1664,7 +1579,7 @@ private static final long serialVersionUID = 0L;
      * <code>.iarnet.common.FunctionDescriptor function_descriptor = 7;</code>
      */
     public Builder clearFunctionDescriptor() {
-      bitField0_ = (bitField0_ & ~0x00000040);
+      bitField0_ = (bitField0_ & ~0x00000020);
       functionDescriptor_ = null;
       if (functionDescriptorBuilder_ != null) {
         functionDescriptorBuilder_.dispose();
@@ -1681,7 +1596,7 @@ private static final long serialVersionUID = 0L;
      * <code>.iarnet.common.FunctionDescriptor function_descriptor = 7;</code>
      */
     public com.kekwy.iarnet.proto.common.FunctionDescriptor.Builder getFunctionDescriptorBuilder() {
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000020;
       onChanged();
       return getFunctionDescriptorFieldBuilder().getBuilder();
     }
@@ -1719,6 +1634,290 @@ private static final long serialVersionUID = 0L;
         functionDescriptor_ = null;
       }
       return functionDescriptorBuilder_;
+    }
+
+    private int instanceIndex_ ;
+    /**
+     * <pre>
+     * 该实例在逻辑组内的全局序号，用于 round-robin 偏移
+     * </pre>
+     *
+     * <code>int32 instance_index = 8;</code>
+     * @return The instanceIndex.
+     */
+    @java.lang.Override
+    public int getInstanceIndex() {
+      return instanceIndex_;
+    }
+    /**
+     * <pre>
+     * 该实例在逻辑组内的全局序号，用于 round-robin 偏移
+     * </pre>
+     *
+     * <code>int32 instance_index = 8;</code>
+     * @param value The instanceIndex to set.
+     * @return This builder for chaining.
+     */
+    public Builder setInstanceIndex(int value) {
+      
+      instanceIndex_ = value;
+      bitField0_ |= 0x00000040;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 该实例在逻辑组内的全局序号，用于 round-robin 偏移
+     * </pre>
+     *
+     * <code>int32 instance_index = 8;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearInstanceIndex() {
+      bitField0_ = (bitField0_ & ~0x00000040);
+      instanceIndex_ = 0;
+      onChanged();
+      return this;
+    }
+
+    private java.util.List<com.kekwy.iarnet.proto.provider.DownstreamGroup> downstreamGroups_ =
+      java.util.Collections.emptyList();
+    private void ensureDownstreamGroupsIsMutable() {
+      if (!((bitField0_ & 0x00000080) != 0)) {
+        downstreamGroups_ = new java.util.ArrayList<com.kekwy.iarnet.proto.provider.DownstreamGroup>(downstreamGroups_);
+        bitField0_ |= 0x00000080;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.kekwy.iarnet.proto.provider.DownstreamGroup, com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder, com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder> downstreamGroupsBuilder_;
+
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public java.util.List<com.kekwy.iarnet.proto.provider.DownstreamGroup> getDownstreamGroupsList() {
+      if (downstreamGroupsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(downstreamGroups_);
+      } else {
+        return downstreamGroupsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public int getDownstreamGroupsCount() {
+      if (downstreamGroupsBuilder_ == null) {
+        return downstreamGroups_.size();
+      } else {
+        return downstreamGroupsBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.DownstreamGroup getDownstreamGroups(int index) {
+      if (downstreamGroupsBuilder_ == null) {
+        return downstreamGroups_.get(index);
+      } else {
+        return downstreamGroupsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder setDownstreamGroups(
+        int index, com.kekwy.iarnet.proto.provider.DownstreamGroup value) {
+      if (downstreamGroupsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.set(index, value);
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder setDownstreamGroups(
+        int index, com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder builderForValue) {
+      if (downstreamGroupsBuilder_ == null) {
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder addDownstreamGroups(com.kekwy.iarnet.proto.provider.DownstreamGroup value) {
+      if (downstreamGroupsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.add(value);
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder addDownstreamGroups(
+        int index, com.kekwy.iarnet.proto.provider.DownstreamGroup value) {
+      if (downstreamGroupsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.add(index, value);
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder addDownstreamGroups(
+        com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder builderForValue) {
+      if (downstreamGroupsBuilder_ == null) {
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.add(builderForValue.build());
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder addDownstreamGroups(
+        int index, com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder builderForValue) {
+      if (downstreamGroupsBuilder_ == null) {
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder addAllDownstreamGroups(
+        java.lang.Iterable<? extends com.kekwy.iarnet.proto.provider.DownstreamGroup> values) {
+      if (downstreamGroupsBuilder_ == null) {
+        ensureDownstreamGroupsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, downstreamGroups_);
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder clearDownstreamGroups() {
+      if (downstreamGroupsBuilder_ == null) {
+        downstreamGroups_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000080);
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public Builder removeDownstreamGroups(int index) {
+      if (downstreamGroupsBuilder_ == null) {
+        ensureDownstreamGroupsIsMutable();
+        downstreamGroups_.remove(index);
+        onChanged();
+      } else {
+        downstreamGroupsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder getDownstreamGroupsBuilder(
+        int index) {
+      return getDownstreamGroupsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder getDownstreamGroupsOrBuilder(
+        int index) {
+      if (downstreamGroupsBuilder_ == null) {
+        return downstreamGroups_.get(index);  } else {
+        return downstreamGroupsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public java.util.List<? extends com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder> 
+         getDownstreamGroupsOrBuilderList() {
+      if (downstreamGroupsBuilder_ != null) {
+        return downstreamGroupsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(downstreamGroups_);
+      }
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder addDownstreamGroupsBuilder() {
+      return getDownstreamGroupsFieldBuilder().addBuilder(
+          com.kekwy.iarnet.proto.provider.DownstreamGroup.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder addDownstreamGroupsBuilder(
+        int index) {
+      return getDownstreamGroupsFieldBuilder().addBuilder(
+          index, com.kekwy.iarnet.proto.provider.DownstreamGroup.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+     */
+    public java.util.List<com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder> 
+         getDownstreamGroupsBuilderList() {
+      return getDownstreamGroupsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.kekwy.iarnet.proto.provider.DownstreamGroup, com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder, com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder> 
+        getDownstreamGroupsFieldBuilder() {
+      if (downstreamGroupsBuilder_ == null) {
+        downstreamGroupsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            com.kekwy.iarnet.proto.provider.DownstreamGroup, com.kekwy.iarnet.proto.provider.DownstreamGroup.Builder, com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder>(
+                downstreamGroups_,
+                ((bitField0_ & 0x00000080) != 0),
+                getParentForChildren(),
+                isClean());
+        downstreamGroups_ = null;
+      }
+      return downstreamGroupsBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

@@ -9,7 +9,7 @@ public interface ActorEnvelopeOrBuilder extends
 
   /**
    * <pre>
-   * 目标 actor id
+   * 目标 actor id（由 Router 填写物理地址）
    * </pre>
    *
    * <code>string target = 1;</code>
@@ -18,7 +18,7 @@ public interface ActorEnvelopeOrBuilder extends
   java.lang.String getTarget();
   /**
    * <pre>
-   * 目标 actor id
+   * 目标 actor id（由 Router 填写物理地址）
    * </pre>
    *
    * <code>string target = 1;</code>
@@ -26,6 +26,16 @@ public interface ActorEnvelopeOrBuilder extends
    */
   com.google.protobuf.ByteString
       getTargetBytes();
+
+  /**
+   * <pre>
+   * 输出端口号，默认 0，由 actor 设置
+   * </pre>
+   *
+   * <code>int32 output_port = 5;</code>
+   * @return The outputPort.
+   */
+  int getOutputPort();
 
   /**
    * <pre>

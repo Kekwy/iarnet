@@ -7,6 +7,7 @@ import com.kekwy.iarnet.proto.provider.RemoveActorResponse;
 import com.kekwy.iarnet.proto.provider.StopActorResponse;
 
 import java.nio.file.Path;
+import java.util.Map;
 
 /**
  * Provider 引擎 SPI：每种运行时（Docker / K8s）提供一个实现，
@@ -20,10 +21,12 @@ public interface ProviderEngine extends AutoCloseable {
     /**
      * 部署一个 Actor。
      *
-     * @param request           部署请求（含 actor_id、artifact_url、resource_request、lang、function_descriptor 等）
-     * @param artifactLocalPath 已拉取到本地的 artifact 文件路径；为 null 表示无 artifact
+     * @param request               部署请求（含 actor_id、artifact_url、resource_request、lang、function_descriptor 等）
+     * @param artifactLocalPath     已拉取到本地的 artifact 文件路径；为 null 表示无 artifact
+     * @param conditionFunctionPaths output_port -> 条件函数文件路径；可为 null 或空表示无条件分支
      */
-    DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath);
+    DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath,
+                                    Map<Integer, Path> conditionFunctionPaths);
 
     /** 停止一个 Actor */
     StopActorResponse stopActor(String actorId);

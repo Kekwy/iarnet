@@ -136,47 +136,6 @@ public interface DeployActorRequestOrBuilder extends
 
   /**
    * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @return A list containing the downstreamActorAddrs.
-   */
-  java.util.List<java.lang.String>
-      getDownstreamActorAddrsList();
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @return The count of downstreamActorAddrs.
-   */
-  int getDownstreamActorAddrsCount();
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @param index The index of the element to return.
-   * @return The downstreamActorAddrs at the given index.
-   */
-  java.lang.String getDownstreamActorAddrs(int index);
-  /**
-   * <pre>
-   * 下游 Actor 的虚拟地址列表
-   * </pre>
-   *
-   * <code>repeated string downstream_actor_addrs = 6;</code>
-   * @param index The index of the value to return.
-   * @return The bytes of the downstreamActorAddrs at the given index.
-   */
-  com.google.protobuf.ByteString
-      getDownstreamActorAddrsBytes(int index);
-
-  /**
-   * <pre>
    * 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
    * </pre>
    *
@@ -201,4 +160,38 @@ public interface DeployActorRequestOrBuilder extends
    * <code>.iarnet.common.FunctionDescriptor function_descriptor = 7;</code>
    */
   com.kekwy.iarnet.proto.common.FunctionDescriptorOrBuilder getFunctionDescriptorOrBuilder();
+
+  /**
+   * <pre>
+   * 该实例在逻辑组内的全局序号，用于 round-robin 偏移
+   * </pre>
+   *
+   * <code>int32 instance_index = 8;</code>
+   * @return The instanceIndex.
+   */
+  int getInstanceIndex();
+
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  java.util.List<com.kekwy.iarnet.proto.provider.DownstreamGroup> 
+      getDownstreamGroupsList();
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  com.kekwy.iarnet.proto.provider.DownstreamGroup getDownstreamGroups(int index);
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  int getDownstreamGroupsCount();
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  java.util.List<? extends com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder> 
+      getDownstreamGroupsOrBuilderList();
+  /**
+   * <code>repeated .iarnet.provider.DownstreamGroup downstream_groups = 9;</code>
+   */
+  com.kekwy.iarnet.proto.provider.DownstreamGroupOrBuilder getDownstreamGroupsOrBuilder(
+      int index);
 }

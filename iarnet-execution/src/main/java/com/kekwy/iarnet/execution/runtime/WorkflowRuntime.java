@@ -5,6 +5,7 @@ import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.ResourceSpec;
+import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
@@ -302,11 +303,23 @@ public class WorkflowRuntime {
                         actorId,
                         function,
                         resourceSpec,
-                        langArtifactUrlMap.get(function.getLang())
+                        langArtifactUrlMap.get(function.getLang()),
+                        i
                 );
                 actorSpecs.add(spec);
             }
         }
+
+        // 目标节点的不同源节点数：多于 1 为 Union 场景，用 HASH_BY_ROW_ID
+        Map<String, Set<String>> sourceNodesByDstNode = new HashMap<>();
+        for (Edge edge : workflowGraph.getEdgesList()) {
+            sourceNodesByDstNode
+                    .computeIfAbsent(edge.getToNodeId(), k -> new HashSet<>())
+                    .add(edge.getFromNodeId());
+        }
+
+        // 每个源节点下一条条件边的 output_port 从 1 自增
+        Map<String, Integer> nextConditionalPortByNodeId = new HashMap<>();
 
         // 将 node 级边展开为 actor 级边：源节点所有实例与后继节点所有实例全连接
         List<ActorEdge> actorEdges = new ArrayList<>();
@@ -317,11 +330,20 @@ public class WorkflowRuntime {
             int dstReplicas = replicasByNodeId.getOrDefault(dstNodeId, 1);
             var conditionFn = edge.hasConditionFunction() ? edge.getConditionFunction() : null;
 
+            int outputPort = conditionFn != null
+                    ? nextConditionalPortByNodeId.merge(srcNodeId, 1, Integer::sum)
+                    : 0;
+
+            Set<String> sources = sourceNodesByDstNode.get(dstNodeId);
+            RoutingStrategy routingStrategy = (sources != null && sources.size() > 1)
+                    ? RoutingStrategy.HASH_BY_ROW_ID
+                    : RoutingStrategy.ROUND_ROBIN;
+
             for (int i = 0; i < srcReplicas; i++) {
                 String fromActorId = "actor-" + srcNodeId + "-" + i;
                 for (int j = 0; j < dstReplicas; j++) {
                     String toActorId = "actor-" + dstNodeId + "-" + j;
-                    actorEdges.add(new ActorEdge(fromActorId, toActorId, conditionFn));
+                    actorEdges.add(new ActorEdge(fromActorId, toActorId, conditionFn, outputPort, routingStrategy));
                 }
             }
         }

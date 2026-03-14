@@ -1,52 +1,70 @@
 package com.kekwy.iarnet.provider.actor;
 
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
+import com.kekwy.iarnet.proto.provider.DownstreamGroup;
+import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 单机场景下的 Actor 路由：维护 actor_id -> Stream 注册表与拓扑（上下游），
- * 仅负责通道注册、拓扑记录与消息转发；就绪/通道建立上报由调用方通过 SignalingService 完成。
+ * 单机场景下的 Actor 路由：维护 actor_id -> Stream 注册表与按 output_port、DownstreamGroup 的拓扑，
+ * 支持 ROUND_ROBIN（含 instance_index 偏移）与 HASH_BY_ROW_ID；就绪/通道建立上报由调用方通过 SignalingService 完成。
  */
 @Slf4j
 @Component
 public class ActorRouter {
 
-    private record ActorInfo(
+    private record DownstreamGroupInfo(
+            String logicalOperatorId,
+            List<String> actorAddrs,
+            RoutingStrategy routingStrategy,
+            int outputPort
+    ) {
+    }
+
+    private record ActorRoutingConfig(
             String actorId,
+            int instanceIndex,
             Set<String> upstreamActors,
-            Set<String> downstreamActors
+            Set<String> downstreamActors,
+            List<DownstreamGroupInfo> downstreamGroups
     ) {
     }
 
     private final Map<String, StreamObserver<ActorEnvelope>> connectedActors = new HashMap<>();
-    private final Map<String, ActorInfo> actorInfos = new HashMap<>();
+    private final Map<String, ActorRoutingConfig> routingConfigs = new HashMap<>();
+    private final Map<String, AtomicInteger> perActorCounters = new ConcurrentHashMap<>();
 
     /**
-     * 注册 Actor 流（仅登记 stream，不触发上报；调用方应随后调用 markActorRegistered 并自行上报）。
+     * 注册 Actor 流（仅登记 stream；调用方应随后上报就绪与通道建立）。
      */
     public Set<ActorEdge> onActorConnected(String actorId, StreamObserver<ActorEnvelope> stream) {
         if (actorId == null || actorId.isBlank()) return Set.of();
         Set<ActorEdge> establishedEdges = new HashSet<>();
         synchronized (connectedActors) {
             connectedActors.put(actorId, stream);
-            ActorInfo actorInfo = actorInfos.get(actorId);
-            Set<String> upstreamActors = actorInfo.upstreamActors();
-            Set<String> downstreamActors = actorInfo.downstreamActors();
-            for (String upstreamActorId : upstreamActors) {
+            ActorRoutingConfig config = routingConfigs.get(actorId);
+            if (config == null) {
+                return establishedEdges;
+            }
+            for (String upstreamActorId : config.upstreamActors()) {
                 if (connectedActors.containsKey(upstreamActorId)) {
                     establishedEdges.add(new ActorEdge(upstreamActorId, actorId));
                 }
             }
-            for (String downstreamActorId : downstreamActors) {
+            for (String downstreamActorId : config.downstreamActors()) {
                 if (connectedActors.containsKey(downstreamActorId)) {
                     establishedEdges.add(new ActorEdge(actorId, downstreamActorId));
                 }
@@ -61,49 +79,178 @@ public class ActorRouter {
     public void onActorLostConnection(String actorId) {
         if (actorId != null && !actorId.isBlank()) {
             synchronized (connectedActors) {
-                // TODO: 考虑断线重连的情况
                 connectedActors.remove(actorId);
             }
         }
     }
 
     /**
-     * 根据 envelope.target 将消息路由到目标 actor。
+     * 根据 sourceActorId 与 envelope.output_port 解析下游组，按策略选择目标并转发。
      */
-    public void routeEnvelope(ActorEnvelope envelope) {
+    public void routeEnvelope(String sourceActorId, ActorEnvelope envelope) {
         if (envelope == null) return;
-        String target = envelope.getTarget();
-        if (target.isBlank()) {
-            log.warn("ActorEnvelope 缺少 target，无法路由");
+        ActorRoutingConfig config;
+        synchronized (connectedActors) {
+            config = routingConfigs.get(sourceActorId);
+        }
+        if (config == null) {
+            log.warn("未找到 sourceActorId 的路由配置: {}", sourceActorId);
             return;
         }
+
+        int port = envelope.getOutputPort();
+        List<DownstreamGroupInfo> groups = config.downstreamGroups().stream()
+                .filter(g -> g.outputPort() == port)
+                .toList();
+
+        for (DownstreamGroupInfo group : groups) {
+            List<String> alive = filterAlive(group.actorAddrs());
+            if (alive.isEmpty()) {
+                log.warn("output_port={} 下 logicalOperatorId={} 无可用下游实例", port, group.logicalOperatorId());
+                continue;
+            }
+
+            String target = selectTarget(sourceActorId, envelope, group, alive);
+            ActorEnvelope toSend = envelope.toBuilder().setTarget(target).build();
+            deliverTo(target, toSend);
+        }
+    }
+
+    private List<String> filterAlive(List<String> actorAddrs) {
+        synchronized (connectedActors) {
+            List<String> out = new ArrayList<>();
+            for (String addr : actorAddrs) {
+                if (connectedActors.containsKey(addr)) {
+                    out.add(addr);
+                }
+            }
+            return out;
+        }
+    }
+
+    private String selectTarget(String sourceActorId, ActorEnvelope envelope,
+                                DownstreamGroupInfo group, List<String> alive) {
+        return switch (group.routingStrategy()) {
+            case ROUND_ROBIN -> roundRobinSelect(sourceActorId, group, alive);
+            case HASH_BY_ROW_ID -> hashSelect(envelope, alive);
+            default -> alive.get(0);
+        };
+    }
+
+    private String roundRobinSelect(String sourceActorId, DownstreamGroupInfo group, List<String> alive) {
+        int offset = getInstanceIndex(sourceActorId);
+        String counterKey = sourceActorId + ":" + group.logicalOperatorId();
+        int seq = perActorCounters
+                .computeIfAbsent(counterKey, k -> new AtomicInteger(0))
+                .getAndIncrement();
+        int idx = Math.floorMod(offset + seq, alive.size());
+        return alive.get(idx);
+    }
+
+    private String hashSelect(ActorEnvelope envelope, List<String> alive) {
+        String rowId = envelope.hasRow() ? envelope.getRow().getRowId() : "";
+        int hash = murmur3_32(rowId.getBytes(StandardCharsets.UTF_8));
+        int idx = Math.floorMod(hash, alive.size());
+        return alive.get(idx);
+    }
+
+    /** 简单的 32 位 MurmurHash3 实现，保证确定性。 */
+    private static int murmur3_32(byte[] data) {
+        int len = data.length;
+        int c1 = 0xcc9e2d51;
+        int c2 = 0x1b873593;
+        int h1 = 0;
+        int i = 0;
+        while (i + 4 <= len) {
+            int k1 = (data[i] & 0xff) | ((data[i + 1] & 0xff) << 8)
+                    | ((data[i + 2] & 0xff) << 16) | ((data[i + 3] & 0xff) << 24);
+            i += 4;
+            k1 *= c1;
+            k1 = Integer.rotateLeft(k1, 15);
+            k1 *= c2;
+            h1 ^= k1;
+            h1 = Integer.rotateLeft(h1, 13);
+            h1 = h1 * 5 + 0xe6546b64;
+        }
+        int k1 = 0;
+        if (i < len) k1 = data[i] & 0xff;
+        if (i + 1 < len) k1 |= (data[i + 1] & 0xff) << 8;
+        if (i + 2 < len) k1 |= (data[i + 2] & 0xff) << 16;
+        k1 *= c1;
+        k1 = Integer.rotateLeft(k1, 15);
+        k1 *= c2;
+        h1 ^= k1;
+        h1 ^= len;
+        h1 ^= h1 >>> 16;
+        h1 *= 0x85ebca6b;
+        h1 ^= h1 >>> 13;
+        h1 *= 0xc2b2ae35;
+        h1 ^= h1 >>> 16;
+        return h1;
+    }
+
+    private int getInstanceIndex(String actorId) {
+        ActorRoutingConfig config = routingConfigs.get(actorId);
+        return config != null ? config.instanceIndex() : 0;
+    }
+
+    private void deliverTo(String targetActorId, ActorEnvelope envelope) {
+        deliverToTarget(targetActorId, envelope);
+    }
+
+    /**
+     * 直接向本地已注册的 actor 投递 envelope（用于跨 Provider 转发时 envelope 已带物理 target）。
+     */
+    public void deliverToTarget(String targetActorId, ActorEnvelope envelope) {
         StreamObserver<ActorEnvelope> stream;
         synchronized (connectedActors) {
-            stream = connectedActors.get(target);
+            stream = connectedActors.get(targetActorId);
         }
         if (stream == null) {
-            log.warn("目标 Actor 未注册，无法转发: target={}", target);
+            log.warn("目标 Actor 未注册，无法转发: target={}", targetActorId);
             return;
         }
         try {
             stream.onNext(envelope);
-            log.debug("已路由 envelope 到 target={}, payloadCase={}", target, envelope.getPayloadCase());
+            log.debug("已路由 envelope 到 target={}, payloadCase={}", targetActorId, envelope.getPayloadCase());
         } catch (Exception e) {
-            log.warn("路由 envelope 到 target={} 失败", target, e);
+            log.warn("路由 envelope 到 target={} 失败", targetActorId, e);
         }
     }
 
-    public void registerActorTopology(String actorId,
-                                      List<String> upstreamActorIds,
-                                      List<String> downstreamActorIds) {
+    /**
+     * 注册 Actor 路由拓扑：instance_index 用于 round-robin 偏移，downstream_groups 用于按 output_port 与策略路由。
+     */
+    public void registerActorRouting(String actorId,
+                                    int instanceIndex,
+                                    List<String> upstreamActorIds,
+                                    List<DownstreamGroup> downstreamGroups) {
         if (actorId == null || actorId.isBlank()) return;
-        if (downstreamActorIds == null) downstreamActorIds = Collections.emptyList();
+        if (downstreamGroups == null) downstreamGroups = Collections.emptyList();
+
+        Set<String> upstreams = upstreamActorIds != null ? new HashSet<>(upstreamActorIds) : Set.of();
+        Set<String> downstreams = new HashSet<>();
+        List<DownstreamGroupInfo> groups = new ArrayList<>();
+
+        for (DownstreamGroup g : downstreamGroups) {
+            List<String> addrs = g.getActorAddrsList();
+            downstreams.addAll(addrs);
+            groups.add(new DownstreamGroupInfo(
+                    g.getLogicalOperatorId(),
+                    List.copyOf(addrs),
+                    g.getRoutingStrategy(),
+                    g.getOutputPort()
+            ));
+        }
 
         synchronized (connectedActors) {
-            actorInfos.put(actorId, new ActorInfo(
-                    actorId, Set.copyOf(upstreamActorIds), Set.copyOf(downstreamActorIds)
+            routingConfigs.put(actorId, new ActorRoutingConfig(
+                    actorId,
+                    instanceIndex,
+                    upstreams,
+                    downstreams,
+                    groups
             ));
         }
     }
-
 }

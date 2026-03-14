@@ -92,7 +92,7 @@ private static final long serialVersionUID = 0L;
   private volatile java.lang.Object target_ = "";
   /**
    * <pre>
-   * 目标 actor id
+   * 目标 actor id（由 Router 填写物理地址）
    * </pre>
    *
    * <code>string target = 1;</code>
@@ -113,7 +113,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
-   * 目标 actor id
+   * 目标 actor id（由 Router 填写物理地址）
    * </pre>
    *
    * <code>string target = 1;</code>
@@ -132,6 +132,21 @@ private static final long serialVersionUID = 0L;
     } else {
       return (com.google.protobuf.ByteString) ref;
     }
+  }
+
+  public static final int OUTPUT_PORT_FIELD_NUMBER = 5;
+  private int outputPort_ = 0;
+  /**
+   * <pre>
+   * 输出端口号，默认 0，由 actor 设置
+   * </pre>
+   *
+   * <code>int32 output_port = 5;</code>
+   * @return The outputPort.
+   */
+  @java.lang.Override
+  public int getOutputPort() {
+    return outputPort_;
   }
 
   public static final int START_INPUT_COMMAND_FIELD_NUMBER = 2;
@@ -289,6 +304,9 @@ private static final long serialVersionUID = 0L;
     if (payloadCase_ == 4) {
       output.writeMessage(4, (com.kekwy.iarnet.proto.actor.DataRow) payload_);
     }
+    if (outputPort_ != 0) {
+      output.writeInt32(5, outputPort_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -313,6 +331,10 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(4, (com.kekwy.iarnet.proto.actor.DataRow) payload_);
     }
+    if (outputPort_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(5, outputPort_);
+    }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
@@ -330,6 +352,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getTarget()
         .equals(other.getTarget())) return false;
+    if (getOutputPort()
+        != other.getOutputPort()) return false;
     if (!getPayloadCase().equals(other.getPayloadCase())) return false;
     switch (payloadCase_) {
       case 2:
@@ -360,6 +384,8 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + TARGET_FIELD_NUMBER;
     hash = (53 * hash) + getTarget().hashCode();
+    hash = (37 * hash) + OUTPUT_PORT_FIELD_NUMBER;
+    hash = (53 * hash) + getOutputPort();
     switch (payloadCase_) {
       case 2:
         hash = (37 * hash) + START_INPUT_COMMAND_FIELD_NUMBER;
@@ -506,6 +532,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       target_ = "";
+      outputPort_ = 0;
       if (startInputCommandBuilder_ != null) {
         startInputCommandBuilder_.clear();
       }
@@ -553,6 +580,9 @@ private static final long serialVersionUID = 0L;
       int from_bitField0_ = bitField0_;
       if (((from_bitField0_ & 0x00000001) != 0)) {
         result.target_ = target_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.outputPort_ = outputPort_;
       }
     }
 
@@ -621,6 +651,9 @@ private static final long serialVersionUID = 0L;
         target_ = other.target_;
         bitField0_ |= 0x00000001;
         onChanged();
+      }
+      if (other.getOutputPort() != 0) {
+        setOutputPort(other.getOutputPort());
       }
       switch (other.getPayloadCase()) {
         case START_INPUT_COMMAND: {
@@ -691,6 +724,11 @@ private static final long serialVersionUID = 0L;
               payloadCase_ = 4;
               break;
             } // case 34
+            case 40: {
+              outputPort_ = input.readInt32();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 40
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -726,7 +764,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object target_ = "";
     /**
      * <pre>
-     * 目标 actor id
+     * 目标 actor id（由 Router 填写物理地址）
      * </pre>
      *
      * <code>string target = 1;</code>
@@ -746,7 +784,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <pre>
-     * 目标 actor id
+     * 目标 actor id（由 Router 填写物理地址）
      * </pre>
      *
      * <code>string target = 1;</code>
@@ -767,7 +805,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <pre>
-     * 目标 actor id
+     * 目标 actor id（由 Router 填写物理地址）
      * </pre>
      *
      * <code>string target = 1;</code>
@@ -784,7 +822,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <pre>
-     * 目标 actor id
+     * 目标 actor id（由 Router 填写物理地址）
      * </pre>
      *
      * <code>string target = 1;</code>
@@ -798,7 +836,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <pre>
-     * 目标 actor id
+     * 目标 actor id（由 Router 填写物理地址）
      * </pre>
      *
      * <code>string target = 1;</code>
@@ -811,6 +849,50 @@ private static final long serialVersionUID = 0L;
       checkByteStringIsUtf8(value);
       target_ = value;
       bitField0_ |= 0x00000001;
+      onChanged();
+      return this;
+    }
+
+    private int outputPort_ ;
+    /**
+     * <pre>
+     * 输出端口号，默认 0，由 actor 设置
+     * </pre>
+     *
+     * <code>int32 output_port = 5;</code>
+     * @return The outputPort.
+     */
+    @java.lang.Override
+    public int getOutputPort() {
+      return outputPort_;
+    }
+    /**
+     * <pre>
+     * 输出端口号，默认 0，由 actor 设置
+     * </pre>
+     *
+     * <code>int32 output_port = 5;</code>
+     * @param value The outputPort to set.
+     * @return This builder for chaining.
+     */
+    public Builder setOutputPort(int value) {
+      
+      outputPort_ = value;
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 输出端口号，默认 0，由 actor 设置
+     * </pre>
+     *
+     * <code>int32 output_port = 5;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearOutputPort() {
+      bitField0_ = (bitField0_ & ~0x00000002);
+      outputPort_ = 0;
       onChanged();
       return this;
     }

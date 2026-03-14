@@ -7,6 +7,7 @@ public record ActorSpec(
         String actorId,
         FunctionDescriptor function,
         ResourceSpec resourceSpec,
-        String artifactUrl
+        String artifactUrl,
+        int instanceIndex
 ) {
 }

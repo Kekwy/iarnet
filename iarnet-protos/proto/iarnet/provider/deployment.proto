@@ -25,14 +25,30 @@ message DeploymentEnvelope {
 
 }
 
+enum RoutingStrategy {
+  ROUTING_STRATEGY_UNSPECIFIED = 0;
+  ROUND_ROBIN = 1;
+  HASH_BY_ROW_ID = 2;
+}
+
+message DownstreamGroup {
+  string logical_operator_id = 1;   // 逻辑算子标识（如 node id）
+  repeated string actor_addrs = 2;  // 该逻辑算子的所有物理实例地址（有序）
+  RoutingStrategy routing_strategy = 3;
+  int32 output_port = 4;            // 对应 actor 的哪个输出端口
+  optional iarnet.common.FunctionDescriptor condition_function = 5;  // 该端口对应的条件函数；output_port=0 可不设
+}
+
 message DeployActorRequest {
   string              actor_id      = 1;  // 实例唯一标识（由 control-plane 生成）
   string              artifact_url     = 2;  // artifact 拉取地址（如 OSS 预签名 URL）；Adapter 收到后按需拉取再部署
   iarnet.common.ResourceSpec  resource_request = 3;  // 资源需求
   iarnet.common.Lang      lang             = 4;  // 算子使用的编程语言 / 运行时
   repeated string     upstream_actor_addrs   = 5;  // 上游 Actor 的虚拟地址列表
-  repeated string     downstream_actor_addrs = 6;  // 下游 Actor 的虚拟地址列表
+  reserved 6;  // 原 downstream_actor_addrs，已由 downstream_groups 替代
   iarnet.common.FunctionDescriptor function_descriptor = 7;  // 该 Actor 要执行的函数描述；Adapter 写入文件并挂载，Actor 启动时读取
+  int32 instance_index = 8;  // 该实例在逻辑组内的全局序号，用于 round-robin 偏移
+  repeated DownstreamGroup downstream_groups = 9;
 }
 
 message DeployActorResponse {

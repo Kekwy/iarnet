@@ -2,6 +2,7 @@ package com.kekwy.iarnet.provider.deployment;
 
 import com.kekwy.iarnet.provider.actor.ActorRouter;
 import com.kekwy.iarnet.provider.artifact.ArtifactFetcher;
+import com.kekwy.iarnet.provider.artifact.ArtifactStore;
 import com.kekwy.iarnet.provider.signaling.SignalingService;
 import com.kekwy.iarnet.provider.config.ProviderIdentity;
 import com.kekwy.iarnet.provider.engine.ProviderEngine;
@@ -15,6 +16,7 @@ import com.kekwy.iarnet.proto.provider.GetActorStatusRequest;
 import com.kekwy.iarnet.proto.provider.GetActorStatusResponse;
 import com.kekwy.iarnet.proto.provider.RemoveActorRequest;
 import com.kekwy.iarnet.proto.provider.RemoveActorResponse;
+import com.kekwy.iarnet.proto.provider.DownstreamGroup;
 import com.kekwy.iarnet.proto.provider.StopActorRequest;
 import com.kekwy.iarnet.proto.provider.StopActorResponse;
 import io.grpc.Metadata;
@@ -26,7 +28,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +48,7 @@ public class DeploymentService {
     private final ScheduledExecutorService scheduler;
     private final ProviderEngine engine;
     private final ArtifactFetcher artifactFetcher;
+    private final ArtifactStore artifactStore;
     private final ActorRouter actorRouter;
     private final ProviderIdentity identity;
 
@@ -53,12 +58,14 @@ public class DeploymentService {
                              ScheduledExecutorService providerScheduler,
                              ProviderEngine engine,
                              ArtifactFetcher artifactFetcher,
+                             ArtifactStore artifactStore,
                              ActorRouter actorRouter,
                              ProviderIdentity identity) {
         this.asyncStub = providerRegistryAsyncStub;
         this.scheduler = providerScheduler;
         this.engine = engine;
         this.artifactFetcher = artifactFetcher;
+        this.artifactStore = artifactStore;
         this.actorRouter = actorRouter;
         this.identity = identity;
     }
@@ -93,6 +100,7 @@ public class DeploymentService {
 
     // --- 业务方法，供 DeploymentMessageDispatcher 委托调用 ---
 
+    @SuppressWarnings("ConstantValue")
     public DeployActorResponse deployActor(DeployActorRequest request) throws IOException {
         Path artifactPath = null;
         String artifactUrl = request.getArtifactUrl();
@@ -100,8 +108,20 @@ public class DeploymentService {
             artifactPath = artifactFetcher.fetch(request.getActorId(), artifactUrl);
         }
         String actorId = request.getActorId();
-        actorRouter.registerActorTopology(actorId, request.getUpstreamActorAddrsList(), request.getDownstreamActorAddrsList());
-        return engine.deployActor(request, artifactPath);
+        actorRouter.registerActorRouting(actorId, request.getInstanceIndex(),
+                request.getUpstreamActorAddrsList(), request.getDownstreamGroupsList());
+
+        Map<Integer, Path> conditionFunctionPaths = new HashMap<>();
+        for (DownstreamGroup group : request.getDownstreamGroupsList()) {
+            if (!group.hasConditionFunction()) {
+                continue;
+            }
+            int port = group.getOutputPort();
+            Path path = artifactStore.storeConditionFunction(actorId, port, group.getConditionFunction().toByteArray());
+            conditionFunctionPaths.put(port, path);
+        }
+
+        return engine.deployActor(request, artifactPath, conditionFunctionPaths);
     }
 
     public StopActorResponse stopActor(StopActorRequest request) {

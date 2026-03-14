@@ -46,7 +46,7 @@ public class ActorRegistrationServiceGrpcImpl extends ActorRegistrationServiceGr
                         break;
                     case ROW:
                         if (registeredActorId != null) {
-                            router.routeEnvelope(msg);
+                            router.routeEnvelope(registeredActorId, msg);
                         } else {
                             log.warn("收到 row 但该连接尚未 register_actor");
                         }

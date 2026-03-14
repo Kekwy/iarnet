@@ -20,6 +20,11 @@ public final class Deployment {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_iarnet_provider_DeploymentEnvelope_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_iarnet_provider_DownstreamGroup_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_iarnet_provider_DownstreamGroup_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_iarnet_provider_DeployActorRequest_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -96,34 +101,43 @@ public final class Deployment {
       "tor_status_request\030\t \001(\0132&.iarnet.provid" +
       "er.GetActorStatusRequestH\000\022L\n\031get_actor_" +
       "status_response\030\n \001(\0132\'.iarnet.provider." +
-      "GetActorStatusResponseH\000B\t\n\007message\"\224\002\n\022" +
-      "DeployActorRequest\022\020\n\010actor_id\030\001 \001(\t\022\024\n\014" +
-      "artifact_url\030\002 \001(\t\0225\n\020resource_request\030\003" +
-      " \001(\0132\033.iarnet.common.ResourceSpec\022!\n\004lan" +
-      "g\030\004 \001(\0162\023.iarnet.common.Lang\022\034\n\024upstream" +
-      "_actor_addrs\030\005 \003(\t\022\036\n\026downstream_actor_a" +
-      "ddrs\030\006 \003(\t\022>\n\023function_descriptor\030\007 \001(\0132" +
-      "!.iarnet.common.FunctionDescriptor\"@\n\023De" +
-      "ployActorResponse\022)\n\005actor\030\001 \001(\0132\032.iarne" +
-      "t.provider.ActorInfo\"$\n\020StopActorRequest" +
-      "\022\020\n\010actor_id\030\001 \001(\t\"5\n\021StopActorResponse\022" +
-      "\017\n\007success\030\001 \001(\010\022\017\n\007message\030\002 \001(\t\"&\n\022Rem" +
-      "oveActorRequest\022\020\n\010actor_id\030\001 \001(\t\"7\n\023Rem" +
-      "oveActorResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007mes" +
-      "sage\030\002 \001(\t\")\n\025GetActorStatusRequest\022\020\n\010a" +
-      "ctor_id\030\001 \001(\t\"C\n\026GetActorStatusResponse\022" +
-      ")\n\005actor\030\001 \001(\0132\032.iarnet.provider.ActorIn" +
-      "fo\"\231\001\n\020ResourceCapacity\022*\n\005total\030\001 \001(\0132\033" +
-      ".iarnet.common.ResourceSpec\022)\n\004used\030\002 \001(" +
-      "\0132\033.iarnet.common.ResourceSpec\022.\n\tavaila" +
-      "ble\030\003 \001(\0132\033.iarnet.common.ResourceSpec\"\\" +
-      "\n\tActorInfo\022\020\n\010actor_id\030\001 \001(\t\022,\n\006status\030" +
-      "\002 \001(\0162\034.iarnet.provider.ActorStatus\022\017\n\007m" +
-      "essage\030\003 \001(\t*k\n\013ActorStatus\022\034\n\030ACTOR_STA" +
-      "TUS_UNSPECIFIED\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNNIN" +
-      "G\020\002\022\013\n\007STOPPED\020\003\022\n\n\006FAILED\020\004\022\013\n\007REMOVED\020" +
-      "\005B#\n\037com.kekwy.iarnet.proto.providerP\001b\006" +
-      "proto3"
+      "GetActorStatusResponseH\000B\t\n\007message\"\357\001\n\017" +
+      "DownstreamGroup\022\033\n\023logical_operator_id\030\001" +
+      " \001(\t\022\023\n\013actor_addrs\030\002 \003(\t\022:\n\020routing_str" +
+      "ategy\030\003 \001(\0162 .iarnet.provider.RoutingStr" +
+      "ategy\022\023\n\013output_port\030\004 \001(\005\022B\n\022condition_" +
+      "function\030\005 \001(\0132!.iarnet.common.FunctionD" +
+      "escriptorH\000\210\001\001B\025\n\023_condition_function\"\317\002" +
+      "\n\022DeployActorRequest\022\020\n\010actor_id\030\001 \001(\t\022\024" +
+      "\n\014artifact_url\030\002 \001(\t\0225\n\020resource_request" +
+      "\030\003 \001(\0132\033.iarnet.common.ResourceSpec\022!\n\004l" +
+      "ang\030\004 \001(\0162\023.iarnet.common.Lang\022\034\n\024upstre" +
+      "am_actor_addrs\030\005 \003(\t\022>\n\023function_descrip" +
+      "tor\030\007 \001(\0132!.iarnet.common.FunctionDescri" +
+      "ptor\022\026\n\016instance_index\030\010 \001(\005\022;\n\021downstre" +
+      "am_groups\030\t \003(\0132 .iarnet.provider.Downst" +
+      "reamGroupJ\004\010\006\020\007\"@\n\023DeployActorResponse\022)" +
+      "\n\005actor\030\001 \001(\0132\032.iarnet.provider.ActorInf" +
+      "o\"$\n\020StopActorRequest\022\020\n\010actor_id\030\001 \001(\t\"" +
+      "5\n\021StopActorResponse\022\017\n\007success\030\001 \001(\010\022\017\n" +
+      "\007message\030\002 \001(\t\"&\n\022RemoveActorRequest\022\020\n\010" +
+      "actor_id\030\001 \001(\t\"7\n\023RemoveActorResponse\022\017\n" +
+      "\007success\030\001 \001(\010\022\017\n\007message\030\002 \001(\t\")\n\025GetAc" +
+      "torStatusRequest\022\020\n\010actor_id\030\001 \001(\t\"C\n\026Ge" +
+      "tActorStatusResponse\022)\n\005actor\030\001 \001(\0132\032.ia" +
+      "rnet.provider.ActorInfo\"\231\001\n\020ResourceCapa" +
+      "city\022*\n\005total\030\001 \001(\0132\033.iarnet.common.Reso" +
+      "urceSpec\022)\n\004used\030\002 \001(\0132\033.iarnet.common.R" +
+      "esourceSpec\022.\n\tavailable\030\003 \001(\0132\033.iarnet." +
+      "common.ResourceSpec\"\\\n\tActorInfo\022\020\n\010acto" +
+      "r_id\030\001 \001(\t\022,\n\006status\030\002 \001(\0162\034.iarnet.prov" +
+      "ider.ActorStatus\022\017\n\007message\030\003 \001(\t*X\n\017Rou" +
+      "tingStrategy\022 \n\034ROUTING_STRATEGY_UNSPECI" +
+      "FIED\020\000\022\017\n\013ROUND_ROBIN\020\001\022\022\n\016HASH_BY_ROW_I" +
+      "D\020\002*k\n\013ActorStatus\022\034\n\030ACTOR_STATUS_UNSPE" +
+      "CIFIED\020\000\022\013\n\007PENDING\020\001\022\013\n\007RUNNING\020\002\022\013\n\007ST" +
+      "OPPED\020\003\022\n\n\006FAILED\020\004\022\013\n\007REMOVED\020\005B#\n\037com." +
+      "kekwy.iarnet.proto.providerP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -137,62 +151,68 @@ public final class Deployment {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_DeploymentEnvelope_descriptor,
         new java.lang.String[] { "MessageId", "CorrelationId", "DeployActorRequest", "DeployActorResponse", "StopActorRequest", "StopActorResponse", "RemoveActorRequest", "RemoveActorResponse", "GetActorStatusRequest", "GetActorStatusResponse", "Message", });
-    internal_static_iarnet_provider_DeployActorRequest_descriptor =
+    internal_static_iarnet_provider_DownstreamGroup_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_iarnet_provider_DownstreamGroup_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_iarnet_provider_DownstreamGroup_descriptor,
+        new java.lang.String[] { "LogicalOperatorId", "ActorAddrs", "RoutingStrategy", "OutputPort", "ConditionFunction", "ConditionFunction", });
+    internal_static_iarnet_provider_DeployActorRequest_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_iarnet_provider_DeployActorRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_DeployActorRequest_descriptor,
-        new java.lang.String[] { "ActorId", "ArtifactUrl", "ResourceRequest", "Lang", "UpstreamActorAddrs", "DownstreamActorAddrs", "FunctionDescriptor", });
+        new java.lang.String[] { "ActorId", "ArtifactUrl", "ResourceRequest", "Lang", "UpstreamActorAddrs", "FunctionDescriptor", "InstanceIndex", "DownstreamGroups", });
     internal_static_iarnet_provider_DeployActorResponse_descriptor =
-      getDescriptor().getMessageTypes().get(2);
+      getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_provider_DeployActorResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_DeployActorResponse_descriptor,
         new java.lang.String[] { "Actor", });
     internal_static_iarnet_provider_StopActorRequest_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_iarnet_provider_StopActorRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_StopActorRequest_descriptor,
         new java.lang.String[] { "ActorId", });
     internal_static_iarnet_provider_StopActorResponse_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_iarnet_provider_StopActorResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_StopActorResponse_descriptor,
         new java.lang.String[] { "Success", "Message", });
     internal_static_iarnet_provider_RemoveActorRequest_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_iarnet_provider_RemoveActorRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_RemoveActorRequest_descriptor,
         new java.lang.String[] { "ActorId", });
     internal_static_iarnet_provider_RemoveActorResponse_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(7);
     internal_static_iarnet_provider_RemoveActorResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_RemoveActorResponse_descriptor,
         new java.lang.String[] { "Success", "Message", });
     internal_static_iarnet_provider_GetActorStatusRequest_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(8);
     internal_static_iarnet_provider_GetActorStatusRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_GetActorStatusRequest_descriptor,
         new java.lang.String[] { "ActorId", });
     internal_static_iarnet_provider_GetActorStatusResponse_descriptor =
-      getDescriptor().getMessageTypes().get(8);
+      getDescriptor().getMessageTypes().get(9);
     internal_static_iarnet_provider_GetActorStatusResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_GetActorStatusResponse_descriptor,
         new java.lang.String[] { "Actor", });
     internal_static_iarnet_provider_ResourceCapacity_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_iarnet_provider_ResourceCapacity_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_ResourceCapacity_descriptor,
         new java.lang.String[] { "Total", "Used", "Available", });
     internal_static_iarnet_provider_ActorInfo_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_iarnet_provider_ActorInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_provider_ActorInfo_descriptor,

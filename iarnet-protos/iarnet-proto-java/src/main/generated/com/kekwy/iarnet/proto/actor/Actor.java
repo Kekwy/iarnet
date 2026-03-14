@@ -44,17 +44,17 @@ public final class Actor {
   static {
     java.lang.String[] descriptorData = {
       "\n\030iarnet/actor/actor.proto\022\014iarnet.actor" +
-      "\032\030iarnet/common/type.proto\"\316\001\n\rActorEnve" +
-      "lope\022\016\n\006target\030\001 \001(\t\022>\n\023start_input_comm" +
-      "and\030\002 \001(\0132\037.iarnet.actor.StartInputComma" +
-      "ndH\000\022<\n\016register_actor\030\003 \001(\0132\".iarnet.ac" +
-      "tor.RegisterActorRequestH\000\022$\n\003row\030\004 \001(\0132" +
-      "\025.iarnet.actor.DataRowH\000B\t\n\007payload\"\023\n\021S" +
-      "tartInputCommand\"(\n\024RegisterActorRequest" +
-      "\022\020\n\010actor_id\030\001 \001(\t\"=\n\007DataRow\022\r\n\005rowId\030\001" +
-      " \001(\t\022#\n\005value\030\002 \001(\0132\024.iarnet.common.Valu" +
-      "eB \n\034com.kekwy.iarnet.proto.actorP\001b\006pro" +
-      "to3"
+      "\032\030iarnet/common/type.proto\"\343\001\n\rActorEnve" +
+      "lope\022\016\n\006target\030\001 \001(\t\022\023\n\013output_port\030\005 \001(" +
+      "\005\022>\n\023start_input_command\030\002 \001(\0132\037.iarnet." +
+      "actor.StartInputCommandH\000\022<\n\016register_ac" +
+      "tor\030\003 \001(\0132\".iarnet.actor.RegisterActorRe" +
+      "questH\000\022$\n\003row\030\004 \001(\0132\025.iarnet.actor.Data" +
+      "RowH\000B\t\n\007payload\"\023\n\021StartInputCommand\"(\n" +
+      "\024RegisterActorRequest\022\020\n\010actor_id\030\001 \001(\t\"" +
+      "=\n\007DataRow\022\r\n\005rowId\030\001 \001(\t\022#\n\005value\030\002 \001(\013" +
+      "2\024.iarnet.common.ValueB \n\034com.kekwy.iarn" +
+      "et.proto.actorP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -66,7 +66,7 @@ public final class Actor {
     internal_static_iarnet_actor_ActorEnvelope_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_actor_ActorEnvelope_descriptor,
-        new java.lang.String[] { "Target", "StartInputCommand", "RegisterActor", "Row", "Payload", });
+        new java.lang.String[] { "Target", "OutputPort", "StartInputCommand", "RegisterActor", "Row", "Payload", });
     internal_static_iarnet_actor_StartInputCommand_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_iarnet_actor_StartInputCommand_fieldAccessorTable = new

@@ -8,7 +8,8 @@ option java_package = "com.kekwy.iarnet.proto.actor";
 option java_multiple_files = true;
 
 message ActorEnvelope {
-  string target = 1; // 目标 actor id
+  string target = 1; // 目标 actor id（由 Router 填写物理地址）
+  int32  output_port = 5; // 输出端口号，默认 0，由 actor 设置
 
   oneof payload {
     StartInputCommand start_input_command = 2;  // 命令 input Actor 开始产生输入

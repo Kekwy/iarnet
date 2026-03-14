@@ -34,6 +34,7 @@ public class DockerEngine implements ProviderEngine {
     private static final String CONTAINER_ARTIFACT_DIR = "/opt/iarnet/artifact";
     private static final String CONTAINER_FUNCTION_DIR = "/opt/iarnet/function";
     private static final String CONTAINER_FUNCTION_FILE = CONTAINER_FUNCTION_DIR + "/function.pb";
+    private static final String CONTAINER_CONDITIONS_DIR = CONTAINER_FUNCTION_DIR + "/conditions";
 
     private final DockerClient dockerClient;
     private final ArtifactStore artifactStore;
@@ -100,12 +101,14 @@ public class DockerEngine implements ProviderEngine {
     }
 
     @Override
-    public DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath) {
+    public DeployActorResponse deployActor(DeployActorRequest request, Path artifactLocalPath,
+                                            Map<Integer, Path> conditionFunctionPaths) {
         String actorId = request.getActorId();
         Lang lang = request.getLang();
         String image = resolveImageForLang(lang);
-        log.info("部署 Docker Actor: actorId={}, lang={}, image={}, hasArtifact={}, hasFunctionDescriptor={}",
-                actorId, lang, image, artifactLocalPath != null, request.hasFunctionDescriptor());
+        boolean hasConditions = conditionFunctionPaths != null && !conditionFunctionPaths.isEmpty();
+        log.info("部署 Docker Actor: actorId={}, lang={}, image={}, hasArtifact={}, hasFunctionDescriptor={}, hasConditions={}",
+                actorId, lang, image, artifactLocalPath != null, request.hasFunctionDescriptor(), hasConditions);
 
         try {
             Path functionDescriptorPath = null;
@@ -127,6 +130,9 @@ public class DockerEngine implements ProviderEngine {
             if (functionDescriptorPath != null) {
                 envList.add("IARNET_ACTOR_FUNCTION_FILE=" + CONTAINER_FUNCTION_FILE);
             }
+            if (hasConditions) {
+                envList.add("IARNET_CONDITION_FUNCTIONS_DIR=" + CONTAINER_CONDITIONS_DIR);
+            }
 
             Map<String, String> labels = new HashMap<>();
             labels.put("iarnet.managed", "true");
@@ -136,7 +142,7 @@ public class DockerEngine implements ProviderEngine {
                     .withName(actorId)
                     .withEnv(envList)
                     .withLabels(labels)
-                    .withHostConfig(buildHostConfig(request, artifactLocalPath, functionDescriptorPath));
+                    .withHostConfig(buildHostConfig(request, artifactLocalPath, functionDescriptorPath, hasConditions));
 
             CreateContainerResponse container = createCmd.exec();
             String containerId = container.getId();
@@ -264,7 +270,8 @@ public class DockerEngine implements ProviderEngine {
 
     // ======================== 内部方法 ========================
 
-    private HostConfig buildHostConfig(DeployActorRequest request, Path artifactLocalPath, Path functionDescriptorPath) {
+    private HostConfig buildHostConfig(DeployActorRequest request, Path artifactLocalPath,
+                                        Path functionDescriptorPath, boolean hasConditions) {
         ResourceSpec resource = request.getResourceRequest();
         HostConfig hostConfig = HostConfig.newHostConfig();
 
@@ -282,6 +289,12 @@ public class DockerEngine implements ProviderEngine {
         if (functionDescriptorPath != null && java.nio.file.Files.isRegularFile(functionDescriptorPath)) {
             String hostDir = functionDescriptorPath.getParent().toAbsolutePath().toString();
             binds.add(new Bind(hostDir, new Volume(CONTAINER_FUNCTION_DIR)));
+        }
+        if (hasConditions && functionDescriptorPath == null) {
+            Path actorFunctionDir = artifactStore.getArtifactDir("_functions").resolve(request.getActorId());
+            if (java.nio.file.Files.isDirectory(actorFunctionDir)) {
+                binds.add(new Bind(actorFunctionDir.toAbsolutePath().toString(), new Volume(CONTAINER_FUNCTION_DIR)));
+            }
         }
         if (!binds.isEmpty()) {
             hostConfig.withBinds(binds);
