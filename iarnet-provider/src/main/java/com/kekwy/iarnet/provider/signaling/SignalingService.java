@@ -4,7 +4,6 @@ import com.kekwy.iarnet.provider.actor.ActorRouter;
 import com.kekwy.iarnet.provider.config.ProviderIdentity;
 import com.kekwy.iarnet.provider.registry.DelegatingObserver;
 import com.kekwy.iarnet.provider.registry.ProviderRegistryClient;
-import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.provider.ActorMessageForward;
 import com.kekwy.iarnet.proto.fabric.ProviderRegistryServiceGrpc;
 import com.kekwy.iarnet.proto.provider.ActorChannelStatus;
@@ -19,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +39,8 @@ public class SignalingService {
 
     private volatile boolean closed = false;
     private volatile StreamObserver<SignalingEnvelope> signalingSender;
+    /** Channel 未就绪时暂存的上报，建立/重连后统一发送 */
+    private final ConcurrentLinkedQueue<SignalingEnvelope> pendingReports = new ConcurrentLinkedQueue<>();
 
     public SignalingService(ProviderRegistryServiceGrpc.ProviderRegistryServiceStub providerRegistryAsyncStub,
                             ScheduledExecutorService providerScheduler,
@@ -67,12 +69,34 @@ public class SignalingService {
         this.signalingSender = proxy;
 
         log.info("SignalingChannel 已建立: providerId={}", providerId);
+        flushPendingReports();
     }
 
     private void onDisconnect() {
+        this.signalingSender = null;
         if (closed) return;
         log.warn("SignalingChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
         scheduler.schedule(this::openChannel, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /** 将暂存的上报按序发出（channel 建立/重连后调用） */
+    private void flushPendingReports() {
+        StreamObserver<SignalingEnvelope> sender = this.signalingSender;
+        if (sender == null) return;
+        SignalingEnvelope envelope;
+        int count = 0;
+        while ((envelope = pendingReports.poll()) != null) {
+            try {
+                sender.onNext(envelope);
+                count++;
+            } catch (Exception e) {
+                log.warn("重放暂存上报失败，已丢弃剩余 {} 条", pendingReports.size() + 1, e);
+                break;
+            }
+        }
+        if (count > 0) {
+            log.info("SignalingChannel 已重放 {} 条暂存上报", count);
+        }
     }
 
     public void close() {
@@ -100,45 +124,56 @@ public class SignalingService {
         log.debug("收到 IceEnvelope: connectId={}", iceEnvelope != null ? iceEnvelope.getConnectId() : null);
     }
 
-    /** 上报 Actor 就绪（供 ActorRegistrationServiceGrpcImpl 等调用）。 */
+    /** 上报 Actor 就绪（供 ActorRegistrationServiceGrpcImpl 等调用）。Channel 未就绪时入队，建立后重放。 */
     public void reportActorReady(String actorId) {
-        StreamObserver<SignalingEnvelope> sender = this.signalingSender;
-        if (sender == null) return;
         String providerId = identity != null ? identity.getProviderId() : "";
-        try {
-            SignalingEnvelope msg = SignalingEnvelope.newBuilder()
-                    .setProviderId(providerId != null ? providerId : "")
-                    .setTimestampMs(System.currentTimeMillis())
-                    .setActorReady(ActorReadyReport.newBuilder().setActorId(actorId).build())
-                    .build();
-            sender.onNext(msg);
-            log.info("SignalingService: 已上报 ActorReadyReport: actorId={}", actorId);
-        } catch (Exception e) {
-            log.warn("SignalingService: 上报 ActorReadyReport 失败: actorId={}", actorId, e);
+        SignalingEnvelope msg = SignalingEnvelope.newBuilder()
+                .setProviderId(providerId != null ? providerId : "")
+                .setTimestampMs(System.currentTimeMillis())
+                .setActorReady(ActorReadyReport.newBuilder().setActorId(actorId).build())
+                .build();
+        if (!sendOrEnqueue(msg, "ActorReadyReport", actorId)) {
+            log.debug("SignalingChannel 未就绪，ActorReadyReport 已入队: actorId={}", actorId);
         }
     }
 
-    /** 上报本地通道已建立（供 ActorRegistrationServiceGrpcImpl、DeploymentService 等调用）。 */
+    /** 上报本地通道已建立（供 ActorRegistrationServiceGrpcImpl、DeploymentService 等调用）。Channel 未就绪时入队。 */
     public void reportChannelEstablished(String srcActorId, String dstActorId) {
-        StreamObserver<SignalingEnvelope> sender = this.signalingSender;
-        if (sender == null) return;
         String providerId = identity != null ? identity.getProviderId() : "";
-        try {
-            SignalingEnvelope msg = SignalingEnvelope.newBuilder()
-                    .setProviderId(providerId != null ? providerId : "")
-                    .setTimestampMs(System.currentTimeMillis())
-                    .setActorChannel(ActorChannelStatus.newBuilder()
-                            .setWorkflowId("")
-                            .setApplicationId("")
-                            .setSrcActorAddr(srcActorId)
-                            .setDstActorAddr(dstActorId)
-                            .setConnected(true)
-                            .build())
-                    .build();
-            sender.onNext(msg);
-            log.info("SignalingService: 已上报 ActorChannelStatus: src={}, dst={}", srcActorId, dstActorId);
-        } catch (Exception e) {
-            log.warn("SignalingService: 上报 ActorChannelStatus 失败: src={}, dst={}", srcActorId, dstActorId, e);
+        SignalingEnvelope msg = SignalingEnvelope.newBuilder()
+                .setProviderId(providerId != null ? providerId : "")
+                .setTimestampMs(System.currentTimeMillis())
+                .setActorChannel(ActorChannelStatus.newBuilder()
+                        .setWorkflowId("")
+                        .setApplicationId("")
+                        .setSrcActorAddr(srcActorId)
+                        .setDstActorAddr(dstActorId)
+                        .setConnected(true)
+                        .build())
+                .build();
+        if (!sendOrEnqueue(msg, "ActorChannelStatus", srcActorId + "->" + dstActorId)) {
+            log.debug("SignalingChannel 未就绪，ActorChannelStatus 已入队: src={}, dst={}", srcActorId, dstActorId);
         }
+    }
+
+    /**
+     * 若 channel 已建立则立即发送，否则入队。
+     * @return true 表示已发送，false 表示已入队
+     */
+    private boolean sendOrEnqueue(SignalingEnvelope msg, String reportType, String detail) {
+        StreamObserver<SignalingEnvelope> sender = this.signalingSender;
+        if (sender != null) {
+            try {
+                sender.onNext(msg);
+                log.info("SignalingService: 已上报 {}: {}", reportType, detail);
+                return true;
+            } catch (Exception e) {
+                log.warn("SignalingService: 上报 {} 失败: {}", reportType, detail, e);
+                pendingReports.offer(msg);
+                return false;
+            }
+        }
+        pendingReports.offer(msg);
+        return false;
     }
 }

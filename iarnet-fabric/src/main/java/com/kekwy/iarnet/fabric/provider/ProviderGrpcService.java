@@ -181,16 +181,19 @@ public class ProviderGrpcService
         return new StreamObserver<>() {
             @Override
             public void onNext(SignalingEnvelope value) {
+                var payloadCase = value.getPayloadCase();
+                log.info("SignalingChannel 收到: providerId={}, payloadCase={}", providerId, payloadCase);
                 try {
-                    switch (value.getPayloadCase()) {
+                    switch (payloadCase) {
                         case ACTOR_READY -> handleActorReady(providerId, value.getActorReady());
                         case ACTOR_CHANNEL -> handleActorChannel(value.getActorChannel());
+                        case PAYLOAD_NOT_SET -> log.warn("SignalingChannel 收到空 payload: providerId={}", providerId);
                         default -> log.debug("SignalingChannel 收到未处理的消息类型: providerId={}, type={}",
-                                providerId, value.getPayloadCase());
+                                providerId, payloadCase);
                     }
                 } catch (Exception e) {
                     log.error("SignalingChannel 处理消息异常: providerId={}, payloadCase={}",
-                            providerId, value.getPayloadCase(), e);
+                            providerId, payloadCase, e);
                 }
             }
 
