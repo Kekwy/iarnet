@@ -13,7 +13,7 @@
 
     <artifactId>iarnet-cli</artifactId>
     <packaging>jar</packaging>
-    <name>iarnet-api-cli</name>
+    <name>iarnet-cli</name>
     <description>iarnet api 命令行客户端</description>
     <dependencies>
         <!-- ========== gRPC ========== -->

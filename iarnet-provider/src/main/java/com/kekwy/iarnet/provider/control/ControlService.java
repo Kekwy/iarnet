@@ -67,7 +67,9 @@ public class ControlService {
         }
 
         DelegatingObserver<ControlEnvelope> proxy = new DelegatingObserver<>();
-        StreamObserver<ControlEnvelope> receiver = new ControlMessageDispatcher(this, this::onDisconnect);
+        final StreamObserver<ControlEnvelope> thisSender = proxy;
+        StreamObserver<ControlEnvelope> receiver = new ControlMessageDispatcher(this,
+                () -> onDisconnect(thisSender));
 
         Metadata headers = new Metadata();
         headers.put(ProviderRegistryClient.PROVIDER_ID_METADATA_KEY, providerId);
@@ -105,8 +107,11 @@ public class ControlService {
         log.info("心跳已启动: 间隔={}s, providerId={}", HEARTBEAT_INTERVAL_SECONDS, identity != null ? identity.getProviderId() : null);
     }
 
-    private void onDisconnect() {
-        StreamObserver<ControlEnvelope> oldSender = this.controlSender;
+    private void onDisconnect(StreamObserver<ControlEnvelope> disconnectedSender) {
+        if (this.controlSender != disconnectedSender) {
+            log.debug("忽略旧 ControlChannel 的断开事件");
+            return;
+        }
         this.controlSender = null;
         if (heartbeatTask != null) {
             heartbeatTask.cancel(false);
@@ -115,9 +120,7 @@ public class ControlService {
         if (closed) return;
         log.warn("ControlChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
         scheduler.schedule(() -> {
-            if (oldSender != null) {
-                try { oldSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
-            }
+            try { disconnectedSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
             openChannel();
         }, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }

@@ -10,14 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PreDestroy;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * {@link ActorRegistry} 的默认实现。
@@ -29,26 +24,17 @@ import java.util.concurrent.TimeUnit;
 public class DefaultActorRegistry implements ActorRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultActorRegistry.class);
-    private static final Duration HEARTBEAT_TIMEOUT = Duration.ofSeconds(120);
 
     private final ProviderRegistry providerRegistry;
     private final ConcurrentHashMap<String, ActorSession> sessions = new ConcurrentHashMap<>();
     private final CopyOnWriteArrayList<ActorLifecycleListener> listeners = new CopyOnWriteArrayList<>();
-    private final ScheduledExecutorService watchdog;
 
     public DefaultActorRegistry(ProviderRegistry providerRegistry) {
         this.providerRegistry = providerRegistry;
-        watchdog = Executors.newSingleThreadScheduledExecutor(r -> {
-            Thread t = new Thread(r, "actor-registry-watchdog");
-            t.setDaemon(true);
-            return t;
-        });
-        watchdog.scheduleAtFixedRate(this::checkHeartbeats, 30, 30, TimeUnit.SECONDS);
     }
 
     @PreDestroy
     public void shutdown() {
-        watchdog.shutdownNow();
         sessions.clear();
     }
 
@@ -145,16 +131,5 @@ public class DefaultActorRegistry implements ActorRegistry {
     @Override
     public void removeListener(ActorLifecycleListener listener) {
         listeners.remove(listener);
-    }
-
-    private void checkHeartbeats() {
-        Instant threshold = Instant.now().minus(HEARTBEAT_TIMEOUT);
-        for (ActorSession session : sessions.values()) {
-            if (session.getLastHeartbeat().isBefore(threshold)) {
-                String actorId = session.getActorId();
-                log.warn("Actor 心跳超时: actorId={}", actorId);
-                onActorDisconnected(actorId);
-            }
-        }
     }
 }

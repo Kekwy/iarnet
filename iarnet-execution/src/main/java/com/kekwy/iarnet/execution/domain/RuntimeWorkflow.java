@@ -4,7 +4,6 @@ import com.kekwy.iarnet.execution.WorkflowEngine;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.DataRow;
 import com.kekwy.iarnet.proto.actor.InvokeRequest;
-import com.kekwy.iarnet.proto.actor.StartInputCommand;
 import com.kekwy.iarnet.proto.workflow.WorkflowInput;
 import com.kekwy.iarnet.proto.common.Value;
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
@@ -98,19 +97,11 @@ public class RuntimeWorkflow {
     }
 
     /**
-     * 向所有 input node 的 actor 发送 StartInputCommand，启动数据流。
+     * 已废弃：入口节点现为 Task/Output，由 execute() 下发的 Row 驱动，不再发送 StartInputCommand。
+     * 保留空实现以免调用方编译报错。
      */
+    @Deprecated
     public void start() {
-        ActorEnvelope startEnvelope = ActorEnvelope.newBuilder()
-                .setStartInputCommand(StartInputCommand.getDefaultInstance())
-                .build();
-
-        for (RuntimeNode inputNode : getRuntimeGraph().getInputNodes()) {
-            for (ActorInstanceRef ref : inputNode.actorInstanceRefs()) {
-                log.info("发送 StartInputCommand: nodeId={}, actorId={}",
-                        inputNode.nodeId(), ref.getActorId());
-                ref.send(startEnvelope);
-            }
-        }
+        // no-op: entry nodes receive data via execute() -> InvokeRequest with Row
     }
 }

@@ -39,6 +39,8 @@ public class SignalingService {
 
     private volatile boolean closed = false;
     private volatile StreamObserver<SignalingEnvelope> signalingSender;
+    /** 保护 signalingSender.onNext 的锁，gRPC StreamObserver 非线程安全 */
+    private final Object senderLock = new Object();
     /** Channel 未就绪时暂存的上报，建立/重连后统一发送 */
     private final ConcurrentLinkedQueue<SignalingEnvelope> pendingReports = new ConcurrentLinkedQueue<>();
 
@@ -68,7 +70,9 @@ public class SignalingService {
         }
 
         DelegatingObserver<SignalingEnvelope> proxy = new DelegatingObserver<>();
-        StreamObserver<SignalingEnvelope> receiver = new SignalingMessageDispatcher(this, proxy, this::onDisconnect);
+        final StreamObserver<SignalingEnvelope> thisSender = proxy;
+        StreamObserver<SignalingEnvelope> receiver = new SignalingMessageDispatcher(this, proxy,
+                () -> onDisconnect(thisSender));
 
         Metadata headers = new Metadata();
         headers.put(ProviderRegistryClient.PROVIDER_ID_METADATA_KEY, providerId);
@@ -82,32 +86,35 @@ public class SignalingService {
         flushPendingReports();
     }
 
-    private void onDisconnect() {
-        StreamObserver<SignalingEnvelope> oldSender = this.signalingSender;
+    private void onDisconnect(StreamObserver<SignalingEnvelope> disconnectedSender) {
+        if (this.signalingSender != disconnectedSender) {
+            log.debug("忽略旧 SignalingChannel 的断开事件");
+            return;
+        }
         this.signalingSender = null;
         if (closed) return;
         log.warn("SignalingChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
         scheduler.schedule(() -> {
-            if (oldSender != null) {
-                try { oldSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
-            }
+            try { disconnectedSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
             openChannel();
         }, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
-    /** 将暂存的上报按序发出（channel 建立/重连后调用） */
+    /** 将暂存的上报按序发出（channel 建立/重连后调用）。与 sendOrEnqueue 共用 senderLock 保证线程安全。 */
     private void flushPendingReports() {
         StreamObserver<SignalingEnvelope> sender = this.signalingSender;
         if (sender == null) return;
         SignalingEnvelope envelope;
         int count = 0;
-        while ((envelope = pendingReports.poll()) != null) {
-            try {
-                sender.onNext(envelope);
-                count++;
-            } catch (Exception e) {
-                log.warn("重放暂存上报失败，已丢弃剩余 {} 条", pendingReports.size() + 1, e);
-                break;
+        synchronized (senderLock) {
+            while ((envelope = pendingReports.poll()) != null) {
+                try {
+                    sender.onNext(envelope);
+                    count++;
+                } catch (Exception e) {
+                    log.warn("重放暂存上报失败，已丢弃剩余 {} 条", pendingReports.size() + 1, e);
+                    break;
+                }
             }
         }
         if (count > 0) {
@@ -180,7 +187,9 @@ public class SignalingService {
         StreamObserver<SignalingEnvelope> sender = this.signalingSender;
         if (sender != null) {
             try {
-                sender.onNext(msg);
+                synchronized (senderLock) {
+                    sender.onNext(msg);
+                }
                 log.info("SignalingService: 已上报 {}: {}", reportType, detail);
                 return true;
             } catch (Exception e) {

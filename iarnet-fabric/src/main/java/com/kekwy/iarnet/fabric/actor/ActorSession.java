@@ -1,7 +1,5 @@
 package com.kekwy.iarnet.fabric.actor;
 
-import java.time.Instant;
-
 /**
  * 记录一个已连接 Actor 的元数据与实时状态。
  * <p>
@@ -17,13 +15,11 @@ public class ActorSession {
 
     private final String actorId;
     private final String providerId;
-    private volatile Instant lastHeartbeat;
     private volatile Status status;
 
     public ActorSession(String actorId, String providerId) {
         this.actorId = actorId;
         this.providerId = providerId;
-        this.lastHeartbeat = Instant.now();
         this.status = Status.READY;
     }
 
@@ -36,14 +32,6 @@ public class ActorSession {
      */
     public String getProviderId() {
         return providerId;
-    }
-
-    public Instant getLastHeartbeat() {
-        return lastHeartbeat;
-    }
-
-    public void updateHeartbeat() {
-        this.lastHeartbeat = Instant.now();
     }
 
     public Status getStatus() {

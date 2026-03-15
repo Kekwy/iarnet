@@ -310,6 +310,9 @@ public final class ValueCodec {
 
     private static <T> T mapToPojo(Map<String, Object> map, Class<T> clazz) {
         try {
+            if (clazz.isRecord()) {
+                return mapToRecord(map, clazz);
+            }
             T instance = clazz.getDeclaredConstructor().newInstance();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 try {
@@ -323,6 +326,22 @@ public final class ValueCodec {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException("Cannot instantiate " + clazz.getName(), e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T mapToRecord(Map<String, Object> map, Class<T> clazz)
+            throws ReflectiveOperationException {
+        var components = clazz.getRecordComponents();
+        Class<?>[] paramTypes = new Class<?>[components.length];
+        Object[] args = new Object[components.length];
+        for (int i = 0; i < components.length; i++) {
+            paramTypes[i] = components[i].getType();
+            Object raw = map.get(components[i].getName());
+            args[i] = coerce(raw, paramTypes[i]);
+        }
+        var ctor = clazz.getDeclaredConstructor(paramTypes);
+        ctor.setAccessible(true);
+        return (T) ctor.newInstance(args);
     }
 
     /**

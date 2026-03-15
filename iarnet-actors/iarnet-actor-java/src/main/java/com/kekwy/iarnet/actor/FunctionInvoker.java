@@ -7,9 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.SerializedLambda;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -79,16 +83,19 @@ public final class FunctionInvoker {
         switch (this.kind) {
             case INPUT -> {
                 inputNext0 = fnClass.getMethod("next");
+                setAccessible(inputNext0);
                 optionalIsEmpty0 = Optional.class.getMethod("isEmpty");
                 optionalGet0 = Optional.class.getMethod("get");
             }
             case TASK -> {
                 taskApply0 = fnClass.getMethod("apply", Object.class);
-                taskInputClass0 = taskApply0.getParameterTypes()[0];
+                setAccessible(taskApply0);
+                taskInputClass0 = resolveActualParamClass(fnClass, "apply", 1, 0);
             }
             case OUTPUT -> {
                 outputAccept0 = fnClass.getMethod("accept", Object.class);
-                outputInputClass0 = outputAccept0.getParameterTypes()[0];
+                setAccessible(outputAccept0);
+                outputInputClass0 = resolveActualParamClass(fnClass, "accept", 1, 0);
             }
             case COMBINE -> {
                 ClassLoader cl = fnClass.getClassLoader();
@@ -96,6 +103,7 @@ public final class FunctionInvoker {
                 combineOfNullable0 = combineOptionalValueClass0.getMethod("ofNullable", Object.class);
                 combineEmpty0 = combineOptionalValueClass0.getMethod("empty");
                 combineCombine0 = fnClass.getMethod("combine", combineOptionalValueClass0, combineOptionalValueClass0);
+                setAccessible(combineCombine0);
                 Type[] genericParams = combineCombine0.getGenericParameterTypes();
                 combineLeftInputClass0 = toRawClass(firstTypeArgument(genericParams[0]));
                 combineRightInputClass0 = toRawClass(firstTypeArgument(genericParams[1]));
@@ -115,6 +123,78 @@ public final class FunctionInvoker {
         this.combineLeftInputClass = combineLeftInputClass0;
         this.combineRightInputClass = combineRightInputClass0;
         log.debug("FunctionInvoker 已创建: kind={}, identifier={}", kind, descriptor.getFunctionIdentifier());
+    }
+
+    /** 使反射可调用 lambda/合成类方法，避免 IllegalAccessException。 */
+    private static void setAccessible(AccessibleObject accessible) {
+        try {
+            accessible.setAccessible(true);
+        } catch (Exception e) {
+            log.debug("setAccessible 被拒绝: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 解析函数方法的真实参数类型，绕过泛型擦除导致的 Object.class。
+     * <p>策略：
+     * <ol>
+     *   <li>扫描非桥接方法：匿名类 / 具名类会生成带真实参数类型的重载（非 bridge）</li>
+     *   <li>SerializedLambda：lambda 可通过 writeReplace 获取 instantiatedMethodType 解析真实类型</li>
+     *   <li>兜底返回 Object.class</li>
+     * </ol>
+     */
+    private Class<?> resolveActualParamClass(Class<?> fnClass, String methodName,
+                                             int expectedParamCount, int paramIndex) {
+        for (Method m : fnClass.getDeclaredMethods()) {
+            if (methodName.equals(m.getName())
+                    && m.getParameterCount() == expectedParamCount
+                    && !m.isBridge() && !m.isSynthetic()
+                    && m.getParameterTypes()[paramIndex] != Object.class) {
+                Class<?> resolved = m.getParameterTypes()[paramIndex];
+                log.debug("通过非桥接方法解析到参数类型: {}.{}[{}] -> {}",
+                        fnClass.getSimpleName(), methodName, paramIndex, resolved.getName());
+                return resolved;
+            }
+        }
+        try {
+            Method writeReplace = fnClass.getDeclaredMethod("writeReplace");
+            writeReplace.setAccessible(true);
+            SerializedLambda sl = (SerializedLambda) writeReplace.invoke(function);
+            String methodType = sl.getInstantiatedMethodType();
+            List<String> paramClassNames = parseMethodDescriptorParams(methodType);
+            if (paramIndex < paramClassNames.size()) {
+                String className = paramClassNames.get(paramIndex);
+                Class<?> resolved = jarLoader.getClassLoader().loadClass(className);
+                log.debug("通过 SerializedLambda 解析到参数类型: {}.{}[{}] -> {}",
+                        fnClass.getSimpleName(), methodName, paramIndex, resolved.getName());
+                return resolved;
+            }
+        } catch (Exception e) {
+            log.debug("SerializedLambda 解析失败: {}", e.getMessage());
+        }
+        return Object.class;
+    }
+
+    /** 解析 JVM 方法描述符的参数列表，如 "(Lcom/example/Foo;I)V" → ["com.example.Foo", ...] */
+    private static List<String> parseMethodDescriptorParams(String desc) {
+        List<String> params = new ArrayList<>();
+        if (desc == null || !desc.startsWith("(")) return params;
+        int i = 1;
+        while (i < desc.length() && desc.charAt(i) != ')') {
+            char c = desc.charAt(i);
+            if (c == 'L') {
+                int end = desc.indexOf(';', i);
+                if (end < 0) break;
+                params.add(desc.substring(i + 1, end).replace('/', '.'));
+                i = end + 1;
+            } else if (c == '[') {
+                i++;
+            } else {
+                params.add(Object.class.getName());
+                i++;
+            }
+        }
+        return params;
     }
 
     /** 等价于 {@code new FunctionInvoker(descriptor, jarLoader, null)}，完全由描述符推断类型。 */

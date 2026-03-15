@@ -362,7 +362,7 @@ public class WorkflowEngine {
                 RuntimeGraph runtimeGraph = buildRuntimeGraph(workflowGraph, instanceRefGraph);
                 RuntimeWorkflow session = new RuntimeWorkflow(runtimeGraph, workflowInputs, nodeIdToInputParamName);
                 runtimeSessions.put(workflowId, session);
-                session.start();
+                // 入口节点为 Task/Output，通过 execute() 下发的 Row 驱动，不再发送 StartInputCommand
                 drainPendingExecuteRequests(workflowId, session);
             }
 

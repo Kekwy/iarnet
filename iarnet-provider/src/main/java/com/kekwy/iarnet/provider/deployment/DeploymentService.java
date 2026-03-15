@@ -84,7 +84,9 @@ public class DeploymentService {
         }
 
         DelegatingObserver<DeploymentEnvelope> proxy = new DelegatingObserver<>();
-        StreamObserver<DeploymentEnvelope> receiver = new DeploymentMessageDispatcher(this, proxy, this::onDisconnect);
+        final StreamObserver<DeploymentEnvelope> thisSender = proxy;
+        StreamObserver<DeploymentEnvelope> receiver = new DeploymentMessageDispatcher(this, proxy,
+                () -> onDisconnect(thisSender));
 
         Metadata headers = new Metadata();
         headers.put(ProviderRegistryClient.PROVIDER_ID_METADATA_KEY, providerId);
@@ -97,15 +99,16 @@ public class DeploymentService {
         log.info("DeploymentChannel 已建立: providerId={}", providerId);
     }
 
-    private void onDisconnect() {
-        StreamObserver<DeploymentEnvelope> oldSender = this.deploymentSender;
+    private void onDisconnect(StreamObserver<DeploymentEnvelope> disconnectedSender) {
+        if (this.deploymentSender != disconnectedSender) {
+            log.debug("忽略旧 DeploymentChannel 的断开事件");
+            return;
+        }
         this.deploymentSender = null;
         if (closed) return;
         log.warn("DeploymentChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
         scheduler.schedule(() -> {
-            if (oldSender != null) {
-                try { oldSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
-            }
+            try { disconnectedSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
             openChannel();
         }, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }
