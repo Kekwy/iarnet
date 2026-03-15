@@ -125,7 +125,7 @@ public class WorkflowEngine {
 
     /**
      * 提交工作流图，入队后立即返回 token，供后续 {@link #execute(String, String, Map)} 等调用时校验使用。
-     * 若 workflowId 已通过 {@link #register()} 预注册，则复用已有 token。
+     * 若 workflowId 已通过 {@link #register} 预注册，则复用已有 token。
      *
      * @param graph              工作流图
      * @param artifactDir        制品目录

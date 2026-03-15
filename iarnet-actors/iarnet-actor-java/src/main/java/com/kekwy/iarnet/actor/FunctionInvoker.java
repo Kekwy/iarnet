@@ -2,6 +2,7 @@ package com.kekwy.iarnet.actor;
 
 import com.kekwy.iarnet.proto.ValueCodec;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
+import com.kekwy.iarnet.proto.common.TypeKind;
 import com.kekwy.iarnet.proto.common.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +11,6 @@ import java.io.IOException;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +43,6 @@ public final class FunctionInvoker {
     private final Method combineOfNullable;
     private final Method combineEmpty;
     private final Method combineCombine;
-    private final Class<?> combineLeftInputClass;
-    private final Class<?> combineRightInputClass;
 
     public enum Kind {
         INPUT,   // 0 inputs, has output -> next()
@@ -78,7 +75,6 @@ public final class FunctionInvoker {
         Class<?> outputInputClass0 = null;
         Class<?> combineOptionalValueClass0 = null;
         Method combineOfNullable0 = null, combineEmpty0 = null, combineCombine0 = null;
-        Class<?> combineLeftInputClass0 = null, combineRightInputClass0 = null;
         Class<?> fnClass = this.function.getClass();
         switch (this.kind) {
             case INPUT -> {
@@ -104,9 +100,6 @@ public final class FunctionInvoker {
                 combineEmpty0 = combineOptionalValueClass0.getMethod("empty");
                 combineCombine0 = fnClass.getMethod("combine", combineOptionalValueClass0, combineOptionalValueClass0);
                 setAccessible(combineCombine0);
-                Type[] genericParams = combineCombine0.getGenericParameterTypes();
-                combineLeftInputClass0 = toRawClass(firstTypeArgument(genericParams[0]));
-                combineRightInputClass0 = toRawClass(firstTypeArgument(genericParams[1]));
             }
         }
         this.inputNext = inputNext0;
@@ -120,8 +113,6 @@ public final class FunctionInvoker {
         this.combineOfNullable = combineOfNullable0;
         this.combineEmpty = combineEmpty0;
         this.combineCombine = combineCombine0;
-        this.combineLeftInputClass = combineLeftInputClass0;
-        this.combineRightInputClass = combineRightInputClass0;
         log.debug("FunctionInvoker 已创建: kind={}, identifier={}", kind, descriptor.getFunctionIdentifier());
     }
 
@@ -246,12 +237,13 @@ public final class FunctionInvoker {
 
     /**
      * Task 函数：单输入单输出，解码 input 后调用 apply，编码结果返回。
+     * 优先使用 descriptor.inputs_type[0] 的 class_name 解码，否则用反射推断的类型。
      */
     public Value runTask(Value input) throws Throwable {
         if (kind != Kind.TASK) {
             throw new IllegalStateException("非 Task 函数");
         }
-        Object decoded = ValueCodec.decode(input, taskInputClass);
+        Object decoded = decodeInput(input, 0, taskInputClass);
         Object result = taskApply.invoke(function, decoded);
         return ValueCodec.encode(result);
     }
@@ -263,12 +255,13 @@ public final class FunctionInvoker {
         if (kind != Kind.OUTPUT) {
             throw new IllegalStateException("非 Output 函数");
         }
-        Object decoded = ValueCodec.decode(input, outputInputClass);
+        Object decoded = decodeInput(input, 0, outputInputClass);
         outputAccept.invoke(function, decoded);
     }
 
     /**
      * Combine 函数：两路输入（可为空），解码后包装为 OptionalValue 调用 combine。
+     * 使用 descriptor.inputs_type 的 class_name 解码，不依赖反射推断。
      */
     public Value runCombine(Value input1, Value input2) throws Throwable {
         if (kind != Kind.COMBINE) {
@@ -276,29 +269,26 @@ public final class FunctionInvoker {
         }
         Object left = input1 == null || input1.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
-                : ValueCodec.decode(input1, combineLeftInputClass);
+                : ValueCodec.decode(input1, descriptor.getInputsType(0), jarLoader.getClassLoader());
         Object right = input2 == null || input2.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
-                : ValueCodec.decode(input2, combineRightInputClass);
+                : ValueCodec.decode(input2, descriptor.getInputsType(1), jarLoader.getClassLoader());
         Object optLeft = left == null ? combineEmpty.invoke(null) : combineOfNullable.invoke(null, left);
         Object optRight = right == null ? combineEmpty.invoke(null) : combineOfNullable.invoke(null, right);
         Object result = combineCombine.invoke(function, optLeft, optRight);
         return ValueCodec.encode(result);
     }
 
-    /** 从 OptionalValue&lt;T&gt; 等参数化类型取第一个类型实参。 */
-    private static Type firstTypeArgument(Type type) {
-        if (type instanceof ParameterizedType pt) {
-            Type[] args = pt.getActualTypeArguments();
-            return args.length > 0 ? args[0] : Object.class;
+    /** 单输入解码：优先用 descriptor 的 Type+class_name，否则用 fallbackClass。 */
+    private Object decodeInput(Value input, int inputIndex, Class<?> fallbackClass) {
+        if (descriptor.getInputsTypeCount() > inputIndex) {
+            var type = descriptor.getInputsType(inputIndex);
+            if (type.getKind() == TypeKind.TYPE_KIND_STRUCT && type.hasStructDetail()
+                    && !type.getStructDetail().getClassName().isEmpty()) {
+                return ValueCodec.decode(input, type, jarLoader.getClassLoader());
+            }
         }
-        return Object.class;
+        return ValueCodec.decode(input, fallbackClass);
     }
 
-    /** 将 java.lang.reflect.Type 转为 Class（泛型取 raw type）。 */
-    private static Class<?> toRawClass(Type type) {
-        if (type instanceof Class<?> c) return c;
-        if (type instanceof ParameterizedType pt) return (Class<?>) pt.getRawType();
-        return Object.class;
-    }
 }

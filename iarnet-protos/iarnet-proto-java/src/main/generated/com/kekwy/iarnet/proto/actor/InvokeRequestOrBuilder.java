@@ -8,16 +8,16 @@ public interface InvokeRequestOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>string sessionId = 1;</code>
-   * @return The sessionId.
+   * <code>string executionId = 1;</code>
+   * @return The executionId.
    */
-  java.lang.String getSessionId();
+  java.lang.String getExecutionId();
   /**
-   * <code>string sessionId = 1;</code>
-   * @return The bytes for sessionId.
+   * <code>string executionId = 1;</code>
+   * @return The bytes for executionId.
    */
   com.google.protobuf.ByteString
-      getSessionIdBytes();
+      getExecutionIdBytes();
 
   /**
    * <code>.iarnet.actor.DataRow row = 2;</code>

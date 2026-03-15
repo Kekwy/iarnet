@@ -126,7 +126,8 @@ public final class Types {
     }
 
     private static Type structFromClass(Class<?> clazz) {
-        StructTypeDetail.Builder detail = StructTypeDetail.newBuilder();
+        StructTypeDetail.Builder detail = StructTypeDetail.newBuilder()
+                .setClassName(clazz.getName());
         for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
             if (Modifier.isStatic(f.getModifiers())
                     || Modifier.isTransient(f.getModifiers())

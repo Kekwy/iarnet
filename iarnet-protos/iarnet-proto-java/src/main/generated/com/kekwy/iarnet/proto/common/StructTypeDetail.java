@@ -17,6 +17,7 @@ private static final long serialVersionUID = 0L;
   }
   private StructTypeDetail() {
     fields_ = java.util.Collections.emptyList();
+    className_ = "";
   }
 
   @java.lang.Override
@@ -85,6 +86,53 @@ private static final long serialVersionUID = 0L;
     return fields_.get(index);
   }
 
+  public static final int CLASS_NAME_FIELD_NUMBER = 2;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object className_ = "";
+  /**
+   * <pre>
+   * 可选: 原始语言中的类型全限定名
+   * </pre>
+   *
+   * <code>string class_name = 2;</code>
+   * @return The className.
+   */
+  @java.lang.Override
+  public java.lang.String getClassName() {
+    java.lang.Object ref = className_;
+    if (ref instanceof java.lang.String) {
+      return (java.lang.String) ref;
+    } else {
+      com.google.protobuf.ByteString bs = 
+          (com.google.protobuf.ByteString) ref;
+      java.lang.String s = bs.toStringUtf8();
+      className_ = s;
+      return s;
+    }
+  }
+  /**
+   * <pre>
+   * 可选: 原始语言中的类型全限定名
+   * </pre>
+   *
+   * <code>string class_name = 2;</code>
+   * @return The bytes for className.
+   */
+  @java.lang.Override
+  public com.google.protobuf.ByteString
+      getClassNameBytes() {
+    java.lang.Object ref = className_;
+    if (ref instanceof java.lang.String) {
+      com.google.protobuf.ByteString b = 
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (java.lang.String) ref);
+      className_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -102,6 +150,9 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < fields_.size(); i++) {
       output.writeMessage(1, fields_.get(i));
     }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(className_)) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, className_);
+    }
     getUnknownFields().writeTo(output);
   }
 
@@ -114,6 +165,9 @@ private static final long serialVersionUID = 0L;
     for (int i = 0; i < fields_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(1, fields_.get(i));
+    }
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(className_)) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, className_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -132,6 +186,8 @@ private static final long serialVersionUID = 0L;
 
     if (!getFieldsList()
         .equals(other.getFieldsList())) return false;
+    if (!getClassName()
+        .equals(other.getClassName())) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -147,6 +203,8 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + FIELDS_FIELD_NUMBER;
       hash = (53 * hash) + getFieldsList().hashCode();
     }
+    hash = (37 * hash) + CLASS_NAME_FIELD_NUMBER;
+    hash = (53 * hash) + getClassName().hashCode();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -283,6 +341,7 @@ private static final long serialVersionUID = 0L;
         fieldsBuilder_.clear();
       }
       bitField0_ = (bitField0_ & ~0x00000001);
+      className_ = "";
       return this;
     }
 
@@ -329,6 +388,9 @@ private static final long serialVersionUID = 0L;
 
     private void buildPartial0(com.kekwy.iarnet.proto.common.StructTypeDetail result) {
       int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.className_ = className_;
+      }
     }
 
     @java.lang.Override
@@ -401,6 +463,11 @@ private static final long serialVersionUID = 0L;
           }
         }
       }
+      if (!other.getClassName().isEmpty()) {
+        className_ = other.className_;
+        bitField0_ |= 0x00000002;
+        onChanged();
+      }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -440,6 +507,11 @@ private static final long serialVersionUID = 0L;
               }
               break;
             } // case 10
+            case 18: {
+              className_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -695,6 +767,98 @@ private static final long serialVersionUID = 0L;
         fields_ = null;
       }
       return fieldsBuilder_;
+    }
+
+    private java.lang.Object className_ = "";
+    /**
+     * <pre>
+     * 可选: 原始语言中的类型全限定名
+     * </pre>
+     *
+     * <code>string class_name = 2;</code>
+     * @return The className.
+     */
+    public java.lang.String getClassName() {
+      java.lang.Object ref = className_;
+      if (!(ref instanceof java.lang.String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        className_ = s;
+        return s;
+      } else {
+        return (java.lang.String) ref;
+      }
+    }
+    /**
+     * <pre>
+     * 可选: 原始语言中的类型全限定名
+     * </pre>
+     *
+     * <code>string class_name = 2;</code>
+     * @return The bytes for className.
+     */
+    public com.google.protobuf.ByteString
+        getClassNameBytes() {
+      java.lang.Object ref = className_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        className_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <pre>
+     * 可选: 原始语言中的类型全限定名
+     * </pre>
+     *
+     * <code>string class_name = 2;</code>
+     * @param value The className to set.
+     * @return This builder for chaining.
+     */
+    public Builder setClassName(
+        java.lang.String value) {
+      if (value == null) { throw new NullPointerException(); }
+      className_ = value;
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 可选: 原始语言中的类型全限定名
+     * </pre>
+     *
+     * <code>string class_name = 2;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearClassName() {
+      className_ = getDefaultInstance().getClassName();
+      bitField0_ = (bitField0_ & ~0x00000002);
+      onChanged();
+      return this;
+    }
+    /**
+     * <pre>
+     * 可选: 原始语言中的类型全限定名
+     * </pre>
+     *
+     * <code>string class_name = 2;</code>
+     * @param value The bytes for className to set.
+     * @return This builder for chaining.
+     */
+    public Builder setClassNameBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
+      className_ = value;
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

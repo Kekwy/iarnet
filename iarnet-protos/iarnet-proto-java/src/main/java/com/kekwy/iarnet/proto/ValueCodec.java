@@ -193,6 +193,36 @@ public final class ValueCodec {
                         + " to " + clazz.getName());
     }
 
+    /**
+     * 根据 proto Type 解码 Value。当 type 为 STRUCT 且 struct_detail.class_name 非空时，
+     * 使用给定 ClassLoader 加载该类并将 STRUCT 转为 POJO；否则按 {@link #decode(Value)} 解码。
+     */
+    @SuppressWarnings("unchecked")
+    public static Object decode(Value val, Type type, ClassLoader classLoader) {
+        Objects.requireNonNull(val, "value must not be null");
+        Objects.requireNonNull(type, "type must not be null");
+        Objects.requireNonNull(classLoader, "classLoader must not be null");
+        if (val.getKindCase() == Value.KindCase.KIND_NOT_SET) {
+            return null;
+        }
+        if (type.getKind() == TypeKind.TYPE_KIND_STRUCT && type.hasStructDetail()) {
+            StructTypeDetail structDetail = type.getStructDetail();
+            if (!structDetail.getClassName().isEmpty()) {
+                Object decoded = decode(val);
+                if (decoded == null) return null;
+                if (decoded instanceof Map) {
+                    try {
+                        Class<?> clazz = classLoader.loadClass(structDetail.getClassName());
+                        return mapToPojo((Map<String, Object>) decoded, clazz);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException("Cannot load class " + structDetail.getClassName(), e);
+                    }
+                }
+            }
+        }
+        return decode(val);
+    }
+
     private static List<Object> decodeArray(ArrayValue arr) {
         List<Object> list = new ArrayList<>(arr.getElementsCount());
         for (Value elem : arr.getElementsList()) {

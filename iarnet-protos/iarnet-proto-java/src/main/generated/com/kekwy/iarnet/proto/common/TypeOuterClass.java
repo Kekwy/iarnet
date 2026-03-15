@@ -95,39 +95,40 @@ public final class TypeOuterClass {
       "(\0162\031.iarnet.common.MapKeyKind\022\'\n\nvalue_t" +
       "ype\030\002 \001(\0132\023.iarnet.common.Type\">\n\013Struct" +
       "Field\022\014\n\004name\030\001 \001(\t\022!\n\004type\030\002 \001(\0132\023.iarn" +
-      "et.common.Type\">\n\020StructTypeDetail\022*\n\006fi" +
-      "elds\030\001 \003(\0132\032.iarnet.common.StructField\"\365" +
-      "\002\n\005Value\022\025\n\013bytes_value\030\001 \001(\014H\000\022\025\n\013int32" +
-      "_value\030\002 \001(\005H\000\022\025\n\013int64_value\030\003 \001(\003H\000\022\025\n" +
-      "\013float_value\030\004 \001(\002H\000\022\026\n\014double_value\030\005 \001" +
-      "(\001H\000\022\024\n\nbool_value\030\006 \001(\010H\000\022\026\n\014string_val" +
-      "ue\030\007 \001(\tH\000\0220\n\013array_value\030\010 \001(\0132\031.iarnet" +
-      ".common.ArrayValueH\000\022,\n\tmap_value\030\t \001(\0132" +
-      "\027.iarnet.common.MapValueH\000\0222\n\014struct_val" +
-      "ue\030\n \001(\0132\032.iarnet.common.StructValueH\000\022." +
-      "\n\nnull_value\030\013 \001(\0132\030.iarnet.common.NullV" +
-      "alueH\000B\006\n\004kind\"4\n\nArrayValue\022&\n\010elements" +
-      "\030\001 \003(\0132\024.iarnet.common.Value\"\212\001\n\010MapEntr" +
-      "y\022\024\n\nstring_key\030\001 \001(\tH\000\022\023\n\tint32_key\030\002 \001" +
-      "(\005H\000\022\023\n\tint64_key\030\003 \001(\003H\000\022\022\n\010bool_key\030\004 " +
-      "\001(\010H\000\022#\n\005value\030\005 \001(\0132\024.iarnet.common.Val" +
-      "ueB\005\n\003key\"4\n\010MapValue\022(\n\007entries\030\001 \003(\0132\027" +
-      ".iarnet.common.MapEntry\"E\n\020StructFieldVa" +
-      "lue\022\014\n\004name\030\001 \001(\t\022#\n\005value\030\002 \001(\0132\024.iarne" +
-      "t.common.Value\">\n\013StructValue\022/\n\006fields\030" +
-      "\001 \003(\0132\037.iarnet.common.StructFieldValue\"\013" +
-      "\n\tNullValue*\216\002\n\010TypeKind\022\031\n\025TYPE_KIND_UN" +
-      "SPECIFIED\020\000\022\024\n\020TYPE_KIND_STRING\020\001\022\023\n\017TYP" +
-      "E_KIND_INT32\020\002\022\023\n\017TYPE_KIND_INT64\020\003\022\023\n\017T" +
-      "YPE_KIND_FLOAT\020\004\022\024\n\020TYPE_KIND_DOUBLE\020\005\022\025" +
-      "\n\021TYPE_KIND_BOOLEAN\020\006\022\023\n\017TYPE_KIND_BYTES" +
-      "\020\007\022\022\n\016TYPE_KIND_NULL\020\010\022\023\n\017TYPE_KIND_ARRA" +
-      "Y\020\t\022\021\n\rTYPE_KIND_MAP\020\n\022\024\n\020TYPE_KIND_STRU" +
-      "CT\020\013*\215\001\n\nMapKeyKind\022\034\n\030MAP_KEY_KIND_UNSP" +
-      "ECIFIED\020\000\022\027\n\023MAP_KEY_KIND_STRING\020\001\022\026\n\022MA" +
-      "P_KEY_KIND_INT32\020\002\022\026\n\022MAP_KEY_KIND_INT64" +
-      "\020\003\022\030\n\024MAP_KEY_KIND_BOOLEAN\020\004B!\n\035com.kekw" +
-      "y.iarnet.proto.commonP\001b\006proto3"
+      "et.common.Type\"R\n\020StructTypeDetail\022*\n\006fi" +
+      "elds\030\001 \003(\0132\032.iarnet.common.StructField\022\022" +
+      "\n\nclass_name\030\002 \001(\t\"\365\002\n\005Value\022\025\n\013bytes_va" +
+      "lue\030\001 \001(\014H\000\022\025\n\013int32_value\030\002 \001(\005H\000\022\025\n\013in" +
+      "t64_value\030\003 \001(\003H\000\022\025\n\013float_value\030\004 \001(\002H\000" +
+      "\022\026\n\014double_value\030\005 \001(\001H\000\022\024\n\nbool_value\030\006" +
+      " \001(\010H\000\022\026\n\014string_value\030\007 \001(\tH\000\0220\n\013array_" +
+      "value\030\010 \001(\0132\031.iarnet.common.ArrayValueH\000" +
+      "\022,\n\tmap_value\030\t \001(\0132\027.iarnet.common.MapV" +
+      "alueH\000\0222\n\014struct_value\030\n \001(\0132\032.iarnet.co" +
+      "mmon.StructValueH\000\022.\n\nnull_value\030\013 \001(\0132\030" +
+      ".iarnet.common.NullValueH\000B\006\n\004kind\"4\n\nAr" +
+      "rayValue\022&\n\010elements\030\001 \003(\0132\024.iarnet.comm" +
+      "on.Value\"\212\001\n\010MapEntry\022\024\n\nstring_key\030\001 \001(" +
+      "\tH\000\022\023\n\tint32_key\030\002 \001(\005H\000\022\023\n\tint64_key\030\003 " +
+      "\001(\003H\000\022\022\n\010bool_key\030\004 \001(\010H\000\022#\n\005value\030\005 \001(\013" +
+      "2\024.iarnet.common.ValueB\005\n\003key\"4\n\010MapValu" +
+      "e\022(\n\007entries\030\001 \003(\0132\027.iarnet.common.MapEn" +
+      "try\"E\n\020StructFieldValue\022\014\n\004name\030\001 \001(\t\022#\n" +
+      "\005value\030\002 \001(\0132\024.iarnet.common.Value\">\n\013St" +
+      "ructValue\022/\n\006fields\030\001 \003(\0132\037.iarnet.commo" +
+      "n.StructFieldValue\"\013\n\tNullValue*\216\002\n\010Type" +
+      "Kind\022\031\n\025TYPE_KIND_UNSPECIFIED\020\000\022\024\n\020TYPE_" +
+      "KIND_STRING\020\001\022\023\n\017TYPE_KIND_INT32\020\002\022\023\n\017TY" +
+      "PE_KIND_INT64\020\003\022\023\n\017TYPE_KIND_FLOAT\020\004\022\024\n\020" +
+      "TYPE_KIND_DOUBLE\020\005\022\025\n\021TYPE_KIND_BOOLEAN\020" +
+      "\006\022\023\n\017TYPE_KIND_BYTES\020\007\022\022\n\016TYPE_KIND_NULL" +
+      "\020\010\022\023\n\017TYPE_KIND_ARRAY\020\t\022\021\n\rTYPE_KIND_MAP" +
+      "\020\n\022\024\n\020TYPE_KIND_STRUCT\020\013*\215\001\n\nMapKeyKind\022" +
+      "\034\n\030MAP_KEY_KIND_UNSPECIFIED\020\000\022\027\n\023MAP_KEY" +
+      "_KIND_STRING\020\001\022\026\n\022MAP_KEY_KIND_INT32\020\002\022\026" +
+      "\n\022MAP_KEY_KIND_INT64\020\003\022\030\n\024MAP_KEY_KIND_B" +
+      "OOLEAN\020\004B!\n\035com.kekwy.iarnet.proto.commo" +
+      "nP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -162,7 +163,7 @@ public final class TypeOuterClass {
     internal_static_iarnet_common_StructTypeDetail_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_common_StructTypeDetail_descriptor,
-        new java.lang.String[] { "Fields", });
+        new java.lang.String[] { "Fields", "ClassName", });
     internal_static_iarnet_common_Value_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_iarnet_common_Value_fieldAccessorTable = new

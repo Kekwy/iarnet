@@ -52,12 +52,13 @@ public class ActorRouter {
 
     /**
      * 注册 Actor 流（仅登记 stream；调用方应随后上报就绪与通道建立）。
+     * 写入 channel 时通过同步包装保证线程安全。
      */
     public Set<ActorEdge> onActorConnected(String actorId, StreamObserver<ActorEnvelope> stream) {
         if (actorId == null || actorId.isBlank()) return Set.of();
         Set<ActorEdge> establishedEdges = new HashSet<>();
         synchronized (connectedActors) {
-            connectedActors.put(actorId, stream);
+            connectedActors.put(actorId, new SynchronizedActorChannelObserver(stream));
             ActorRoutingConfig config = routingConfigs.get(actorId);
             if (config == null) {
                 return establishedEdges;
@@ -116,7 +117,7 @@ public class ActorRouter {
 
             String target = selectTarget(sourceActorId, envelope, group, alive);
             InvokeRequest request = InvokeRequest.newBuilder()
-                    .setSessionId(response.getSessionId())
+                    .setExecutionId(response.getExecutionId())
                     .setRow(response.getRow())
                     .setInputPort(group.inputPort())
                     .build();
@@ -210,6 +211,7 @@ public class ActorRouter {
 
     /**
      * 直接向本地已注册的 actor 投递 envelope（用于跨 Provider 转发时 envelope 已带物理 target）。
+     * 发送通过 SynchronizedActorChannelObserver 加锁，保证线程安全。
      */
     public void deliverToTarget(String targetActorId, ActorEnvelope envelope) {
         StreamObserver<ActorEnvelope> stream;
@@ -262,6 +264,39 @@ public class ActorRouter {
                     downstreams,
                     groups
             ));
+        }
+    }
+
+    /**
+     * 对 Actor Channel 的 StreamObserver 做同步包装，保证多线程向同一 channel 发送 onNext 时线程安全。
+     */
+    private static final class SynchronizedActorChannelObserver implements StreamObserver<ActorEnvelope> {
+        private final Object lock = new Object();
+        private final StreamObserver<ActorEnvelope> delegate;
+
+        SynchronizedActorChannelObserver(StreamObserver<ActorEnvelope> delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void onNext(ActorEnvelope value) {
+            synchronized (lock) {
+                delegate.onNext(value);
+            }
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            synchronized (lock) {
+                delegate.onError(t);
+            }
+        }
+
+        @Override
+        public void onCompleted() {
+            synchronized (lock) {
+                delegate.onCompleted();
+            }
         }
     }
 }

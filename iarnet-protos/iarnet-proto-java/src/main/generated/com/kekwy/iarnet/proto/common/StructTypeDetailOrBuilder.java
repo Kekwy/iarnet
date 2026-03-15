@@ -30,4 +30,24 @@ public interface StructTypeDetailOrBuilder extends
    */
   com.kekwy.iarnet.proto.common.StructFieldOrBuilder getFieldsOrBuilder(
       int index);
+
+  /**
+   * <pre>
+   * 可选: 原始语言中的类型全限定名
+   * </pre>
+   *
+   * <code>string class_name = 2;</code>
+   * @return The className.
+   */
+  java.lang.String getClassName();
+  /**
+   * <pre>
+   * 可选: 原始语言中的类型全限定名
+   * </pre>
+   *
+   * <code>string class_name = 2;</code>
+   * @return The bytes for className.
+   */
+  com.google.protobuf.ByteString
+      getClassNameBytes();
 }

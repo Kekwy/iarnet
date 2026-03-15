@@ -17,13 +17,13 @@ message ActorEnvelope {
 }
 
 message InvokeResponse {
-  string sessionId = 1;
+  string executionId = 1;
   DataRow row = 2;
   int32 port = 3;
 }
 
 message InvokeRequest {
-  string sessionId = 1;
+  string executionId = 1;
   DataRow row = 2;
   int32   input_port = 3;   // 数据对应目标节点的哪个输入端口
 }

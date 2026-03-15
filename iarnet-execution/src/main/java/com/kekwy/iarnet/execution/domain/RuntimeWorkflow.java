@@ -56,7 +56,7 @@ public class RuntimeWorkflow {
      * @return 本次提交的 submissionId，供后续查询或取消使用
      */
     public String execute(Map<String, Value> inputs) {
-        String submissionId = UUID.randomUUID().toString();
+        String executionId = UUID.randomUUID().toString();
         for (RuntimeNode inputNode : getRuntimeGraph().getInputNodes()) {
             String paramName = nodeIdToInputParamName.get(inputNode.nodeId());
             if (paramName == null) {
@@ -67,10 +67,10 @@ public class RuntimeWorkflow {
                 value = Value.getDefaultInstance();
             }
             DataRow row = DataRow.newBuilder()
-                    .setRowId(submissionId)
                     .setValue(value)
                     .build();
             InvokeRequest request = InvokeRequest.newBuilder()
+                    .setExecutionId(executionId)
                     .setRow(row)
                     .setInputPort(0)
                     .build();
@@ -85,11 +85,11 @@ public class RuntimeWorkflow {
             }
             int idx = Math.floorMod(roundRobinCounter.getAndIncrement(), refs.size());
             ActorInstanceRef ref = refs.get(idx);
-            log.info("下发输入: submissionId={}, nodeId={}, param={}, actorId={}",
-                    submissionId, inputNode.nodeId(), paramName, ref.getActorId());
+            log.info("下发输入: executionId={}, nodeId={}, param={}, actorId={}",
+                    executionId, inputNode.nodeId(), paramName, ref.getActorId());
             ref.send(envelope);
         }
-        return submissionId;
+        return executionId;
     }
 
     public void handleActorMessage(String actorId, ActorEnvelope message) {

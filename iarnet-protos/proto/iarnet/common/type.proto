@@ -57,6 +57,7 @@ message StructField {
 
 message StructTypeDetail {
   repeated StructField fields = 1;
+  string class_name = 2;  // 可选: 原始语言中的类型全限定名
 }
 
 message Value {
