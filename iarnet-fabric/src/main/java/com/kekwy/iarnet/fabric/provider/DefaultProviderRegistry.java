@@ -115,7 +115,12 @@ public class DefaultProviderRegistry implements ProviderRegistry {
 
         StreamObserver<DeploymentEnvelope> oldSender = conn.getDeploymentSender();
         if (oldSender != null) {
-            log.info("替换 Provider 已有的 DeploymentChannel: providerId={}", providerId);
+            log.info("替换 Provider 已有的 DeploymentChannel，先关闭旧流: providerId={}", providerId);
+            try {
+                oldSender.onCompleted();
+            } catch (Exception e) {
+                log.trace("关闭旧 Deployment 流异常: {}", e.getMessage());
+            }
         }
 
         conn.setDeploymentSender(deploymentSender);
@@ -135,15 +140,14 @@ public class DefaultProviderRegistry implements ProviderRegistry {
     }
 
     @Override
-    public void closeDeploymentChannel(String providerId) {
+    public void closeDeploymentChannel(String providerId, StreamObserver<DeploymentEnvelope> senderThatClosed) {
         ProviderConnection conn = connections.get(providerId);
-        if (conn != null) {
-            conn.setDeploymentSender(null);
-        }
-        ProviderInfo info = providers.get(providerId);
-        if (info != null) {
-            info.setStatus(ProviderInfo.Status.OFFLINE);
-            log.info("DeploymentChannel 已断开: providerId={}, name={}", providerId, info.getName());
+        if (conn != null && conn.clearDeploymentSenderIfEquals(senderThatClosed)) {
+            ProviderInfo info = providers.get(providerId);
+            if (info != null) {
+                info.setStatus(ProviderInfo.Status.OFFLINE);
+                log.info("DeploymentChannel 已断开: providerId={}, name={}", providerId, info.getName());
+            }
         }
     }
 

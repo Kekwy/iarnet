@@ -38,6 +38,8 @@ public class ControlService {
 
     private volatile boolean closed = false;
     private volatile ScheduledFuture<?> heartbeatTask;
+    /** 当前 Control 流发送端，重连前需 onCompleted 关闭，避免多流并存 */
+    private volatile StreamObserver<ControlEnvelope> controlSender;
 
     public ControlService(ProviderRegistryServiceGrpc.ProviderRegistryServiceStub asyncStub,
                           ScheduledExecutorService providerScheduler,
@@ -49,10 +51,20 @@ public class ControlService {
         this.identity = identity;
     }
 
-    /** 建立 Control 流（providerId 从 ProviderIdentity 读取，重连时同样）。 */
+    /** 建立 Control 流（providerId 从 ProviderIdentity 读取，重连时同样）。重连前先关闭旧流，避免多流并存。 */
     public void openChannel() {
         String providerId = identity != null ? identity.getProviderId() : null;
         if (closed || asyncStub == null || providerId == null) return;
+
+        StreamObserver<ControlEnvelope> prev = this.controlSender;
+        this.controlSender = null;
+        if (heartbeatTask != null) {
+            heartbeatTask.cancel(false);
+            heartbeatTask = null;
+        }
+        if (prev != null) {
+            try { prev.onCompleted(); } catch (Exception e) { log.trace("关闭旧 Control 流: {}", e.getMessage()); }
+        }
 
         DelegatingObserver<ControlEnvelope> proxy = new DelegatingObserver<>();
         StreamObserver<ControlEnvelope> receiver = new ControlMessageDispatcher(this, this::onDisconnect);
@@ -63,6 +75,7 @@ public class ControlService {
 
         StreamObserver<ControlEnvelope> sender = headerStub.controlChannel(receiver);
         proxy.setDelegate(sender);
+        this.controlSender = proxy;
 
         startHeartbeat(proxy);
         log.info("ControlChannel 已建立: providerId={}", providerId);
@@ -93,13 +106,20 @@ public class ControlService {
     }
 
     private void onDisconnect() {
+        StreamObserver<ControlEnvelope> oldSender = this.controlSender;
+        this.controlSender = null;
         if (heartbeatTask != null) {
             heartbeatTask.cancel(false);
             heartbeatTask = null;
         }
         if (closed) return;
         log.warn("ControlChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
-        scheduler.schedule(this::openChannel, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+        scheduler.schedule(() -> {
+            if (oldSender != null) {
+                try { oldSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
+            }
+            openChannel();
+        }, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     public void close() {

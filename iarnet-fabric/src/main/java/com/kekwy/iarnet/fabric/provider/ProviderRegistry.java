@@ -45,9 +45,13 @@ public interface ProviderRegistry {
     void handleDeploymentResponse(String providerId, DeploymentEnvelope response);
 
     /**
-     * 关闭 DeploymentChannel 连接。
+     * 关闭 DeploymentChannel 连接：仅当当前持有的 sender 即为 {@code senderThatClosed} 时置空，
+     * 避免旧流晚于新流关闭时误清掉新连接。
+     *
+     * @param providerId       Provider 标识
+     * @param senderThatClosed 刚关闭的流对应的发送端（与 openDeploymentChannel 传入的 observer 一致）
      */
-    void closeDeploymentChannel(String providerId);
+    void closeDeploymentChannel(String providerId, StreamObserver<DeploymentEnvelope> senderThatClosed);
 
     /**
      * 通过 DeploymentChannel 向指定 Provider 发送部署请求，异步获取响应。

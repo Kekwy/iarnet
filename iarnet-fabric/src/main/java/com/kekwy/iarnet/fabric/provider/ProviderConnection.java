@@ -57,6 +57,19 @@ public class ProviderConnection {
     }
 
     /**
+     * 仅当当前 deploymentSender 与 {@code senderThatClosed} 为同一引用时置空并返回 true，
+     * 避免旧流晚于新流关闭时误清掉新连接。
+     */
+    public boolean clearDeploymentSenderIfEquals(StreamObserver<DeploymentEnvelope> senderThatClosed) {
+        if (senderThatClosed == null) return false;
+        if (this.deploymentSender == senderThatClosed) {
+            this.deploymentSender = null;
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 通过 DeploymentChannel 发送部署请求，返回异步结果。
      * <p>
      * message_id 由本方法自动填充，Provider 响应时在 correlation_id 中回传。

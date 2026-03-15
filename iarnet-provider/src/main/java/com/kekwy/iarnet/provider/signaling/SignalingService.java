@@ -52,10 +52,20 @@ public class SignalingService {
         this.identity = identity;
     }
 
-    /** 建立 Signaling 流（providerId 从 ProviderIdentity 读取，重连时同样）。 */
+    /** 建立 Signaling 流（providerId 从 ProviderIdentity 读取，重连时同样）。重连前先关闭旧流，避免多流并存导致对端或框架主动关闭。 */
     public void openChannel() {
         String providerId = identity != null ? identity.getProviderId() : null;
         if (closed || asyncStub == null || providerId == null) return;
+
+        StreamObserver<SignalingEnvelope> prev = this.signalingSender;
+        this.signalingSender = null;
+        if (prev != null) {
+            try {
+                prev.onCompleted();
+            } catch (Exception e) {
+                log.debug("关闭旧 Signaling 流: {}", e.getMessage());
+            }
+        }
 
         DelegatingObserver<SignalingEnvelope> proxy = new DelegatingObserver<>();
         StreamObserver<SignalingEnvelope> receiver = new SignalingMessageDispatcher(this, proxy, this::onDisconnect);
@@ -73,10 +83,16 @@ public class SignalingService {
     }
 
     private void onDisconnect() {
+        StreamObserver<SignalingEnvelope> oldSender = this.signalingSender;
         this.signalingSender = null;
         if (closed) return;
         log.warn("SignalingChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
-        scheduler.schedule(this::openChannel, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+        scheduler.schedule(() -> {
+            if (oldSender != null) {
+                try { oldSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
+            }
+            openChannel();
+        }, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     /** 将暂存的上报按序发出（channel 建立/重连后调用） */

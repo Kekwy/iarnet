@@ -53,6 +53,8 @@ public class DeploymentService {
     private final ProviderIdentity identity;
 
     private volatile boolean closed = false;
+    /** 当前 Deployment 流发送端，重连前需 onCompleted 关闭，避免多流并存 */
+    private volatile StreamObserver<DeploymentEnvelope> deploymentSender;
 
     public DeploymentService(ProviderRegistryServiceGrpc.ProviderRegistryServiceStub providerRegistryAsyncStub,
                              ScheduledExecutorService providerScheduler,
@@ -70,10 +72,16 @@ public class DeploymentService {
         this.identity = identity;
     }
 
-    /** 建立 Deployment 流（providerId 从 ProviderIdentity 读取，重连时同样）。 */
+    /** 建立 Deployment 流（providerId 从 ProviderIdentity 读取，重连时同样）。重连前先关闭旧流，避免多流并存。 */
     public void openChannel() {
         String providerId = identity != null ? identity.getProviderId() : null;
         if (closed || asyncStub == null || providerId == null) return;
+
+        StreamObserver<DeploymentEnvelope> prev = this.deploymentSender;
+        this.deploymentSender = null;
+        if (prev != null) {
+            try { prev.onCompleted(); } catch (Exception e) { log.trace("关闭旧 Deployment 流: {}", e.getMessage()); }
+        }
 
         DelegatingObserver<DeploymentEnvelope> proxy = new DelegatingObserver<>();
         StreamObserver<DeploymentEnvelope> receiver = new DeploymentMessageDispatcher(this, proxy, this::onDisconnect);
@@ -84,14 +92,22 @@ public class DeploymentService {
 
         StreamObserver<DeploymentEnvelope> sender = headerStub.deploymentChannel(receiver);
         proxy.setDelegate(sender);
+        this.deploymentSender = proxy;
 
         log.info("DeploymentChannel 已建立: providerId={}", providerId);
     }
 
     private void onDisconnect() {
+        StreamObserver<DeploymentEnvelope> oldSender = this.deploymentSender;
+        this.deploymentSender = null;
         if (closed) return;
         log.warn("DeploymentChannel 断开，{}s 后重连...", RECONNECT_DELAY_SECONDS);
-        scheduler.schedule(this::openChannel, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
+        scheduler.schedule(() -> {
+            if (oldSender != null) {
+                try { oldSender.onCompleted(); } catch (Exception e) { log.trace("关闭旧流: {}", e.getMessage()); }
+            }
+            openChannel();
+        }, RECONNECT_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     public void close() {

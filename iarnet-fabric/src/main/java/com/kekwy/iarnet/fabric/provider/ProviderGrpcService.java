@@ -83,6 +83,10 @@ public class ProviderGrpcService
 
         ProviderConnection conn = providerRegistry.getConnection(providerId);
         if (conn != null) {
+            StreamObserver<ControlEnvelope> old = conn.getControlSender();
+            if (old != null) {
+                try { old.onCompleted(); } catch (Exception e) { log.trace("关闭旧 Control 流: {}", e.getMessage()); }
+            }
             conn.setControlSender(responseObserver);
         }
 
@@ -138,6 +142,7 @@ public class ProviderGrpcService
         log.info("Provider 建立 DeploymentChannel: providerId={}", providerId);
         providerRegistry.openDeploymentChannel(providerId, responseObserver);
 
+        final StreamObserver<DeploymentEnvelope> thisSender = responseObserver;
         return new StreamObserver<>() {
             @Override
             public void onNext(DeploymentEnvelope response) {
@@ -147,13 +152,13 @@ public class ProviderGrpcService
             @Override
             public void onError(Throwable t) {
                 log.warn("DeploymentChannel 异常断开: providerId={}, reason={}", providerId, t.getMessage());
-                providerRegistry.closeDeploymentChannel(providerId);
+                providerRegistry.closeDeploymentChannel(providerId, thisSender);
             }
 
             @Override
             public void onCompleted() {
                 log.info("DeploymentChannel 由 Provider 正常关闭: providerId={}", providerId);
-                providerRegistry.closeDeploymentChannel(providerId);
+                providerRegistry.closeDeploymentChannel(providerId, thisSender);
             }
         };
     }
@@ -175,6 +180,10 @@ public class ProviderGrpcService
 
         ProviderConnection conn = providerRegistry.getConnection(providerId);
         if (conn != null) {
+            StreamObserver<SignalingEnvelope> old = conn.getSignalingSender();
+            if (old != null) {
+                try { old.onCompleted(); } catch (Exception e) { log.trace("关闭旧 Signaling 流: {}", e.getMessage()); }
+            }
             conn.setSignalingSender(responseObserver);
         }
 

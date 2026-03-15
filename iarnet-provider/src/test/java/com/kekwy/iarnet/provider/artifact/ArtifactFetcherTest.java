@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * Adapter 侧 artifact 拉取功能单元测试。
  * <p>
  * 使用本地真实 MinIO（{@code http://localhost:9002}）上传测试文件并生成预签名 URL，
- * 再由 ArtifactFetcher 拉取，验证落盘与按 artifact_id 去重。
+ * 再由 ArtifactFetcher 拉取，验证落盘与按 artifact_url 去重。
  * 运行前请启动 MinIO 且 API 端口为 9002，例如：{@code cd deploy/minio && docker compose up -d} 并映射 9002。
  */
 @DisplayName("ArtifactFetcher 拉取 artifact（真实 MinIO）")
@@ -87,13 +87,13 @@ class ArtifactFetcherTest {
     }
 
     @Test
-    @DisplayName("fetch：同一 artifact_id 再次拉取应命中缓存返回相同路径")
-    void fetch_sameArtifactId_shouldReturnCachedPath() throws Exception {
+    @DisplayName("fetch：同一 artifact_url 再次拉取应命中缓存返回相同路径")
+    void fetch_sameArtifactUrl_shouldReturnCachedPath() throws Exception {
         byte[] body = "cached-content".getBytes();
         String presignedUrl = uploadToMinio("path/to/file.jar", body);
 
-        Path first = fetcher.fetch("same-id", presignedUrl);
-        Path second = fetcher.fetch("same-id", presignedUrl);
+        Path first = fetcher.fetch("actor-1", presignedUrl);
+        Path second = fetcher.fetch("actor-2", presignedUrl);
 
         assertNotNull(first);
         assertNotNull(second);
@@ -103,16 +103,14 @@ class ArtifactFetcherTest {
     }
 
     @Test
-    @DisplayName("fetch：artifactId 为空应抛出 IllegalArgumentException")
-    void fetch_blankArtifactId_shouldThrow() {
-        assertThrows(IllegalArgumentException.class, () ->
-                fetcher.fetch("", "http://localhost:9002/any"));
-        assertThrows(IllegalArgumentException.class, () ->
-                fetcher.fetch("   ", "http://localhost:9002/any"));
+    @DisplayName("fetch：artifactUrl 为空应抛出 IllegalArgumentException")
+    void fetch_blankArtifactUrl_shouldThrow() {
         assertThrows(IllegalArgumentException.class, () ->
                 fetcher.fetch("id", null));
         assertThrows(IllegalArgumentException.class, () ->
                 fetcher.fetch("id", ""));
+        assertThrows(IllegalArgumentException.class, () ->
+                fetcher.fetch("id", "   "));
     }
 
     @Test
