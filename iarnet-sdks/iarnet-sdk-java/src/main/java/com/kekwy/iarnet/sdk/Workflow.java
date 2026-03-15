@@ -74,6 +74,7 @@ public class Workflow {
 
     private static final String ENV_APP_ID = "IARNET_APP_ID";
     private static final String ENV_GRPC_PORT = "IARNET_GRPC_PORT";
+    private static final String ENV_WORKFLOW_ID = "IARNET_WORKFLOW_ID";
     private static final String ENV_EXTERNAL_SOURCE_BASE_DIR = "IARNET_EXTERNAL_SOURCE_BASE_DIR";
     private static final String DEFAULT_GRPC_HOST = "localhost";
 
@@ -196,8 +197,12 @@ public class Workflow {
         if (!externalLangs.isEmpty()) {
             ensureExternalSourcesExported(externalLangs);
         }
+        String workflowId = System.getenv(ENV_WORKFLOW_ID);
+        if (workflowId == null || workflowId.isBlank()) {
+            workflowId = IDUtil.genUUIDWith("wf");
+        }
         WorkflowGraph graph = WorkflowGraph.newBuilder()
-                .setWorkflowId(IDUtil.genUUIDWith("wf"))
+                .setWorkflowId(workflowId)
                 .setApplicationId(applicationId)
                 .setName(name)
                 .addAllNodes(nodesWithInputParam)

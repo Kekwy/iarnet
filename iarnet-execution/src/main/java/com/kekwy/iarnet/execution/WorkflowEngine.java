@@ -10,6 +10,7 @@ import com.kekwy.iarnet.proto.common.Lang;
 import com.kekwy.iarnet.proto.common.ResourceSpec;
 import com.kekwy.iarnet.proto.common.Type;
 import com.kekwy.iarnet.proto.common.TypeKind;
+import com.kekwy.iarnet.proto.common.Value;
 import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import com.kekwy.iarnet.proto.workflow.Edge;
 import com.kekwy.iarnet.proto.workflow.Node;
@@ -79,7 +80,7 @@ public class WorkflowEngine {
 
     private record PendingExecuteRequest(
             String token,
-            Map<String, Object> inputs,
+            Map<String, Value> inputs,
             CompletableFuture<String> resultFuture
     ) {}
 
@@ -91,7 +92,29 @@ public class WorkflowEngine {
     }
 
     /**
+     * 预注册结果：workflowId 与 token，用于 submitJarWithInput 流程下发给 JAR 进程，SDK 用该 workflowId 构建图并提交。
+     */
+    public record RegistrationResult(String workflowId, String token) {}
+
+    /**
+     * 预注册工作流，生成 workflowId 与 token 并存入引擎；后续 SDK 提交的图需使用该 workflowId，execute 时使用该 token。
+     *
+     * @return workflowId 与 token
+     */
+    public RegistrationResult register() {
+        if (!running) {
+            throw new IllegalStateException("Executor 已关闭，无法接收新的注册");
+        }
+        String workflowId = "wf-" + UUID.randomUUID();
+        String token = UUID.randomUUID().toString();
+        workflowTokens.put(workflowId, token);
+        log.info("工作流已预注册: workflowId={}, token={}", workflowId, token);
+        return new RegistrationResult(workflowId, token);
+    }
+
+    /**
      * 提交工作流图，入队后立即返回 token，供后续 {@link #execute(String, String, Map)} 等调用时校验使用。
+     * 若 workflowId 已通过 {@link #register()} 预注册，则复用已有 token。
      *
      * @param graph              工作流图
      * @param artifactDir        制品目录
@@ -103,8 +126,7 @@ public class WorkflowEngine {
             throw new IllegalStateException("Executor 已关闭，无法接收新的工作流");
         }
         String workflowId = graph.getWorkflowId();
-        String token = UUID.randomUUID().toString();
-        workflowTokens.put(workflowId, token);
+        String token = workflowTokens.computeIfAbsent(workflowId, k -> UUID.randomUUID().toString());
         queue.add(new SubmitRequest(graph, artifactDir, externalSourceDir));
         log.info("工作流已入队: workflowId={}, token={}, 当前队列长度={}", workflowId, token, queue.size());
         return token;
@@ -119,7 +141,7 @@ public class WorkflowEngine {
      * @param inputs     工作流输入参数名到值的映射，与 WorkflowGraph.inputs 中定义的参数对应
      * @return 本次执行的 submissionId，供后续查询或取消使用
      */
-    public String execute(String workflowId, String token, Map<String, Object> inputs) {
+    public String execute(String workflowId, String token, Map<String, Value> inputs) {
         String expectedToken = workflowTokens.get(workflowId);
         if (expectedToken == null || !expectedToken.equals(token)) {
             throw new IllegalArgumentException("无效的 workflowId 或 token，无法执行工作流");
@@ -130,7 +152,7 @@ public class WorkflowEngine {
             return session.execute(inputs != null ? inputs : Map.of());
         }
         // 工作流尚未就绪，放入待处理队列并阻塞等待就绪后由部署回调统一处理
-        Map<String, Object> inputMap = inputs != null ? inputs : Map.of();
+        Map<String, Value> inputMap = inputs != null ? inputs : Map.of();
         CompletableFuture<String> resultFuture = new CompletableFuture<>();
         PendingExecuteRequest pending = new PendingExecuteRequest(token, inputMap, resultFuture);
         pendingExecuteRequests.computeIfAbsent(workflowId, k -> new ConcurrentLinkedQueue<>()).offer(pending);
@@ -157,7 +179,7 @@ public class WorkflowEngine {
      *
      * @throws IllegalArgumentException 若缺少参数、多出未定义参数或类型不匹配
      */
-    private static void validateInputsAgainstWorkflow(RuntimeWorkflow session, Map<String, Object> inputs) {
+    private static void validateInputsAgainstWorkflow(RuntimeWorkflow session, Map<String, Value> inputs) {
         List<WorkflowInput> workflowInputs = session.getWorkflowInputs();
         for (WorkflowInput def : workflowInputs) {
             String paramName = def.getName();
@@ -165,11 +187,11 @@ public class WorkflowEngine {
                 throw new IllegalArgumentException("缺少工作流输入参数: " + paramName +
                         "，工作流定义需要: " + workflowInputs.stream().map(WorkflowInput::getName).toList());
             }
-            Object value = inputs.get(paramName);
+            Value value = inputs.get(paramName);
             Type expectedType = def.getType();
             if (!isValueCompatibleWithType(value, expectedType)) {
                 throw new IllegalArgumentException("工作流输入参数 " + paramName + " 类型不匹配: 期望 " +
-                        describeType(expectedType) + "，实际值类型为 " + (value == null ? "null" : value.getClass().getTypeName()));
+                        describeType(expectedType) + "，实际值 kind 为 " + (value == null ? "null" : value.getKindCase().name()));
             }
         }
         Set<String> definedNames = workflowInputs.stream().map(WorkflowInput::getName).collect(Collectors.toSet());
@@ -181,23 +203,23 @@ public class WorkflowEngine {
         }
     }
 
-    private static boolean isValueCompatibleWithType(Object value, Type type) {
-        if (type == null || type.getKind() == TypeKind.TYPE_KIND_UNSPECIFIED) {
-            return true;
-        }
-        if (value == null) {
+    private static boolean isValueCompatibleWithType(Value value, Type type) {
+        if (type == null || type.getKind() == TypeKind.TYPE_KIND_UNSPECIFIED) return true;
+        if (value == null || value.getKindCase() == Value.KindCase.KIND_NOT_SET) {
             return type.getKind() == TypeKind.TYPE_KIND_NULL;
         }
         return switch (type.getKind()) {
-            case TYPE_KIND_STRING -> value instanceof String;
-            case TYPE_KIND_INT32 -> value instanceof Integer || value instanceof Byte || value instanceof Short;
-            case TYPE_KIND_INT64 -> value instanceof Long || value instanceof Integer;
-            case TYPE_KIND_FLOAT -> value instanceof Float || value instanceof Double;
-            case TYPE_KIND_DOUBLE -> value instanceof Double || value instanceof Float;
-            case TYPE_KIND_BOOLEAN -> value instanceof Boolean;
-            case TYPE_KIND_BYTES -> value instanceof byte[];
-            case TYPE_KIND_NULL -> false;
-            case TYPE_KIND_ARRAY, TYPE_KIND_MAP, TYPE_KIND_STRUCT -> true;
+            case TYPE_KIND_STRING -> value.getKindCase() == Value.KindCase.STRING_VALUE;
+            case TYPE_KIND_INT32 -> value.getKindCase() == Value.KindCase.INT32_VALUE;
+            case TYPE_KIND_INT64 -> value.getKindCase() == Value.KindCase.INT64_VALUE;
+            case TYPE_KIND_FLOAT -> value.getKindCase() == Value.KindCase.FLOAT_VALUE;
+            case TYPE_KIND_DOUBLE -> value.getKindCase() == Value.KindCase.DOUBLE_VALUE;
+            case TYPE_KIND_BOOLEAN -> value.getKindCase() == Value.KindCase.BOOL_VALUE;
+            case TYPE_KIND_BYTES -> value.getKindCase() == Value.KindCase.BYTES_VALUE;
+            case TYPE_KIND_NULL -> value.getKindCase() == Value.KindCase.NULL_VALUE;
+            case TYPE_KIND_ARRAY -> value.getKindCase() == Value.KindCase.ARRAY_VALUE;
+            case TYPE_KIND_MAP -> value.getKindCase() == Value.KindCase.MAP_VALUE;
+            case TYPE_KIND_STRUCT -> value.getKindCase() == Value.KindCase.STRUCT_VALUE;
             default -> true;
         };
     }

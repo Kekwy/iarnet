@@ -49,24 +49,27 @@ public final class ApplicationServiceOuterClass {
   static {
     java.lang.String[] descriptorData = {
       "\n,iarnet/application/application_service" +
-      ".proto\022\022iarnet.application\"#\n\020SubmitJarR" +
-      "equest\022\017\n\007content\030\001 \001(\014\" \n\021SubmitJarResp" +
-      "onse\022\013\n\003msg\030\001 \001(\t\"\\\n\031SubmitJarWithInputR" +
-      "equest\022\017\n\007content\030\001 \001(\014\022.\n\006inputs\030\002 \003(\0132" +
-      "\036.iarnet.application.InputEntry\"(\n\nInput" +
-      "Entry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\")\n\032Sub" +
-      "mitJarWithInputResponse\022\013\n\003msg\030\001 \001(\t2\343\001\n" +
-      "\022ApplicationService\022X\n\tsubmitJar\022$.iarne" +
-      "t.application.SubmitJarRequest\032%.iarnet." +
-      "application.SubmitJarResponse\022s\n\022submitJ" +
-      "arWithInput\022-.iarnet.application.SubmitJ" +
-      "arWithInputRequest\032..iarnet.application." +
-      "SubmitJarWithInputResponseB&\n\"com.kekwy." +
-      "iarnet.proto.applicationP\001b\006proto3"
+      ".proto\022\022iarnet.application\032\030iarnet/commo" +
+      "n/type.proto\"#\n\020SubmitJarRequest\022\017\n\007cont" +
+      "ent\030\001 \001(\014\" \n\021SubmitJarResponse\022\013\n\003msg\030\001 " +
+      "\001(\t\"\\\n\031SubmitJarWithInputRequest\022\017\n\007cont" +
+      "ent\030\001 \001(\014\022.\n\006inputs\030\002 \003(\0132\036.iarnet.appli" +
+      "cation.InputEntry\">\n\nInputEntry\022\013\n\003key\030\001" +
+      " \001(\t\022#\n\005value\030\002 \001(\0132\024.iarnet.common.Valu" +
+      "e\")\n\032SubmitJarWithInputResponse\022\013\n\003msg\030\001" +
+      " \001(\t2\343\001\n\022ApplicationService\022X\n\tsubmitJar" +
+      "\022$.iarnet.application.SubmitJarRequest\032%" +
+      ".iarnet.application.SubmitJarResponse\022s\n" +
+      "\022submitJarWithInput\022-.iarnet.application" +
+      ".SubmitJarWithInputRequest\032..iarnet.appl" +
+      "ication.SubmitJarWithInputResponseB&\n\"co" +
+      "m.kekwy.iarnet.proto.applicationP\001b\006prot" +
+      "o3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
+          com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor(),
         });
     internal_static_iarnet_application_SubmitJarRequest_descriptor =
       getDescriptor().getMessageTypes().get(0);
@@ -98,6 +101,7 @@ public final class ApplicationServiceOuterClass {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_application_SubmitJarWithInputResponse_descriptor,
         new java.lang.String[] { "Msg", });
+    com.kekwy.iarnet.proto.common.TypeOuterClass.getDescriptor();
   }
 
   // @@protoc_insertion_point(outer_class_scope)

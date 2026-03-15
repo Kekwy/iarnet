@@ -20,14 +20,17 @@ public interface InputEntryOrBuilder extends
       getKeyBytes();
 
   /**
-   * <code>string value = 2;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
+   * @return Whether the value field is set.
+   */
+  boolean hasValue();
+  /**
+   * <code>.iarnet.common.Value value = 2;</code>
    * @return The value.
    */
-  java.lang.String getValue();
+  com.kekwy.iarnet.proto.common.Value getValue();
   /**
-   * <code>string value = 2;</code>
-   * @return The bytes for value.
+   * <code>.iarnet.common.Value value = 2;</code>
    */
-  com.google.protobuf.ByteString
-      getValueBytes();
+  com.kekwy.iarnet.proto.common.ValueOrBuilder getValueOrBuilder();
 }

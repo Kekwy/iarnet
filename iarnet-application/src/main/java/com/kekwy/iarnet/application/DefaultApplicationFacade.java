@@ -31,10 +31,11 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     @Value("${grpc.server.port:9090}")
     private int grpcPort;
 
-    private static final String INPUT_FILE_NAME = "input.json";
+    private static final String ENV_WORKFLOW_ID = "IARNET_WORKFLOW_ID";
+    private static final String ENV_WORKFLOW_TOKEN = "IARNET_WORKFLOW_TOKEN";
 
     @Override
-    public void launchApplicationWithJar(byte[] content, Map<String, String> inputs) {
+    public void launchApplicationWithJar(byte[] content, String workflowId, String token) {
         // 1. 为本次 JAR 启动生成应用 ID
         ID appId = IDUtil.genAppID();
         String appIdValue = appId.getValue();
@@ -70,21 +71,7 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         }
         log.info("已保存 JAR 到 workspace: {}", jarPath.toAbsolutePath());
 
-        // 4b. 若有输入，写入工作空间下的 input.json 并供进程通过 IARNET_INPUT_FILE 读取
-        Path inputFile = null;
-        if (inputs != null && !inputs.isEmpty()) {
-            Path wsDir = workspace.getWorkspaceDir();
-            inputFile = wsDir.resolve(INPUT_FILE_NAME);
-            String json = toSimpleJson(inputs);
-            try {
-                Files.writeString(inputFile, json, StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                throw new IllegalStateException("写入输入文件失败: " + inputFile, e);
-            }
-            log.info("已写入测试输入到: {}", inputFile.toAbsolutePath());
-        }
-
-        // 5. 参考 JavaLauncher 中的实现，直接通过 java -jar 启动该 JAR
+        // 5. 通过 java -jar 启动该 JAR
         Path appLogFile = workspace.getAppLogFile();
         try {
             Files.createDirectories(appLogFile.getParent());
@@ -102,8 +89,11 @@ public class DefaultApplicationFacade implements ApplicationFacade {
                 pb.environment().put("IARNET_APP_ID", appIdValue);
             }
             pb.environment().put("IARNET_GRPC_PORT", String.valueOf(grpcPort));
-            if (inputFile != null) {
-                pb.environment().put("IARNET_INPUT_FILE", inputFile.toAbsolutePath().toString());
+            if (workflowId != null && !workflowId.isBlank()) {
+                pb.environment().put(ENV_WORKFLOW_ID, workflowId);
+            }
+            if (token != null && !token.isBlank()) {
+                pb.environment().put(ENV_WORKFLOW_TOKEN, token);
             }
             pb.directory(workspace.getWorkspaceDir().toFile());
             pb.redirectErrorStream(true);
@@ -115,29 +105,6 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         } catch (IOException e) {
             throw new IllegalStateException("启动 JAR 进程失败: " + jarPath, e);
         }
-    }
-
-    private static String toSimpleJson(Map<String, String> map) {
-        StringBuilder sb = new StringBuilder().append('{');
-        boolean first = true;
-        for (Map.Entry<String, String> e : map.entrySet()) {
-            if (!first) sb.append(',');
-            first = false;
-            sb.append('"').append(escapeJson(e.getKey())).append("\":\"")
-                    .append(escapeJson(e.getValue())).append('"');
-        }
-        return sb.append('}').toString();
-    }
-
-    private static String escapeJson(String s) {
-        if (s == null) return "";
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c == '"' || c == '\\') sb.append('\\');
-            sb.append(c);
-        }
-        return sb.toString();
     }
 
     @Autowired

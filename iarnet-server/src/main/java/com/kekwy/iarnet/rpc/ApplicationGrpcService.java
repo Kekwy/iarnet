@@ -1,12 +1,14 @@
 package com.kekwy.iarnet.rpc;
 
 import com.kekwy.iarnet.application.ApplicationFacade;
+import com.kekwy.iarnet.execution.ExecutionFacade;
 import com.kekwy.iarnet.proto.application.ApplicationServiceGrpc;
 import com.kekwy.iarnet.proto.application.InputEntry;
 import com.kekwy.iarnet.proto.application.SubmitJarRequest;
 import com.kekwy.iarnet.proto.application.SubmitJarResponse;
 import com.kekwy.iarnet.proto.application.SubmitJarWithInputRequest;
 import com.kekwy.iarnet.proto.application.SubmitJarWithInputResponse;
+import com.kekwy.iarnet.proto.common.Value;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +16,23 @@ import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
 public class ApplicationGrpcService extends ApplicationServiceGrpc.ApplicationServiceImplBase {
 
-    private ApplicationFacade  applicationFacade;
+    private ApplicationFacade applicationFacade;
+    private ExecutionFacade executionFacade;
 
     @Autowired
     public void setApplicationFacade(ApplicationFacade applicationFacade) {
         this.applicationFacade = applicationFacade;
+    }
+
+    @Autowired
+    public void setExecutionFacade(ExecutionFacade executionFacade) {
+        this.executionFacade = executionFacade;
     }
 
     @Override
@@ -42,13 +51,29 @@ public class ApplicationGrpcService extends ApplicationServiceGrpc.ApplicationSe
         log.info("submitJarWithInput, size={} bytes, inputs count={}",
                 request.getContent().size(), request.getInputsCount());
         byte[] content = request.getContent().toByteArray();
-        Map<String, String> inputs = new LinkedHashMap<>();
+
+        var registration = executionFacade.register();
+        String workflowId = registration.workflowId();
+        String token = registration.token();
+
+        applicationFacade.launchApplicationWithJar(content, workflowId, token);
+
+        Map<String, Value> inputs = new LinkedHashMap<>();
         for (InputEntry e : request.getInputsList()) {
             inputs.put(e.getKey(), e.getValue());
         }
-        applicationFacade.launchApplicationWithJar(content, inputs);
+        CompletableFuture.runAsync(() -> {
+            try {
+                String executionId = executionFacade.execute(workflowId, token, inputs);
+                log.info("execute 已提交/已处理: workflowId={}, executionId={}", workflowId, executionId);
+            } catch (Exception e) {
+                log.error("execute 失败: workflowId={}", workflowId, e);
+            }
+        });
 
-        responseObserver.onNext(SubmitJarWithInputResponse.newBuilder().setMsg("提交成功，输入已写入工作空间 input.json").build());
+        responseObserver.onNext(SubmitJarWithInputResponse.newBuilder()
+                .setMsg("提交成功，工作流已预注册，输入将随工作流就绪后执行")
+                .build());
         responseObserver.onCompleted();
     }
 }

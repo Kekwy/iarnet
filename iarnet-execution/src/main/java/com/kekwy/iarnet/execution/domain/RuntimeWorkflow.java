@@ -6,7 +6,7 @@ import com.kekwy.iarnet.proto.actor.DataRow;
 import com.kekwy.iarnet.proto.actor.InvokeRequest;
 import com.kekwy.iarnet.proto.actor.StartInputCommand;
 import com.kekwy.iarnet.proto.workflow.WorkflowInput;
-import com.kekwy.iarnet.proto.ValueCodec;
+import com.kekwy.iarnet.proto.common.Value;
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,21 +53,23 @@ public class RuntimeWorkflow {
     /**
      * 处理本次执行请求：生成提交 ID，向各直接接收输入的入口节点按负载均衡各选一个 actor 下发其所需参数值。
      *
-     * @param inputs 参数名到值的映射（已由 runtime 校验与工作流输入定义一致）
+     * @param inputs 参数名到 proto Value 的映射（已由 runtime 校验与工作流输入定义一致）
      * @return 本次提交的 submissionId，供后续查询或取消使用
      */
-    public String execute(Map<String, Object> inputs) {
+    public String execute(Map<String, Value> inputs) {
         String submissionId = UUID.randomUUID().toString();
         for (RuntimeNode inputNode : getRuntimeGraph().getInputNodes()) {
             String paramName = nodeIdToInputParamName.get(inputNode.nodeId());
             if (paramName == null) {
                 continue;
             }
-            Object value = inputs.get(paramName);
-            com.kekwy.iarnet.proto.common.Value encoded = ValueCodec.encode(value);
+            Value value = inputs.get(paramName);
+            if (value == null) {
+                value = Value.getDefaultInstance();
+            }
             DataRow row = DataRow.newBuilder()
                     .setRowId(submissionId)
-                    .setValue(encoded)
+                    .setValue(value)
                     .build();
             InvokeRequest request = InvokeRequest.newBuilder()
                     .setRow(row)

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package iarnet.application;
 
-// import "iarnet/ir/workflow.proto";
+import "iarnet/common/type.proto";
 
 option java_package = "com.kekwy.iarnet.proto.application";
 option java_multiple_files = true;
@@ -28,7 +28,7 @@ message SubmitJarWithInputRequest {
 
 message InputEntry {
   string key = 1;
-  string value = 2;
+  common.Value value = 2;
 }
 
 message SubmitJarWithInputResponse {

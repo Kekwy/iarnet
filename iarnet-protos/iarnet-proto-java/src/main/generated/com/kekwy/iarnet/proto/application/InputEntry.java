@@ -17,7 +17,6 @@ private static final long serialVersionUID = 0L;
   }
   private InputEntry() {
     key_ = "";
-    value_ = "";
   }
 
   @java.lang.Override
@@ -85,42 +84,29 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int VALUE_FIELD_NUMBER = 2;
-  @SuppressWarnings("serial")
-  private volatile java.lang.Object value_ = "";
+  private com.kekwy.iarnet.proto.common.Value value_;
   /**
-   * <code>string value = 2;</code>
+   * <code>.iarnet.common.Value value = 2;</code>
+   * @return Whether the value field is set.
+   */
+  @java.lang.Override
+  public boolean hasValue() {
+    return value_ != null;
+  }
+  /**
+   * <code>.iarnet.common.Value value = 2;</code>
    * @return The value.
    */
   @java.lang.Override
-  public java.lang.String getValue() {
-    java.lang.Object ref = value_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      value_ = s;
-      return s;
-    }
+  public com.kekwy.iarnet.proto.common.Value getValue() {
+    return value_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
   }
   /**
-   * <code>string value = 2;</code>
-   * @return The bytes for value.
+   * <code>.iarnet.common.Value value = 2;</code>
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString
-      getValueBytes() {
-    java.lang.Object ref = value_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      value_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public com.kekwy.iarnet.proto.common.ValueOrBuilder getValueOrBuilder() {
+    return value_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -140,8 +126,8 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(key_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 2, value_);
+    if (value_ != null) {
+      output.writeMessage(2, getValue());
     }
     getUnknownFields().writeTo(output);
   }
@@ -155,8 +141,9 @@ private static final long serialVersionUID = 0L;
     if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(key_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
     }
-    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, value_);
+    if (value_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(2, getValue());
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -175,8 +162,11 @@ private static final long serialVersionUID = 0L;
 
     if (!getKey()
         .equals(other.getKey())) return false;
-    if (!getValue()
-        .equals(other.getValue())) return false;
+    if (hasValue() != other.hasValue()) return false;
+    if (hasValue()) {
+      if (!getValue()
+          .equals(other.getValue())) return false;
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -190,8 +180,10 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + KEY_FIELD_NUMBER;
     hash = (53 * hash) + getKey().hashCode();
-    hash = (37 * hash) + VALUE_FIELD_NUMBER;
-    hash = (53 * hash) + getValue().hashCode();
+    if (hasValue()) {
+      hash = (37 * hash) + VALUE_FIELD_NUMBER;
+      hash = (53 * hash) + getValue().hashCode();
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -322,7 +314,11 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       key_ = "";
-      value_ = "";
+      value_ = null;
+      if (valueBuilder_ != null) {
+        valueBuilder_.dispose();
+        valueBuilder_ = null;
+      }
       return this;
     }
 
@@ -360,7 +356,9 @@ private static final long serialVersionUID = 0L;
         result.key_ = key_;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.value_ = value_;
+        result.value_ = valueBuilder_ == null
+            ? value_
+            : valueBuilder_.build();
       }
     }
 
@@ -413,10 +411,8 @@ private static final long serialVersionUID = 0L;
         bitField0_ |= 0x00000001;
         onChanged();
       }
-      if (!other.getValue().isEmpty()) {
-        value_ = other.value_;
-        bitField0_ |= 0x00000002;
-        onChanged();
+      if (other.hasValue()) {
+        mergeValue(other.getValue());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -450,7 +446,9 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 10
             case 18: {
-              value_ = input.readStringRequireUtf8();
+              input.readMessage(
+                  getValueFieldBuilder().getBuilder(),
+                  extensionRegistry);
               bitField0_ |= 0x00000002;
               break;
             } // case 18
@@ -543,76 +541,123 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object value_ = "";
+    private com.kekwy.iarnet.proto.common.Value value_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> valueBuilder_;
     /**
-     * <code>string value = 2;</code>
+     * <code>.iarnet.common.Value value = 2;</code>
+     * @return Whether the value field is set.
+     */
+    public boolean hasValue() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>.iarnet.common.Value value = 2;</code>
      * @return The value.
      */
-    public java.lang.String getValue() {
-      java.lang.Object ref = value_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        value_ = s;
-        return s;
+    public com.kekwy.iarnet.proto.common.Value getValue() {
+      if (valueBuilder_ == null) {
+        return value_ == null ? com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
       } else {
-        return (java.lang.String) ref;
+        return valueBuilder_.getMessage();
       }
     }
     /**
-     * <code>string value = 2;</code>
-     * @return The bytes for value.
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public com.google.protobuf.ByteString
-        getValueBytes() {
-      java.lang.Object ref = value_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        value_ = b;
-        return b;
+    public Builder setValue(com.kekwy.iarnet.proto.common.Value value) {
+      if (valueBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        value_ = value;
       } else {
-        return (com.google.protobuf.ByteString) ref;
+        valueBuilder_.setMessage(value);
       }
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
     }
     /**
-     * <code>string value = 2;</code>
-     * @param value The value to set.
-     * @return This builder for chaining.
+     * <code>.iarnet.common.Value value = 2;</code>
      */
     public Builder setValue(
-        java.lang.String value) {
-      if (value == null) { throw new NullPointerException(); }
-      value_ = value;
+        com.kekwy.iarnet.proto.common.Value.Builder builderForValue) {
+      if (valueBuilder_ == null) {
+        value_ = builderForValue.build();
+      } else {
+        valueBuilder_.setMessage(builderForValue.build());
+      }
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>string value = 2;</code>
-     * @return This builder for chaining.
+     * <code>.iarnet.common.Value value = 2;</code>
+     */
+    public Builder mergeValue(com.kekwy.iarnet.proto.common.Value value) {
+      if (valueBuilder_ == null) {
+        if (((bitField0_ & 0x00000002) != 0) &&
+          value_ != null &&
+          value_ != com.kekwy.iarnet.proto.common.Value.getDefaultInstance()) {
+          getValueBuilder().mergeFrom(value);
+        } else {
+          value_ = value;
+        }
+      } else {
+        valueBuilder_.mergeFrom(value);
+      }
+      bitField0_ |= 0x00000002;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>.iarnet.common.Value value = 2;</code>
      */
     public Builder clearValue() {
-      value_ = getDefaultInstance().getValue();
       bitField0_ = (bitField0_ & ~0x00000002);
+      value_ = null;
+      if (valueBuilder_ != null) {
+        valueBuilder_.dispose();
+        valueBuilder_ = null;
+      }
       onChanged();
       return this;
     }
     /**
-     * <code>string value = 2;</code>
-     * @param value The bytes for value to set.
-     * @return This builder for chaining.
+     * <code>.iarnet.common.Value value = 2;</code>
      */
-    public Builder setValueBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) { throw new NullPointerException(); }
-      checkByteStringIsUtf8(value);
-      value_ = value;
+    public com.kekwy.iarnet.proto.common.Value.Builder getValueBuilder() {
       bitField0_ |= 0x00000002;
       onChanged();
-      return this;
+      return getValueFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.iarnet.common.Value value = 2;</code>
+     */
+    public com.kekwy.iarnet.proto.common.ValueOrBuilder getValueOrBuilder() {
+      if (valueBuilder_ != null) {
+        return valueBuilder_.getMessageOrBuilder();
+      } else {
+        return value_ == null ?
+            com.kekwy.iarnet.proto.common.Value.getDefaultInstance() : value_;
+      }
+    }
+    /**
+     * <code>.iarnet.common.Value value = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder> 
+        getValueFieldBuilder() {
+      if (valueBuilder_ == null) {
+        valueBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.kekwy.iarnet.proto.common.Value, com.kekwy.iarnet.proto.common.Value.Builder, com.kekwy.iarnet.proto.common.ValueOrBuilder>(
+                getValue(),
+                getParentForChildren(),
+                isClean());
+        value_ = null;
+      }
+      return valueBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
