@@ -54,11 +54,13 @@ public class DeploymentMessageDispatcher implements StreamObserver<DeploymentEnv
     }
 
     private DeploymentEnvelope dispatch(DeploymentEnvelope envelope) throws IOException {
-        String correlationId = envelope.getCorrelationId();
         String messageId = envelope.getMessageId();
+        // Fabric 端按 response.correlationId 匹配请求，期望为请求的 messageId
+        String correlationId = (messageId != null && !messageId.isEmpty()) ? messageId : envelope.getCorrelationId();
 
         switch (envelope.getMessageCase()) {
             case DEPLOY_ACTOR_REQUEST:
+                log.info("收到部署请求: messageId={}, actorId={}", messageId, envelope.getDeployActorRequest().getActorId());
                 DeployActorResponse deployResp = service.deployActor(envelope.getDeployActorRequest());
                 return DeploymentEnvelope.newBuilder()
                         .setCorrelationId(correlationId)

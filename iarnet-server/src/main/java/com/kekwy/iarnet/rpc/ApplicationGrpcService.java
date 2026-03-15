@@ -52,11 +52,12 @@ public class ApplicationGrpcService extends ApplicationServiceGrpc.ApplicationSe
                 request.getContent().size(), request.getInputsCount());
         byte[] content = request.getContent().toByteArray();
 
-        var registration = executionFacade.register();
+        var workspace = applicationFacade.prepareJarWorkspace(content);
+        var registration = executionFacade.register(workspace.getArtifactDir(), workspace.getSourceDir());
         String workflowId = registration.workflowId();
         String token = registration.token();
 
-        applicationFacade.launchApplicationWithJar(content, workflowId, token);
+        applicationFacade.launchPreparedJar(workspace, workflowId, token);
 
         Map<String, Value> inputs = new LinkedHashMap<>();
         for (InputEntry e : request.getInputsList()) {

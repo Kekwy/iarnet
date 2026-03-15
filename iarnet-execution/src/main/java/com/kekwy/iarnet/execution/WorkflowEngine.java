@@ -91,24 +91,35 @@ public class WorkflowEngine {
     ) {
     }
 
+    /** 预注册时传入的 workspace 路径，submit 时优先使用 */
+    private record WorkflowPaths(Path artifactDir, Path externalSourceBaseDir) {}
+
+    /** workflowId -> 预注册的 artifactDir 与 externalSourceBaseDir，submit 时消费并移除 */
+    private final ConcurrentMap<String, WorkflowPaths> registeredPaths = new ConcurrentHashMap<>();
+
     /**
      * 预注册结果：workflowId 与 token，用于 submitJarWithInput 流程下发给 JAR 进程，SDK 用该 workflowId 构建图并提交。
      */
     public record RegistrationResult(String workflowId, String token) {}
 
     /**
-     * 预注册工作流，生成 workflowId 与 token 并存入引擎；后续 SDK 提交的图需使用该 workflowId，execute 时使用该 token。
+     * 预注册工作流，生成 workflowId 与 token 并存入引擎；同时存入 artifactDir 与 externalSourceBaseDir，
+     * 后续 SDK 提交图时 submit 将优先使用这些路径。
      *
+     * @param artifactDir         制品目录
+     * @param externalSourceBaseDir 外部源码根目录
      * @return workflowId 与 token
      */
-    public RegistrationResult register() {
+    public RegistrationResult register(Path artifactDir, Path externalSourceBaseDir) {
         if (!running) {
             throw new IllegalStateException("Executor 已关闭，无法接收新的注册");
         }
         String workflowId = "wf-" + UUID.randomUUID();
         String token = UUID.randomUUID().toString();
         workflowTokens.put(workflowId, token);
-        log.info("工作流已预注册: workflowId={}, token={}", workflowId, token);
+        registeredPaths.put(workflowId, new WorkflowPaths(artifactDir, externalSourceBaseDir));
+        log.info("工作流已预注册: workflowId={}, token={}, artifactDir={}, externalSourceBaseDir={}",
+                workflowId, token, artifactDir, externalSourceBaseDir);
         return new RegistrationResult(workflowId, token);
     }
 
@@ -127,7 +138,10 @@ public class WorkflowEngine {
         }
         String workflowId = graph.getWorkflowId();
         String token = workflowTokens.computeIfAbsent(workflowId, k -> UUID.randomUUID().toString());
-        queue.add(new SubmitRequest(graph, artifactDir, externalSourceDir));
+        WorkflowPaths pre = registeredPaths.remove(workflowId);
+        Path effectiveArtifactDir = pre != null ? pre.artifactDir() : artifactDir;
+        Path effectiveSourceDir = pre != null ? pre.externalSourceBaseDir() : externalSourceDir;
+        queue.add(new SubmitRequest(graph, effectiveArtifactDir, effectiveSourceDir));
         log.info("工作流已入队: workflowId={}, token={}, 当前队列长度={}", workflowId, token, queue.size());
         return token;
     }
@@ -310,6 +324,8 @@ public class WorkflowEngine {
             Lang lang = node.getFunction().getLang();
 
             Path artifactPath = getArtifactPath(lang, artifactDir);
+
+            log.info("get {} artifact path {}", lang, artifactPath);
 
             if (!artifactPath.toFile().exists()) {
                 // 说明这个函数是由其他语言的 sdk 跨语言引入的，要打包

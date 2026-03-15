@@ -4,6 +4,7 @@ import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.application.service.ApplicationInfoService;
 import com.kekwy.iarnet.application.service.LaunchService;
 import com.kekwy.iarnet.application.service.WorkspaceService;
+import com.kekwy.iarnet.common.Constants;
 import com.kekwy.iarnet.common.model.ApplicationInfo;
 import com.kekwy.iarnet.common.model.ID;
 import com.kekwy.iarnet.common.util.IDUtil;
@@ -35,17 +36,14 @@ public class DefaultApplicationFacade implements ApplicationFacade {
     private static final String ENV_WORKFLOW_TOKEN = "IARNET_WORKFLOW_TOKEN";
 
     @Override
-    public void launchApplicationWithJar(byte[] content, String workflowId, String token) {
-        // 1. 为本次 JAR 启动生成应用 ID
+    public Workspace prepareJarWorkspace(byte[] content) {
         ID appId = IDUtil.genAppID();
         String appIdValue = appId.getValue();
         log.info("接收到直接 JAR 启动请求，生成应用 ID: {}", appIdValue);
 
-        // 2. 为该应用创建一个空的 Workspace（不做 git clone）
         String workspaceDir = workspaceService.createEmptyWorkspace(appIdValue);
         log.info("已为 JAR 应用创建工作空间: {}", workspaceDir);
 
-        // 3. 持久化应用信息，便于后续在 Web 端展示与统计
         ApplicationInfo info = new ApplicationInfo();
         info.setName(appIdValue);
         info.setId(appId);
@@ -54,7 +52,6 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         info.setBranch("");
         applicationInfoService.create(info);
 
-        // 4. 将上传的 JAR 字节写入 Workspace 的 artifacts 目录
         Workspace workspace = workspaceService.getByApplicationID(appId);
         Path artifactDir = workspace.getArtifactDir();
         try {
@@ -63,15 +60,20 @@ public class DefaultApplicationFacade implements ApplicationFacade {
             throw new IllegalStateException("创建 artifact 目录失败: " + artifactDir, e);
         }
 
-        Path jarPath = artifactDir.resolve("app-" + appIdValue + ".jar");
+        Path jarPath = artifactDir.resolve(Constants.ARTIFACT_FILENAME_JAVA);
         try (var out = Files.newOutputStream(jarPath)) {
             out.write(content);
         } catch (IOException e) {
             throw new IllegalStateException("写入 JAR 文件失败: " + jarPath, e);
         }
         log.info("已保存 JAR 到 workspace: {}", jarPath.toAbsolutePath());
+        return workspace;
+    }
 
-        // 5. 通过 java -jar 启动该 JAR
+    @Override
+    public void launchPreparedJar(Workspace workspace, String workflowId, String token) {
+        String appIdValue = workspace.getApplicationID().getValue();
+        Path jarPath = workspace.getArtifactDir().resolve(Constants.ARTIFACT_FILENAME_JAVA);
         Path appLogFile = workspace.getAppLogFile();
         try {
             Files.createDirectories(appLogFile.getParent());
@@ -105,6 +107,12 @@ public class DefaultApplicationFacade implements ApplicationFacade {
         } catch (IOException e) {
             throw new IllegalStateException("启动 JAR 进程失败: " + jarPath, e);
         }
+    }
+
+    @Override
+    public void launchApplicationWithJar(byte[] content, String workflowId, String token) {
+        Workspace workspace = prepareJarWorkspace(content);
+        launchPreparedJar(workspace, workflowId, token);
     }
 
     @Autowired

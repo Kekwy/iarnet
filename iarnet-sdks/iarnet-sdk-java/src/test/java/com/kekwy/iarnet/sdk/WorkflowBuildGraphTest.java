@@ -143,7 +143,7 @@ class WorkflowBuildGraphTest {
 
             WorkflowGraph graph = buildAndMaybePrint(w);
 
-            assertEquals(3, graph.getNodesCount());
+            assertEquals(2, graph.getNodesCount()); // toCustom (entry), sink
         }
     }
 

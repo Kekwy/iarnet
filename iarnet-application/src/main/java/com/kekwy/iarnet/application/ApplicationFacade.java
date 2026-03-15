@@ -1,5 +1,6 @@
 package com.kekwy.iarnet.application;
 
+import com.kekwy.iarnet.application.model.Workspace;
 import com.kekwy.iarnet.common.model.ApplicationInfo;
 import com.kekwy.iarnet.common.model.ID;
 
@@ -13,6 +14,24 @@ public interface ApplicationFacade {
 
     // TOOD: 通过 shell 导入的应用也需要在 web 上可见
     void createApplicationWithJar(byte[] content);
+
+    /**
+     * 创建 Workspace、写入 JAR，返回 Workspace 供后续 register 与 launch 使用。
+     * 用于 submitJarWithInput 流程：先 prepare，再 register(workspace 路径)，再 launchPreparedJar。
+     *
+     * @param content JAR 字节
+     * @return 已写入 JAR 的 Workspace
+     */
+    Workspace prepareJarWorkspace(byte[] content);
+
+    /**
+     * 启动已准备好的 JAR 进程；若 workflowId、token 非空，则通过环境变量传给 JAR，供 SDK 使用预注册的 workflow。
+     *
+     * @param workspace  由 prepareJarWorkspace 返回的 Workspace
+     * @param workflowId 预注册的 workflowId，可为 null
+     * @param token      预注册的 token，可为 null
+     */
+    void launchPreparedJar(Workspace workspace, String workflowId, String token);
 
     /**
      * 提交 JAR 并启动进程，不传递预注册的 workflow 信息。

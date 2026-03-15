@@ -83,7 +83,7 @@
                 <configuration>
                     <argLine>-Diarnet.test.print.graph=true</argLine>
                     <environmentVariables>
-                        <IARNET_EXTERNAL_SOURCE_DIR>${java.io.tmpdir}/iarnet-external-test</IARNET_EXTERNAL_SOURCE_DIR>
+                        <IARNET_EXTERNAL_SOURCE_BASE_DIR>${java.io.tmpdir}/iarnet-external-test</IARNET_EXTERNAL_SOURCE_BASE_DIR>
                     </environmentVariables>
                 </configuration>
             </plugin>

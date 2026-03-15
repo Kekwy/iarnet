@@ -16,11 +16,14 @@ public class ExecutionFacade {
 
     /**
      * 预注册工作流，返回 workflowId 与 token，用于 submitJarWithInput 流程：通过环境变量下发给 JAR，SDK 用该 workflowId 构建图并提交，主进程用该 token 调用 execute。
+     * 传入的 artifactDir 与 externalSourceBaseDir 会在后续 submit 时优先使用。
      *
+     * @param artifactDir           制品目录
+     * @param externalSourceBaseDir 外部源码根目录
      * @return workflowId 与 token
      */
-    public WorkflowEngine.RegistrationResult register() {
-        return engine.register();
+    public WorkflowEngine.RegistrationResult register(Path artifactDir, Path externalSourceBaseDir) {
+        return engine.register(artifactDir, externalSourceBaseDir);
     }
 
     /**

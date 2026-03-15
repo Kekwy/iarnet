@@ -89,9 +89,20 @@ public class ProviderGrpcService
         return new StreamObserver<>() {
             @Override
             public void onNext(ControlEnvelope value) {
-                // 预留：处理 ProviderHeartbeat 等控制消息
-                log.debug("ControlChannel 收到消息: providerId={}, messageCase={}",
-                        providerId, value.getMessageCase());
+                if (value.hasProviderHeartbeat()) {
+                    providerRegistry.heartbeat(providerId);
+                    ControlEnvelope ack = ControlEnvelope.newBuilder()
+                            .setProviderHeartbeatAck(ProviderHeartbeatAck.newBuilder().setAcknowledged(true).build())
+                            .build();
+                    try {
+                        responseObserver.onNext(ack);
+                    } catch (Exception e) {
+                        log.warn("回写心跳 Ack 失败: providerId={}", providerId, e);
+                    }
+                } else {
+                    log.debug("ControlChannel 收到消息: providerId={}, messageCase={}",
+                            providerId, value.getMessageCase());
+                }
             }
 
             @Override

@@ -4,8 +4,11 @@ import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
 import com.kekwy.iarnet.fabric.actor.ActorRegistry;
 import com.kekwy.iarnet.fabric.actor.ActorLifecycleListener;
 import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
+import com.kekwy.iarnet.fabric.provider.ProviderInfo;
+import com.kekwy.iarnet.fabric.provider.ProviderRegistry;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.provider.DeployActorRequest;
+import com.kekwy.iarnet.proto.provider.DeploymentEnvelope;
 import com.kekwy.iarnet.proto.provider.DownstreamGroup;
 import com.kekwy.iarnet.proto.provider.RoutingStrategy;
 import org.slf4j.Logger;
@@ -27,12 +30,14 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
     private static final Logger log = LoggerFactory.getLogger(DefaultDeploymentService.class);
 
     private final ActorRegistry actorRegistry;
+    private final ProviderRegistry providerRegistry;
 
     private final Map<String, DeploymentContext> contextsByDeploymentId = new ConcurrentHashMap<>();
     private final Map<String, DeploymentContext> actorIdToContext = new ConcurrentHashMap<>();
 
-    public DefaultDeploymentService(ActorRegistry actorRegistry) {
+    public DefaultDeploymentService(ActorRegistry actorRegistry, ProviderRegistry providerRegistry) {
         this.actorRegistry = actorRegistry;
+        this.providerRegistry = providerRegistry;
         this.actorRegistry.addListener(this);
     }
 
@@ -152,15 +157,19 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
     }
 
     /**
-     * 向 Provider 发送部署请求。
-     * <p>
-     * 当前构造 {@link DeployActorRequest} 并通过日志输出；
-     * 实际发送需通过 ProviderRegistryService 的 DeploymentChannel 下发。
+     * 向 Provider 发送部署请求：选取一个在线 Provider，通过 DeploymentChannel 下发 DeploymentEnvelope。
      */
     private void sendDeployActorRequest(String deploymentId,
                                         ActorSpec spec,
                                         List<String> upstreamActorIds,
                                         List<DownstreamGroup> downstreamGroups) {
+        List<ProviderInfo> online = providerRegistry.listOnlineProviders();
+        if (online.isEmpty()) {
+            log.warn("无在线 Provider，无法发送部署请求: deploymentId={}, actorId={}", deploymentId, spec.actorId());
+            return;
+        }
+        String providerId = online.get(0).getProviderId();
+
         DeployActorRequest.Builder reqBuilder = DeployActorRequest.newBuilder()
                 .setActorId(spec.actorId())
                 .setResourceRequest(spec.resourceSpec())
@@ -178,10 +187,17 @@ public class DefaultDeploymentService implements DeploymentService, ActorLifecyc
         }
 
         DeployActorRequest request = reqBuilder.build();
+        DeploymentEnvelope.Builder envelopeBuilder = DeploymentEnvelope.newBuilder().setDeployActorRequest(request);
 
-        // TODO: 通过 ProviderRegistryService.DeploymentChannel 发送 DeploymentEnvelope
-        log.info("发送部署请求: deploymentId={}, actorId={}, upstreams={}, downstreamGroups={}",
-                deploymentId, spec.actorId(), upstreamActorIds, downstreamGroups.size());
+        log.info("发送部署请求: deploymentId={}, actorId={}, providerId={}, upstreams={}, downstreamGroups={}",
+                deploymentId, spec.actorId(), providerId, upstreamActorIds.size(), downstreamGroups.size());
+
+        providerRegistry.sendDeployment(providerId, envelopeBuilder)
+                .whenComplete((resp, ex) -> {
+                    if (ex != null) {
+                        log.warn("部署请求失败: deploymentId={}, actorId={}, providerId={}", deploymentId, spec.actorId(), providerId, ex);
+                    }
+                });
     }
 
     // ======================== Actor 生命周期事件路由 ========================
