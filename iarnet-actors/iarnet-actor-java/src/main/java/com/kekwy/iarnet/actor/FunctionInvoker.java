@@ -45,7 +45,7 @@ public final class FunctionInvoker {
     private final Method combineCombine;
 
     public enum Kind {
-        INPUT,   // 0 inputs, has output -> next()
+        INPUT,   // 0 inputs, has output -> next()  Deprecated
         TASK,    // 1 input, has output -> apply(I)
         OUTPUT,  // 1 input, no output -> accept(I)
         COMBINE  // 2 inputs, has output -> combine(OptionalValue, OptionalValue)
@@ -218,34 +218,17 @@ public final class FunctionInvoker {
         return kind;
     }
 
-    /**
-     * Input 函数：循环调用 next()，将每次返回值编码为 DataRow 并通过 callback 发送。
-     * 在单独线程中调用，以免阻塞 gRPC 流。
-     */
-    public void runInput(Consumer<Value> sendValue) throws Throwable {
-        if (kind != Kind.INPUT) {
-            throw new IllegalStateException("非 Input 函数");
-        }
-        while (true) {
-            Object result = inputNext.invoke(function);
-            if (result == null) break;
-            if (Boolean.TRUE.equals(optionalIsEmpty.invoke(result))) break;
-            Object value = optionalGet.invoke(result);
-            sendValue.accept(ValueCodec.encode(value));
-        }
-    }
 
     /**
      * Task 函数：单输入单输出，解码 input 后调用 apply，编码结果返回。
      * 优先使用 descriptor.inputs_type[0] 的 class_name 解码，否则用反射推断的类型。
      */
-    public Value runTask(Value input) throws Throwable {
+    public Object runTask(Value input) throws Throwable {
         if (kind != Kind.TASK) {
             throw new IllegalStateException("非 Task 函数");
         }
         Object decoded = decodeInput(input, 0, taskInputClass);
-        Object result = taskApply.invoke(function, decoded);
-        return ValueCodec.encode(result);
+        return taskApply.invoke(function, decoded);
     }
 
     /**
@@ -263,10 +246,11 @@ public final class FunctionInvoker {
      * Combine 函数：两路输入（可为空），解码后包装为 OptionalValue 调用 combine。
      * 使用 descriptor.inputs_type 的 class_name 解码，不依赖反射推断。
      */
-    public Value runCombine(Value input1, Value input2) throws Throwable {
+    public Object runCombine(Value input1, Value input2) throws Throwable {
         if (kind != Kind.COMBINE) {
             throw new IllegalStateException("非 Combine 函数");
         }
+        // 无 row / 空 Value（含上游条件分支发的空响应）视为该路为空，转为 OptionalValue.empty()，立即完成汇聚
         Object left = input1 == null || input1.getKindCase() == Value.KindCase.KIND_NOT_SET
                 ? null
                 : ValueCodec.decode(input1, descriptor.getInputsType(0), jarLoader.getClassLoader());
@@ -275,8 +259,7 @@ public final class FunctionInvoker {
                 : ValueCodec.decode(input2, descriptor.getInputsType(1), jarLoader.getClassLoader());
         Object optLeft = left == null ? combineEmpty.invoke(null) : combineOfNullable.invoke(null, left);
         Object optRight = right == null ? combineEmpty.invoke(null) : combineOfNullable.invoke(null, right);
-        Object result = combineCombine.invoke(function, optLeft, optRight);
-        return ValueCodec.encode(result);
+        return combineCombine.invoke(function, optLeft, optRight);
     }
 
     /** 单输入解码：优先用 descriptor 的 Type+class_name，否则用 fallbackClass。 */

@@ -32,7 +32,8 @@ public final class Main {
                     config.getRegistryAddr(),
                     config.getActorId(),
                     invoker,
-                    conditionEvaluator
+                    conditionEvaluator,
+                    config.getCombineTimeoutMs()
             );
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {

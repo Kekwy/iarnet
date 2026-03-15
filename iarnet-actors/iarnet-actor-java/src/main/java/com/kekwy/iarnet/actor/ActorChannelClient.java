@@ -3,6 +3,7 @@ package com.kekwy.iarnet.actor;
 import com.kekwy.iarnet.proto.ValueCodec;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.DataRow;
+import com.kekwy.iarnet.proto.actor.InvokeRequest;
 import com.kekwy.iarnet.proto.actor.InvokeResponse;
 import com.kekwy.iarnet.proto.actor.RegisterActorRequest;
 import com.kekwy.iarnet.proto.common.Value;
@@ -13,6 +14,7 @@ import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +32,7 @@ public final class ActorChannelClient {
     private final String actorId;
     private final FunctionInvoker invoker;
     private final ConditionEvaluator conditionEvaluator;
+    private final CombineBuffer combineBuffer;
     private final ExecutorService executor;
 
     private ManagedChannel channel;
@@ -38,7 +41,8 @@ public final class ActorChannelClient {
     private final CountDownLatch closed = new CountDownLatch(1);
 
     public ActorChannelClient(String registryAddr, String actorId,
-                              FunctionInvoker invoker, ConditionEvaluator conditionEvaluator) {
+                              FunctionInvoker invoker, ConditionEvaluator conditionEvaluator,
+                              long combineTimeoutMs) {
         this.registryAddr = registryAddr;
         this.actorId = actorId;
         this.invoker = invoker;
@@ -48,6 +52,22 @@ public final class ActorChannelClient {
             t.setDaemon(true);
             return t;
         });
+        if (invoker.getKind() == FunctionInvoker.Kind.COMBINE) {
+            this.combineBuffer = new CombineBuffer(combineTimeoutMs, pair ->
+                    executor.submit(() -> {
+                        if (pair != null) {
+                            Object result;
+                            try {
+                                result = invoker.runCombine(pair.left(), pair.right());
+                            } catch (Throwable e) {
+                                throw new RuntimeException(e);
+                            }
+                            evaluateAndSendResponse(result, pair.executionId());
+                        }
+                    }));
+        } else {
+            this.combineBuffer = null;
+        }
     }
 
     /**
@@ -87,18 +107,10 @@ public final class ActorChannelClient {
             @Override
             public void onNext(ActorEnvelope msg) {
                 if (msg == null) return;
+                //noinspection SwitchStatementWithTooFewBranches
                 switch (msg.getPayloadCase()) {
-                    case START_INPUT_COMMAND:
-                        executor.submit(() -> {
-                            try {
-                                invoker.runInput(v -> sendRow(v, 0));
-                            } catch (Throwable t) {
-                                log.error("Input 函数执行异常", t);
-                            }
-                        });
-                        break;
                     case REQUEST:
-                        handleRow(msg.getRequest().getRow(), msg.getRequest().getInputPort());
+                        executor.submit(() -> handleRequest(msg.getRequest()));
                         break;
                     default:
                         log.debug("收到: {}", msg.getPayloadCase());
@@ -125,24 +137,29 @@ public final class ActorChannelClient {
         log.info("已向 Provider 注册: actorId={}, registry={}", actorId, registryAddr);
     }
 
-    private void handleRow(DataRow row, int inputPort) {
-        Value value = row.getValue();
+    private void handleRequest(InvokeRequest request) {
+        if (request == null) return;
+        // COMBINE 允许无 row 的请求（上游条件分支未命中时发的空响应），视为该 port 为空，立即参与汇聚
+        if (invoker.getKind() != FunctionInvoker.Kind.COMBINE && !request.hasRow()) return;
+
+        //noinspection ConstantValue
+        String executionId = request.getExecutionId() != null ? request.getExecutionId() : "";
+        int inputPort = request.getInputPort();
+        // 无 row 时用默认 Value，Combine 端会当作 KIND_NOT_SET → OptionalValue.empty()
+        Value value = request.hasRow() ? request.getRow().getValue() : Value.getDefaultInstance();
+
         try {
             switch (invoker.getKind()) {
                 case TASK -> {
-                    Value out = invoker.runTask(value);
-                    Object outObj = ValueCodec.decode(out);
-                    for (Integer port : conditionEvaluator.evaluate(outObj)) {
-                        sendRow(out, port);
-                    }
+                    Object result = invoker.runTask(value);
+                    evaluateAndSendResponse(result, executionId);
                 }
                 case OUTPUT -> invoker.runOutput(value);
                 case COMBINE -> {
-                    // Combine 需两路输入，此处简化为单行：当作一路有值、一路空
-                    Value out = invoker.runCombine(value, null);
-                    Object outObj = ValueCodec.decode(out);
-                    for (Integer port : conditionEvaluator.evaluate(outObj)) {
-                        sendRow(out, port);
+                    CombineBuffer.ReadyPair pair = combineBuffer.offer(executionId, inputPort, value);
+                    if (pair != null) {
+                        Object result = invoker.runCombine(pair.left(), pair.right());
+                        evaluateAndSendResponse(result, executionId);
                     }
                 }
                 default -> log.warn("收到 ROW 但本节点类型为 {}", invoker.getKind());
@@ -152,16 +169,47 @@ public final class ActorChannelClient {
         }
     }
 
+    void evaluateAndSendResponse(Object result, String executionId) {
+        Value out = ValueCodec.encode(result);
+        Set<Integer> portsWithData = conditionEvaluator.evaluate(result);
+        Set<Integer> allPorts = conditionEvaluator.getOutputPorts();
+        for (Integer port : portsWithData) {
+            sendRow(out, port, executionId);
+        }
+        for (Integer port : allPorts) {
+            if (!portsWithData.contains(port)) {
+                sendEmptyRow(port, executionId);
+            }
+        }
+    }
+
     /**
-     * 发送一行数据到指定 output_port。
+     * 发送仅含 executionId 的空响应，表示该 port 上该 executionId 无数据。
+     * 下游 Combine 可据此立即以空值汇聚，避免因条件分支导致一直等待直到超时。
      */
-    public void sendRow(Value value, int outputPort) {
+    private void sendEmptyRow(int outputPort, String executionId) {
+        if (sendObserver == null) return;
+        InvokeResponse response = InvokeResponse.newBuilder()
+                .setExecutionId(executionId != null ? executionId : "")
+                .setPort(outputPort)
+                .build();
+        ActorEnvelope env = ActorEnvelope.newBuilder()
+                .setResponse(response)
+                .build();
+        sendObserver.onNext(env);
+    }
+
+    /**
+     * 发送一行数据到指定 output_port，透传 executionId 供下游 Combine 汇聚。
+     */
+    public void sendRow(Value value, int outputPort, String executionId) {
         if (sendObserver == null) return;
         DataRow row = DataRow.newBuilder()
                 .setRowId(UUID.randomUUID().toString())
                 .setValue(value)
                 .build();
         InvokeResponse response = InvokeResponse.newBuilder()
+                .setExecutionId(executionId != null ? executionId : "")
                 .setRow(row)
                 .setPort(outputPort)
                 .build();
@@ -183,6 +231,9 @@ public final class ActorChannelClient {
      */
     public void shutdown() {
         running.set(false);
+        if (combineBuffer != null) {
+            combineBuffer.shutdown();
+        }
         if (sendObserver != null) {
             sendObserver.onCompleted();
             sendObserver = null;

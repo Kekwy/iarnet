@@ -1,7 +1,6 @@
 package com.kekwy.iarnet.actor;
 
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * Actor 运行时配置，从环境变量解析。
@@ -14,8 +13,10 @@ public final class ActorConfig {
     private static final String ENV_ARTIFACT_PATH = "IARNET_ARTIFACT_PATH";
     private static final String ENV_CONDITION_FUNCTIONS_DIR = "IARNET_CONDITION_FUNCTIONS_DIR";
     private static final String ENV_NODE_KIND = "IARNET_NODE_KIND";
+    private static final String ENV_COMBINE_TIMEOUT_MS = "IARNET_COMBINE_TIMEOUT_MS";
 
     private static final String DEFAULT_REGISTRY_ADDR = "127.0.0.1:10000";
+    private static final long DEFAULT_COMBINE_TIMEOUT_MS = 30_000L;
 
     private final String actorId;
     private final String registryAddr;
@@ -23,15 +24,18 @@ public final class ActorConfig {
     private final Path artifactPath;
     private final Path conditionFunctionsDir;
     private final FunctionInvoker.Kind nodeKind;
+    private final long combineTimeoutMs;
 
     private ActorConfig(String actorId, String registryAddr, Path functionFile,
-                        Path artifactPath, Path conditionFunctionsDir, FunctionInvoker.Kind nodeKind) {
+                         Path artifactPath, Path conditionFunctionsDir, FunctionInvoker.Kind nodeKind,
+                         long combineTimeoutMs) {
         this.actorId = actorId;
         this.registryAddr = registryAddr;
         this.functionFile = functionFile;
         this.artifactPath = artifactPath;
         this.conditionFunctionsDir = conditionFunctionsDir;
         this.nodeKind = nodeKind;
+        this.combineTimeoutMs = combineTimeoutMs;
     }
 
     /**
@@ -71,7 +75,17 @@ public final class ActorConfig {
 
         FunctionInvoker.Kind nodeKind = parseNodeKind(System.getenv(ENV_NODE_KIND));
 
-        return new ActorConfig(actorId, registryAddr, functionFile, artifactPath, conditionFunctionsDir, nodeKind);
+        long combineTimeoutMs = DEFAULT_COMBINE_TIMEOUT_MS;
+        String timeoutStr = System.getenv(ENV_COMBINE_TIMEOUT_MS);
+        if (timeoutStr != null && !timeoutStr.isBlank()) {
+            try {
+                combineTimeoutMs = Long.parseLong(timeoutStr.trim());
+                if (combineTimeoutMs <= 0) combineTimeoutMs = DEFAULT_COMBINE_TIMEOUT_MS;
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return new ActorConfig(actorId, registryAddr, functionFile, artifactPath, conditionFunctionsDir, nodeKind, combineTimeoutMs);
     }
 
     /** 解析 IARNET_NODE_KIND 环境变量（如 NODE_KIND_INPUT），未设置或无效时返回 null，由 FunctionInvoker 回退到元数据推断。 */
@@ -119,5 +133,10 @@ public final class ActorConfig {
     /** 节点类型（由 Provider 通过 IARNET_NODE_KIND 传入），可为 null 表示由 FunctionInvoker 根据描述符推断。 */
     public FunctionInvoker.Kind getNodeKind() {
         return nodeKind;
+    }
+
+    /** Combine 节点两路输入缓冲超时（毫秒），由 IARNET_COMBINE_TIMEOUT_MS 配置，默认 30000。 */
+    public long getCombineTimeoutMs() {
+        return combineTimeoutMs;
     }
 }
