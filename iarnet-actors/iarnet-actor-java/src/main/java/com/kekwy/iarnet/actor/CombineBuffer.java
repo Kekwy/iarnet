@@ -102,13 +102,21 @@ public final class CombineBuffer {
             log.warn("CombineBuffer.offer 非法 inputPort={}, executionId={}", inputPort, executionId);
             return null;
         }
+        boolean valueEmpty = value.getKindCase() == Value.KindCase.KIND_NOT_SET;
+        log.debug("[flow] COMBINE offer executionId={} inputPort={} valueEmpty={}", executionId, inputPort, valueEmpty);
+
         long now = System.currentTimeMillis();
         PendingCombine p = pending.computeIfAbsent(executionId, k -> new PendingCombine(now));
         synchronized (p) {
             p.set(inputPort, value);
             if (p.hasBoth()) {
                 pending.remove(executionId);
-                return p.toReadyPair(executionId);
+                ReadyPair pair = p.toReadyPair(executionId);
+                log.info("[flow] COMBINE 两路到齐 executionId={} leftEmpty={} rightEmpty={}",
+                        executionId,
+                        pair.left() == null || pair.left().getKindCase() == Value.KindCase.KIND_NOT_SET,
+                        pair.right() == null || pair.right().getKindCase() == Value.KindCase.KIND_NOT_SET);
+                return pair;
             }
         }
         return null;
@@ -123,7 +131,7 @@ public final class CombineBuffer {
                 PendingCombine removed = pending.remove(executionId);
                 if (removed != null) {
                     ReadyPair pair = removed.toReadyPair(executionId);
-                    log.debug("Combine 缓冲超时: executionId={}, 以缺失端口为 null 触发执行", executionId);
+                    log.info("[flow] COMBINE 缓冲超时 executionId={} 以缺失端口为 null 触发执行", executionId);
                     try {
                         onTimeoutReady.accept(pair);
                     } catch (Throwable t) {

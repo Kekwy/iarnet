@@ -23,12 +23,18 @@ message SubmitJarResponse {
 
 message SubmitJarWithInputRequest {
   bytes content = 1;
-  repeated InputEntry inputs = 2;
+  repeated InputEntry inputs = 2;        // 单组输入（向后兼容）
+  repeated InputGroup input_groups = 3;   // 多组输入，每组触发一次 execute
 }
 
 message InputEntry {
   string key = 1;
   common.Value value = 2;
+}
+
+// 一组输入，对应一次工作流 execute
+message InputGroup {
+  repeated InputEntry entries = 1;
 }
 
 message SubmitJarWithInputResponse {

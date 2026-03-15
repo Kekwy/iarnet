@@ -139,33 +139,60 @@ public final class ActorChannelClient {
 
     private void handleRequest(InvokeRequest request) {
         if (request == null) return;
-        // COMBINE 允许无 row 的请求（上游条件分支未命中时发的空响应），视为该 port 为空，立即参与汇聚
-        if (invoker.getKind() != FunctionInvoker.Kind.COMBINE && !request.hasRow()) return;
-
-        //noinspection ConstantValue
         String executionId = request.getExecutionId() != null ? request.getExecutionId() : "";
         int inputPort = request.getInputPort();
-        // 无 row 时用默认 Value，Combine 端会当作 KIND_NOT_SET → OptionalValue.empty()
+
+        // 空请求（无 row）：COMBINE 用空 Value 参与汇聚；其他节点从所有 output port 转发空响应，便于下游立即完成
+        if (!request.hasRow()) {
+            log.info("[flow] executionId={} inputPort={} 收到空请求(无row)，节点类型={}，转发空响应到各 output port",
+                    executionId, inputPort, invoker.getKind());
+            if (invoker.getKind() != FunctionInvoker.Kind.COMBINE) {
+                for (Integer port : conditionEvaluator.getOutputPorts()) {
+                    sendEmptyRow(port, executionId);
+                }
+                return;
+            }
+        }
+
         Value value = request.hasRow() ? request.getRow().getValue() : Value.getDefaultInstance();
+
+        // 有 row 但 value 为空（如上游空响应被转发为默认 Value）：TASK/OUTPUT 不调用用户逻辑，仅从所有 output port 发空响应，避免 NPE
+        boolean valueEmpty = value.getKindCase() == Value.KindCase.KIND_NOT_SET;
+        if (valueEmpty && invoker.getKind() != FunctionInvoker.Kind.COMBINE) {
+            log.info("[flow] executionId={} inputPort={} 收到空 value(KIND_NOT_SET)，节点类型={}，转发空响应到各 output port",
+                    executionId, inputPort, invoker.getKind());
+            for (Integer port : conditionEvaluator.getOutputPorts()) {
+                sendEmptyRow(port, executionId);
+            }
+            return;
+        }
+
+        log.debug("[flow] executionId={} inputPort={} 收到请求 valueKind={} 节点类型={}",
+                executionId, inputPort, value.getKindCase(), invoker.getKind());
 
         try {
             switch (invoker.getKind()) {
                 case TASK -> {
                     Object result = invoker.runTask(value);
+                    log.debug("[flow] executionId={} TASK 执行完成 result={}", executionId, result != null ? result.getClass().getSimpleName() : "null");
                     evaluateAndSendResponse(result, executionId);
                 }
-                case OUTPUT -> invoker.runOutput(value);
+                case OUTPUT -> {
+                    invoker.runOutput(value);
+                    log.debug("[flow] executionId={} OUTPUT 已消费", executionId);
+                }
                 case COMBINE -> {
                     CombineBuffer.ReadyPair pair = combineBuffer.offer(executionId, inputPort, value);
                     if (pair != null) {
                         Object result = invoker.runCombine(pair.left(), pair.right());
+                        log.info("[flow] executionId={} COMBINE 两路到齐，执行完成 result={}", executionId, result != null ? result.getClass().getSimpleName() : "null");
                         evaluateAndSendResponse(result, executionId);
                     }
                 }
                 default -> log.warn("收到 ROW 但本节点类型为 {}", invoker.getKind());
             }
         } catch (Throwable t) {
-            log.error("处理 Row 失败", t);
+            log.error("处理 Row 失败 executionId={} inputPort={}", executionId, inputPort, t);
         }
     }
 
@@ -181,6 +208,8 @@ public final class ActorChannelClient {
                 sendEmptyRow(port, executionId);
             }
         }
+        log.info("[flow] executionId={} 响应已发 有数据 ports={} 空 ports={}",
+                executionId, portsWithData, allPorts.stream().filter(p -> !portsWithData.contains(p)).toList());
     }
 
     /**
@@ -189,6 +218,7 @@ public final class ActorChannelClient {
      */
     private void sendEmptyRow(int outputPort, String executionId) {
         if (sendObserver == null) return;
+        log.debug("[flow] 发空响应 executionId={} port={}", executionId, outputPort);
         InvokeResponse response = InvokeResponse.newBuilder()
                 .setExecutionId(executionId != null ? executionId : "")
                 .setPort(outputPort)
@@ -204,6 +234,7 @@ public final class ActorChannelClient {
      */
     public void sendRow(Value value, int outputPort, String executionId) {
         if (sendObserver == null) return;
+        log.debug("[flow] 发数据 executionId={} port={} valueKind={}", executionId, outputPort, value.getKindCase());
         DataRow row = DataRow.newBuilder()
                 .setRowId(UUID.randomUUID().toString())
                 .setValue(value)

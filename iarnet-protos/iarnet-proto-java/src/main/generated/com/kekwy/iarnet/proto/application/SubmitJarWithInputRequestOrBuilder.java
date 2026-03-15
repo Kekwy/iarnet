@@ -14,26 +14,90 @@ public interface SubmitJarWithInputRequestOrBuilder extends
   com.google.protobuf.ByteString getContent();
 
   /**
+   * <pre>
+   * 单组输入（向后兼容）
+   * </pre>
+   *
    * <code>repeated .iarnet.application.InputEntry inputs = 2;</code>
    */
   java.util.List<com.kekwy.iarnet.proto.application.InputEntry> 
       getInputsList();
   /**
+   * <pre>
+   * 单组输入（向后兼容）
+   * </pre>
+   *
    * <code>repeated .iarnet.application.InputEntry inputs = 2;</code>
    */
   com.kekwy.iarnet.proto.application.InputEntry getInputs(int index);
   /**
+   * <pre>
+   * 单组输入（向后兼容）
+   * </pre>
+   *
    * <code>repeated .iarnet.application.InputEntry inputs = 2;</code>
    */
   int getInputsCount();
   /**
+   * <pre>
+   * 单组输入（向后兼容）
+   * </pre>
+   *
    * <code>repeated .iarnet.application.InputEntry inputs = 2;</code>
    */
   java.util.List<? extends com.kekwy.iarnet.proto.application.InputEntryOrBuilder> 
       getInputsOrBuilderList();
   /**
+   * <pre>
+   * 单组输入（向后兼容）
+   * </pre>
+   *
    * <code>repeated .iarnet.application.InputEntry inputs = 2;</code>
    */
   com.kekwy.iarnet.proto.application.InputEntryOrBuilder getInputsOrBuilder(
+      int index);
+
+  /**
+   * <pre>
+   * 多组输入，每组触发一次 execute
+   * </pre>
+   *
+   * <code>repeated .iarnet.application.InputGroup input_groups = 3;</code>
+   */
+  java.util.List<com.kekwy.iarnet.proto.application.InputGroup> 
+      getInputGroupsList();
+  /**
+   * <pre>
+   * 多组输入，每组触发一次 execute
+   * </pre>
+   *
+   * <code>repeated .iarnet.application.InputGroup input_groups = 3;</code>
+   */
+  com.kekwy.iarnet.proto.application.InputGroup getInputGroups(int index);
+  /**
+   * <pre>
+   * 多组输入，每组触发一次 execute
+   * </pre>
+   *
+   * <code>repeated .iarnet.application.InputGroup input_groups = 3;</code>
+   */
+  int getInputGroupsCount();
+  /**
+   * <pre>
+   * 多组输入，每组触发一次 execute
+   * </pre>
+   *
+   * <code>repeated .iarnet.application.InputGroup input_groups = 3;</code>
+   */
+  java.util.List<? extends com.kekwy.iarnet.proto.application.InputGroupOrBuilder> 
+      getInputGroupsOrBuilderList();
+  /**
+   * <pre>
+   * 多组输入，每组触发一次 execute
+   * </pre>
+   *
+   * <code>repeated .iarnet.application.InputGroup input_groups = 3;</code>
+   */
+  com.kekwy.iarnet.proto.application.InputGroupOrBuilder getInputGroupsOrBuilder(
       int index);
 }

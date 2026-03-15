@@ -35,6 +35,11 @@ public final class ApplicationServiceOuterClass {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_iarnet_application_InputEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_iarnet_application_InputGroup_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_iarnet_application_InputGroup_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_iarnet_application_SubmitJarWithInputResponse_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -52,19 +57,21 @@ public final class ApplicationServiceOuterClass {
       ".proto\022\022iarnet.application\032\030iarnet/commo" +
       "n/type.proto\"#\n\020SubmitJarRequest\022\017\n\007cont" +
       "ent\030\001 \001(\014\" \n\021SubmitJarResponse\022\013\n\003msg\030\001 " +
-      "\001(\t\"\\\n\031SubmitJarWithInputRequest\022\017\n\007cont" +
-      "ent\030\001 \001(\014\022.\n\006inputs\030\002 \003(\0132\036.iarnet.appli" +
-      "cation.InputEntry\">\n\nInputEntry\022\013\n\003key\030\001" +
-      " \001(\t\022#\n\005value\030\002 \001(\0132\024.iarnet.common.Valu" +
-      "e\")\n\032SubmitJarWithInputResponse\022\013\n\003msg\030\001" +
-      " \001(\t2\343\001\n\022ApplicationService\022X\n\tsubmitJar" +
-      "\022$.iarnet.application.SubmitJarRequest\032%" +
-      ".iarnet.application.SubmitJarResponse\022s\n" +
-      "\022submitJarWithInput\022-.iarnet.application" +
-      ".SubmitJarWithInputRequest\032..iarnet.appl" +
-      "ication.SubmitJarWithInputResponseB&\n\"co" +
-      "m.kekwy.iarnet.proto.applicationP\001b\006prot" +
-      "o3"
+      "\001(\t\"\222\001\n\031SubmitJarWithInputRequest\022\017\n\007con" +
+      "tent\030\001 \001(\014\022.\n\006inputs\030\002 \003(\0132\036.iarnet.appl" +
+      "ication.InputEntry\0224\n\014input_groups\030\003 \003(\013" +
+      "2\036.iarnet.application.InputGroup\">\n\nInpu" +
+      "tEntry\022\013\n\003key\030\001 \001(\t\022#\n\005value\030\002 \001(\0132\024.iar" +
+      "net.common.Value\"=\n\nInputGroup\022/\n\007entrie" +
+      "s\030\001 \003(\0132\036.iarnet.application.InputEntry\"" +
+      ")\n\032SubmitJarWithInputResponse\022\013\n\003msg\030\001 \001" +
+      "(\t2\343\001\n\022ApplicationService\022X\n\tsubmitJar\022$" +
+      ".iarnet.application.SubmitJarRequest\032%.i" +
+      "arnet.application.SubmitJarResponse\022s\n\022s" +
+      "ubmitJarWithInput\022-.iarnet.application.S" +
+      "ubmitJarWithInputRequest\032..iarnet.applic" +
+      "ation.SubmitJarWithInputResponseB&\n\"com." +
+      "kekwy.iarnet.proto.applicationP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -88,15 +95,21 @@ public final class ApplicationServiceOuterClass {
     internal_static_iarnet_application_SubmitJarWithInputRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_application_SubmitJarWithInputRequest_descriptor,
-        new java.lang.String[] { "Content", "Inputs", });
+        new java.lang.String[] { "Content", "Inputs", "InputGroups", });
     internal_static_iarnet_application_InputEntry_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_iarnet_application_InputEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_application_InputEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
-    internal_static_iarnet_application_SubmitJarWithInputResponse_descriptor =
+    internal_static_iarnet_application_InputGroup_descriptor =
       getDescriptor().getMessageTypes().get(4);
+    internal_static_iarnet_application_InputGroup_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_iarnet_application_InputGroup_descriptor,
+        new java.lang.String[] { "Entries", });
+    internal_static_iarnet_application_SubmitJarWithInputResponse_descriptor =
+      getDescriptor().getMessageTypes().get(5);
     internal_static_iarnet_application_SubmitJarWithInputResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_iarnet_application_SubmitJarWithInputResponse_descriptor,
