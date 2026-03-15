@@ -1,6 +1,5 @@
 package com.kekwy.iarnet.execution;
 
-import com.kekwy.iarnet.execution.runtime.WorkflowRuntime;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -11,7 +10,7 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 public class ExecutionFacade {
 
-    private final WorkflowRuntime runtime;
+    private final WorkflowEngine runtime;
 
     /**
      * 提交工作流图到执行层，入队后立即返回 token，供后续 execute 时校验使用。

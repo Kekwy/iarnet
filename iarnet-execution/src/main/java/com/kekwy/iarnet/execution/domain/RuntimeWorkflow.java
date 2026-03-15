@@ -1,5 +1,6 @@
-package com.kekwy.iarnet.execution.runtime;
+package com.kekwy.iarnet.execution.domain;
 
+import com.kekwy.iarnet.execution.WorkflowEngine;
 import com.kekwy.iarnet.proto.actor.ActorEnvelope;
 import com.kekwy.iarnet.proto.actor.DataRow;
 import com.kekwy.iarnet.proto.actor.InvokeRequest;
@@ -7,9 +8,8 @@ import com.kekwy.iarnet.proto.actor.StartInputCommand;
 import com.kekwy.iarnet.proto.workflow.WorkflowInput;
 import com.kekwy.iarnet.proto.ValueCodec;
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
-import com.kekwy.iarnet.execution.RuntimeNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -19,40 +19,35 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 单次工作流运行的会话，持有运行图与输入定义。
  * 工作流输入参数定义（{@link #getWorkflowInputs()}）及入口节点与参数名的映射（{@link #getNodeIdToInputParamName()}）
- * 在提交时从 WorkflowGraph 解析并保存，供后续 {@link WorkflowRuntime#execute} 注入实际值时使用。
+ * 在提交时从 WorkflowGraph 解析并保存，供后续 {@link WorkflowEngine#execute} 注入实际值时使用。
  */
-public class RuntimeSession {
+@Slf4j
+public class RuntimeWorkflow {
 
-    private static final Logger log = LoggerFactory.getLogger(RuntimeSession.class);
 
+    @Getter
     private final RuntimeGraph runtimeGraph;
-    /** 工作流输入参数定义（名称 + 类型），来自 WorkflowGraph.inputs */
+    /** 工作流输入参数定义（名称 + 类型），来自 WorkflowGraph.inputs
+     * -- GETTER --
+     * 工作流输入参数定义（名称 + 类型）。
+     */
+    @Getter
     private final List<WorkflowInput> workflowInputs;
-    /** 入口节点 ID -> 关联的工作流输入参数名，来自 Node.input_param */
+    /** 入口节点 ID -> 关联的工作流输入参数名，来自 Node.input_param
+     * -- GETTER --
+     * 入口节点 ID -> 工作流输入参数名，用于将 execute 传入的 inputs 映射到对应节点。
+     */
+    @Getter
     private final Map<String, String> nodeIdToInputParamName;
 
     /** 轮询计数器，用于在入口节点的多个 actor 间负载均衡选取一个下发输入 */
     private final AtomicInteger roundRobinCounter = new AtomicInteger(0);
 
-    public RuntimeSession(RuntimeGraph runtimeGraph, List<WorkflowInput> workflowInputs,
-                          Map<String, String> nodeIdToInputParamName) {
+    public RuntimeWorkflow(RuntimeGraph runtimeGraph, List<WorkflowInput> workflowInputs,
+                           Map<String, String> nodeIdToInputParamName) {
         this.runtimeGraph = runtimeGraph;
         this.workflowInputs = workflowInputs != null ? List.copyOf(workflowInputs) : List.of();
         this.nodeIdToInputParamName = nodeIdToInputParamName != null ? Map.copyOf(nodeIdToInputParamName) : Map.of();
-    }
-
-    public RuntimeGraph getRuntimeGraph() {
-        return runtimeGraph;
-    }
-
-    /** 工作流输入参数定义（名称 + 类型）。 */
-    public List<WorkflowInput> getWorkflowInputs() {
-        return workflowInputs;
-    }
-
-    /** 入口节点 ID -> 工作流输入参数名，用于将 execute 传入的 inputs 映射到对应节点。 */
-    public Map<String, String> getNodeIdToInputParamName() {
-        return nodeIdToInputParamName;
     }
 
     /**

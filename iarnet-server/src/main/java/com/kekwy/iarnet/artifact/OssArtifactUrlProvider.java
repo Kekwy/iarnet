@@ -1,6 +1,6 @@
 package com.kekwy.iarnet.artifact;
 
-import com.kekwy.iarnet.application.artifact.ArtifactUrlProvider;
+import com.kekwy.iarnet.execution.port.ArtifactUrlProvider;
 import com.kekwy.iarnet.service.OssService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

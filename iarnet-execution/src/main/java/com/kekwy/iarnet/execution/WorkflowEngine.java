@@ -1,6 +1,9 @@
-package com.kekwy.iarnet.execution.runtime;
+package com.kekwy.iarnet.execution;
 
 import com.kekwy.iarnet.common.Constants;
+import com.kekwy.iarnet.execution.domain.RuntimeGraph;
+import com.kekwy.iarnet.execution.domain.RuntimeNode;
+import com.kekwy.iarnet.execution.domain.RuntimeWorkflow;
 import com.kekwy.iarnet.fabric.messaging.ActorMessageInbox;
 import com.kekwy.iarnet.proto.common.FunctionDescriptor;
 import com.kekwy.iarnet.proto.common.Lang;
@@ -20,7 +23,6 @@ import com.kekwy.iarnet.fabric.deployment.DeploymentService;
 import com.kekwy.iarnet.fabric.deployment.InstanceRefGraph;
 import com.kekwy.iarnet.proto.workflow.WorkflowInput;
 import com.kekwy.iarnet.proto.workflow.WorkflowGraph;
-import com.kekwy.iarnet.execution.RuntimeNode;
 import com.kekwy.iarnet.execution.port.ArtifactUrlProvider;
 import com.kekwy.iarnet.execution.util.ArtifactBuilder;
 import jakarta.annotation.PreDestroy;
@@ -52,9 +54,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Component
 @RequiredArgsConstructor
 // TODO: 考虑如何进行持久化，主要用于断线重连场景，非高优先级，来得及的话就搞
-public class WorkflowRuntime {
+public class WorkflowEngine {
 
-    private static final Logger log = LoggerFactory.getLogger(WorkflowRuntime.class);
+    private static final Logger log = LoggerFactory.getLogger(WorkflowEngine.class);
 
     private final DeploymentService deploymentService;
     private final ArtifactUrlProvider artifactUrlProvider;
@@ -122,7 +124,7 @@ public class WorkflowRuntime {
         if (expectedToken == null || !expectedToken.equals(token)) {
             throw new IllegalArgumentException("无效的 workflowId 或 token，无法执行工作流");
         }
-        RuntimeSession session = runtimeSessions.get(workflowId);
+        RuntimeWorkflow session = runtimeSessions.get(workflowId);
         if (session != null) {
             validateInputsAgainstWorkflow(session, inputs != null ? inputs : Map.of());
             return session.execute(inputs != null ? inputs : Map.of());
@@ -155,7 +157,7 @@ public class WorkflowRuntime {
      *
      * @throws IllegalArgumentException 若缺少参数、多出未定义参数或类型不匹配
      */
-    private static void validateInputsAgainstWorkflow(RuntimeSession session, Map<String, Object> inputs) {
+    private static void validateInputsAgainstWorkflow(RuntimeWorkflow session, Map<String, Object> inputs) {
         List<WorkflowInput> workflowInputs = session.getWorkflowInputs();
         for (WorkflowInput def : workflowInputs) {
             String paramName = def.getName();
@@ -250,7 +252,7 @@ public class WorkflowRuntime {
                     continue;
                 }
                 // TODO: 需要显式约束 deploymentId = workflowId
-                RuntimeSession session = runtimeSessions.get(envelope.deploymentId());
+                RuntimeWorkflow session = runtimeSessions.get(envelope.deploymentId());
                 if (session != null) {
                     session.handleActorMessage(envelope.actorId(), envelope.message());
                 } else {
@@ -320,7 +322,7 @@ public class WorkflowRuntime {
             @Override
             public void onSuccess(InstanceRefGraph instanceRefGraph) {
                 RuntimeGraph runtimeGraph = buildRuntimeGraph(workflowGraph, instanceRefGraph);
-                RuntimeSession session = new RuntimeSession(runtimeGraph, workflowInputs, nodeIdToInputParamName);
+                RuntimeWorkflow session = new RuntimeWorkflow(runtimeGraph, workflowInputs, nodeIdToInputParamName);
                 runtimeSessions.put(workflowId, session);
                 session.start();
                 drainPendingExecuteRequests(workflowId, session);
@@ -336,7 +338,7 @@ public class WorkflowRuntime {
     }
 
     /** workflow 就绪后，处理该 workflowId 下所有缓存的 execute 请求 */
-    private void drainPendingExecuteRequests(String workflowId, RuntimeSession session) {
+    private void drainPendingExecuteRequests(String workflowId, RuntimeWorkflow session) {
         ConcurrentLinkedQueue<PendingExecuteRequest> queue = pendingExecuteRequests.remove(workflowId);
         if (queue == null) return;
         PendingExecuteRequest req;
@@ -374,7 +376,7 @@ public class WorkflowRuntime {
         }
     }
 
-    private final ConcurrentMap<String, RuntimeSession> runtimeSessions = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, RuntimeWorkflow> runtimeSessions = new ConcurrentHashMap<>();
 
     private static @NonNull Path getSourceDir(Lang lang, Path externalSourceBaseDir) {
         Path sourceDir;

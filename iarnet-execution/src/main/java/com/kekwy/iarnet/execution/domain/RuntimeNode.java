@@ -1,4 +1,4 @@
-package com.kekwy.iarnet.execution;
+package com.kekwy.iarnet.execution.domain;
 
 import com.kekwy.iarnet.fabric.actor.ActorInstanceRef;
 

@@ -1,6 +1,5 @@
-package com.kekwy.iarnet.execution.runtime;
+package com.kekwy.iarnet.execution.domain;
 
-import com.kekwy.iarnet.execution.RuntimeNode;
 import lombok.Getter;
 
 import java.util.List;
